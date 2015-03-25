@@ -259,6 +259,11 @@ class Archan(object):
 
         return least_common_mechanism
 
+    def check_layered_architecture(self):
+        # TODO - precondition for subsequent checks?
+        layered_architecture = False
+        return layered_architecture
+
     def check_open_design(self):
         """Check if all criteria checking methods are implemented.
 
@@ -274,10 +279,6 @@ class Archan(object):
                        self.check_layered_architecture_implemented)
         return open_design
 
-    def check_layered_architecture(self):
-        # TODO - precondition for subsequent checks?
-        pass
-
     def check_code_clean(self):
-        print("No code issue found")
+        print("No code issue found.")
         return True

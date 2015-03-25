@@ -12,8 +12,13 @@ Created on 8 janv. 2015
 @author: Pierre.Parrend
 """
 
+import sys
+import os
+
+sys.path.append(os.path.abspath(os.path.dirname(os.path.dirname(__file__))))
+
 import unittest
-from archan.archan import Archan
+from archan.checker import Archan
 from archan.dsm import DesignStructureMatrix
 
 
@@ -203,93 +208,79 @@ class TestArchan(unittest.TestCase):
             self.web_app_dependency_matrix)
 
         generation_complete = True
+        ri, rj = [], []
         for i in range(1, self.web_app_dependency_matrix.get_size()):
             for j in range(1, self.web_app_dependency_matrix.get_size()):
                 if reference_mediation_matrix[i][j] != \
                         generate_mediation_matrix[i][j]:
                     generation_complete = False
-                    print("Error in generation of the compliance matrix "
-                          "at %s:%s" % (i, j))
+                    ri += i
+                    rj += j
 
-        self.assertTrue(generation_complete)
+        self.assertTrue(generation_complete,
+                        "Error in generation of the compliance matrix "
+                        "at lines %s, columns %s" % (ri, rj))
 
     def test_complete_mediation(self):
-        print("""*** Test Archan 'complete mediation' / online store ***""")
+        # print("""*** Test Archan 'complete mediation' / online store ***""")
         archan = Archan()
         compliant = archan.check_complete_mediation(
             self.web_app_dependency_matrix)
-        if compliant:
-            print("Complete Mediation is enforced")
-        else:
-            print("Complete Mediation is NOT enforced")
-        self.assertTrue(compliant)
+        self.assertTrue(compliant,
+                        "Complete Mediation is NOT enforced")
 
     def test_economy_of_mechanism(self):
-        print("""*** Test Archan 'Economy of Mechanism' ***""")
+        # print("""*** Test Archan 'Economy of Mechanism' ***""")
         archan = Archan()
         economy_of_mechanism = archan.check_economy_of_mechanism(
             self.web_app_dependency_matrix)
-        if economy_of_mechanism:
-            print("Economy of Mechanism is enforced")
-        else:
-            print("Economy of Mechanism is NOT enforced")
-        self.assertTrue(economy_of_mechanism)
+        self.assertTrue(economy_of_mechanism,
+                        "Economy of Mechanism is NOT enforced")
 
     def test_least_common_mechanism(self):
-        print("""*** Test Archan 'Least common Mechanism' ***""")
+        # print("""*** Test Archan 'Least common Mechanism' ***""")
         archan = Archan()
         least_common_mechanism = archan.check_least_common_mechanism(
             self.web_app_dependency_matrix)
-        if least_common_mechanism:
-            print("Least common Mechanism is enforced")
-        else:
-            print("Least common Mechanism is NOT enforced")
-        self.assertTrue(least_common_mechanism)
+        self.assertTrue(least_common_mechanism,
+                        "Least common Mechanism is NOT enforced")
 
     def test_open_design(self):
-        print("""*** Test Archan 'Open Design' ***""")
+        # print("""*** Test Archan 'Open Design' ***""")
         archan = Archan()
         open_design = archan.check_open_design()
-        if open_design:
-            print("Open Design is enforced")
-        else:
-            print("Open Design is NOT enforced")
-        self.assertTrue(open_design)
+        self.assertTrue(open_design,
+                        "Open Design is NOT enforced")
 
     # Test Genida
     def test_economy_of_mechanism_genida(self):
-        print("""*** Test Archan for Genida 'Economy of Mechanism' ***""")
+        # print("""*** Test Archan for Genida 'Economy of Mechanism' ***""")
         archan = Archan()
         economy_of_mechanism = archan.check_economy_of_mechanism(
             self.genida_dm)
-        if economy_of_mechanism:
-            print("Economy of Mechanism is enforced for Genida")
-        else:
-            print("Economy of Mechanism is NOT enforced for Genida")
-        self.assertTrue(economy_of_mechanism)
+        self.assertTrue(economy_of_mechanism,
+                        "Economy of Mechanism is NOT enforced for Genida")
 
     def test_least_common_mechanism_genida(self):
-        print("""*** Test Archan for Genida 'Least common Mechanism' ***""")
+        # print("""*** Test Archan for Genida 'Least common Mechanism' ***""")
         archan = Archan()
         least_common_mechanism = archan.check_least_common_mechanism(
             self.genida_dm)
-        if least_common_mechanism:
-            print("Least common Mechanism is enforced for Genida")
-        else:
-            print("Least common Mechanism is NOT enforced for Genida")
-        self.assertTrue(least_common_mechanism)
+        self.assertTrue(least_common_mechanism,
+                        "Least common Mechanism is NOT enforced for Genida")
 
     def test_complete_mediation_genida(self):
-        print("""*** Test Archan for Genida 'complete mediation'
-        / online store ***""")
+        # print("""*** Test Archan for Genida 'complete mediation'
+        # / online store ***""")
         archan = Archan()
         compliant = archan.check_complete_mediation(self.genida_dm)
-        if compliant:
-            print("Complete Mediation is enforced for Genida")
-        else:
-            print("Complete Mediation is NOT enforced for Genida")
-        self.assertTrue(compliant)
+        self.assertTrue(compliant,
+                        "Complete Mediation is NOT enforced for Genida")
 
     def test_code_clean(self):
         archan = Archan()
         self.assertTrue(archan.check_code_clean())
+
+
+if __name__ == '__main__':
+    unittest.main()

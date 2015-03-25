@@ -33,7 +33,7 @@ class DesignStructureMatrix(object):
     # dependency_matrix
 
     def __init__(self, categories, entities, dependency_matrix):
-        print("TODO - DSM: check compliance with DSM definitions and uses")
+        # print("TODO - DSM: check compliance with DSM definitions and uses")
         self.categories = categories
         self.entities = entities
         self.dependency_matrix = dependency_matrix
