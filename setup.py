@@ -16,12 +16,13 @@ setup(
     author='Pierre Parrend',
     author_email='parrend@unistra.fr',
     url='https://github.com/Pawamoy/archan',
-    #download_url = 'https://github.com/Pawamoy/archan/tarball/0.0.1',
+    # download_url = 'https://github.com/Pawamoy/archan/tarball/0.0.1',
 
     keywords="architecture analysis dependency matrix dsm",
-    description="A Python module that analyses your achitecture strength based on DSM data.",
+    description="A Python module that analyses your architecture strength "
+                "based on DSM data.",
     classifiers=[
-        #"Development Status :: 5 - Production/Stable",
+        # "Development Status :: 5 - Production/Stable",
         "Environment :: Console",
         "Intended Audience :: Developers",
         "Topic :: Utilities",
