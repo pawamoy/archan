@@ -1,0 +1,14 @@
+language: python
+install:
+- pip install pep8
+- pip install pyflakes
+- pip install pylint
+- pip install coveralls
+before_script:
+- pep8 --ignore=E226 archan/*.py
+- pyflakes archan/*.py
+- pylint -f colorized archan/*.py || true
+script:
+- coverage run archan/tests.py
+- coverage report -m
+after_success: coveralls

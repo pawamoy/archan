@@ -1,0 +1,8 @@
+*.pyc
+dist/
+.idea/
+docs/_*
+docs/symlink.sh
+docs/docs.html
+MANIFEST
+.coverage
