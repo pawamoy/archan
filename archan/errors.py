@@ -14,8 +14,11 @@ Created on 17 fevr. 2015
 
 
 class Error(Exception):
-    """Base class for exceptions in this module."""
-    pass
+    """Base class for exceptions in this module.
+    """
+
+    def __init__(self, msg):
+        self.msg = msg
 
 
 class DSMError(Error):
@@ -26,8 +29,7 @@ class DSMError(Error):
         msg  -- explanation of the error
     """
 
-    def __init__(self, msg):
-        self.msg = msg
+    pass
 
 
 class ArchanError(Error):
@@ -38,5 +40,4 @@ class ArchanError(Error):
         msg  -- explanation of the error
     """
 
-    def __init__(self, msg):
-        self.msg = msg
+    pass

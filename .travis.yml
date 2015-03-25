@@ -1,4 +1,10 @@
 language: python
+python:
+    - "2.6"
+    - "2.7"
+    - "3.2"
+    - "3.3"
+    - "3.4"
 install:
 - pip install pep8
 - pip install pyflakes
@@ -7,7 +13,7 @@ install:
 before_script:
 - pep8 --ignore=E226 archan/*.py
 - pyflakes archan/*.py
-- pylint -f colorized archan/*.py || true
+- pylint -f colorized -d C0103 archan/*.py || true
 script:
 - coverage run archan/tests.py
 - coverage report -m

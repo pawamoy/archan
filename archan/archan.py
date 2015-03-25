@@ -16,7 +16,10 @@ from archan.dsm import DesignStructureMatrix
 from archan.errors import ArchanError
 
 
-class Archan:
+class Archan(object):
+    """Architecture analyser class.
+    """
+
     def __init__(self):
         self.check_complete_mediation_implemented = True
         self.check_economy_of_mechanism_implemented = True
@@ -25,8 +28,8 @@ class Archan:
         self.check_least_common_mechanism_implemented = True
         self.check_layered_architecture_implemented = False
         # Archan audit parameters
-        self.independenceFactor = 5
-        self.simplicityFactor = 2
+        self.independence_factor = 5
+        self.simplicity_factor = 2
 
     # rules for mediation matrix generation
     # TODO: set -1 for items NOT to be considered
@@ -42,13 +45,21 @@ class Archan:
     # app_modules: dependencies to libs; dependencies to app should be mediated
     # over a broker; dependencies to data
     # data no dependencies at all (framework + libs would be tolerated)
-    def generate_mediation_matrix(self, dsm):
-        categories = dsm.getCategories()
-        dsm_size = dsm.getSize()
+    @staticmethod
+    def generate_mediation_matrix(dsm):
+        """Generate the mediation matrix of the given matrix.
+
+        :type dsm: :class:`DesignStructureMatrix`
+        :param dsm: matrix to generate mediation matrix from
+        :return: mediation matrix of dsm
+        """
+
+        categories = dsm.get_categories()
+        dsm_size = dsm.get_size()
 
         # define and initialize the mediation matrix
         mediation_matrix = [[0 for x in range(dsm_size)]
-                            for x in range(dsms_ize)]
+                            for x in range(dsm_size)]
 
         for i in range(0, dsm_size):
             for j in range(0, dsm_size):
@@ -103,8 +114,18 @@ class Archan:
 
         return mediation_matrix
 
-    def check_matrices_compliance(self, dependency_matrix,
+    @staticmethod
+    def check_matrices_compliance(dependency_matrix,
                                   complete_mediation_matrix):
+        """Check if matrix and its mediation matrix are compliant.
+
+        :type dependency_matrix: list of list of int
+        :param dependency_matrix: 2-dim array (matrix)
+        :type complete_mediation_matrix: list of list of int
+        :param complete_mediation_matrix: 2-dim array (mediation matrix)
+        :return: bool, True if compliant, else False
+        """
+
         dep_matrix_ok = False
         rows_dep_matrix = len(dependency_matrix)
         cols_dep_matrix = len(dependency_matrix[0])
@@ -119,39 +140,51 @@ class Archan:
                                 (dependency_matrix[i][j] !=
                                     complete_mediation_matrix[i][j])):
                             discrepancy_found = True
-                            print("Matrix discrepancy found at " + str(i)
-                                  + ":" + str(j))
+                            print("Matrix discrepancy found at %s:%s" % (i, j))
                 if not discrepancy_found:
                     dep_matrix_ok = True
             else:
-                print("Matrices are NOT compliant" +
+                print("Matrices are NOT compliant"
                       "(number of columns not equals)")
         else:
             print("Matrices are NOT compliant (number of rows not equals)")
 
         return dep_matrix_ok
 
-    def check_complete_mediation(self, dsm):
+    @staticmethod
+    def check_complete_mediation(dsm):
+        """Check if matrix and its mediation matrix are compliant.
+
+        :type dsm: :class:`DesignStructureMatrix`
+        :param dsm: matrix to check
+        :return: bool, True if compliant, else False
+        """
+
         # generate complete_mediation_matrix according to each category
-        med_matrix = self.generatemediation_matrix(dsm)
-        matrices_compliant = self.check_matrices_compliance(
+        med_matrix = Archan.generate_mediation_matrix(dsm)
+        matrices_compliant = Archan.check_matrices_compliance(
             dsm.get_dependency_matrix(),
             med_matrix)
         # check comparison result
         return matrices_compliant
 
     def check_economy_of_mechanism(self, dsm):
-        """Check economy of mechanism
+        """Check economy of mechanism.
 
         As first abstraction, number of dependencies between two modules
         < 2 * the number of modules
         (dependencies to the framework are NOT considered).
+
+        :type dsm: :class:`DesignStructureMatrix`
+        :param dsm: matrix to check
+        :return: bool, True if economic, else False
         """
+
         # economy_of_mechanism
         economy_of_mechanism = False
         dependency_matrix = dsm.get_dependency_matrix()
-        categories = dsm.getCategories()
-        dsm_size = dsm.getSize()
+        categories = dsm.get_categories()
+        dsm_size = dsm.get_size()
 
         dependency_number = 0
         # evaluate Matrix(dependency_matrix)
@@ -162,33 +195,40 @@ class Archan:
                         dependency_matrix[i][j] > 0):
                     dependency_number += 1
                     # check comparison result
-        if dependency_number < dsm_size * self.simplicityFactor:
+        if dependency_number < dsm_size * self.simplicity_factor:
             economy_of_mechanism = True
         else:
-            print("dependency_number: " + str(dependency_number))
-            print("rowsdep_matrix: " + str(dsm_size))
-            print("expected dependencies: " + str(self.simplicityFactor))
+            print("dependency_number: %s" % dependency_number)
+            print("rowsdep_matrix: %s" % dsm_size)
+            print("expected dependencies: %s" % self.simplicity_factor)
         return economy_of_mechanism
 
     def check_separation_of_privileges(self, dependency_matrix):
-        # separationOfPrivilegesMatrix
-        separationOfPrivileges = False
+        # separation_of_privileges_matrix
+        separation_of_privileges = False
         # check comparison result
-        return separationOfPrivileges
+        return separation_of_privileges
 
     def check_least_privileges(self, dependency_matrix):
-        # _least_privileges_matrix
-        _least_privileges = False
+        # least_privileges_matrix
+        least_privileges = False
         # check comparison result
-        return _least_privileges
+        return least_privileges
 
     def check_least_common_mechanism(self, dsm):
+        """Check least common mechanism.
+
+        :type dsm: :class:`DesignStructureMatrix`
+        :param dsm: matrix to check
+        :return: bool
+        """
+
         # leastCommonMechanismMatrix
         least_common_mechanism = False
         # get the list of dependent modules for each module
         dependency_matrix = dsm.get_dependency_matrix()
-        categories = dsm.getCategories()
-        dsm_size = dsm.getSize()
+        categories = dsm.get_categories()
+        dsm_size = dsm.get_size()
 
         dependent_module_number = []
         # evaluate Matrix(dependency_matrix)
@@ -203,21 +243,28 @@ class Archan:
         # overlapped
         #  index of brokers
         #  and app_libs are set to 0
-        for index, item in enumerate(dsm.getCategories()):
+        for index, item in enumerate(dsm.get_categories()):
             if (item == DesignStructureMatrix.broker or
                     item == DesignStructureMatrix.app_lib):
                 dependent_module_number[index] = 0
-        if max(dependent_module_number) <= dsm.getSize() / self.independence_factor:
+        if max(
+                dependent_module_number
+        ) <= dsm.get_size() / self.independence_factor:
             least_common_mechanism = True
         else:
-            print('max number of dependencies to a module: '
-                  + str(max(dependent_module_number)))
-            print('max number of expected dependencies: '
-                  + str(int(dsm.getSize() / self.independence_factor)))
+            print('max number of dependencies to a module: %s' %
+                  max(dependent_module_number))
+            print('max number of expected dependencies: %s' %
+                  int(dsm.get_size() / self.independence_factor))
 
         return least_common_mechanism
 
     def check_open_design(self):
+        """Check if all criteria checking methods are implemented.
+
+        :return: bool, True if all methods are implemented, else False
+        """
+
         # check that compliance with secure design principles are performed
         open_design = (self.check_complete_mediation_implemented and
                        self.check_economy_of_mechanism_implemented and

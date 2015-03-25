@@ -33,8 +33,6 @@ class DesignStructureMatrix(object):
     # dependency_matrix
 
     def __init__(self, categories, entities, dependency_matrix):
-        """Constructor
-        """
         print("TODO - DSM: check compliance with DSM definitions and uses")
         self.categories = categories
         self.entities = entities
@@ -58,22 +56,49 @@ class DesignStructureMatrix(object):
                 "Beware: nb of entities: %s; nb of rows: %s" % (ent_nb, rows))
 
     def set_categories(self, categories):
+        """Set categories.
+
+        :param categories: categories to set
+        """
+
         self.categories = categories
 
     def get_categories(self):
+        """Get categories.
+        """
+
         return self.categories
 
     def set_entities(self, entities):
+        """Set entities.
+
+        :param entities: entities to set
+        """
+
         self.entities = entities
 
     def get_entities(self):
+        """Get entities.
+        """
+
         return self.entities
 
     def set_dependency_matrix(self, dependency_matrix):
+        """Set dependency matrix data.
+
+        :param dependency_matrix: dependency matrix data to set
+        """
+
         self.dependency_matrix = dependency_matrix
 
     def get_dependency_matrix(self):
+        """Get dependency matrix data.
+        """
+
         return self.dependency_matrix
 
     def get_size(self):
+        """Get size.
+        """
+
         return self.size
