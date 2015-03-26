@@ -1,10 +1,10 @@
 language: python
 python:
-    - "2.6"
-    - "2.7"
-    - "3.2"
-    - "3.3"
-    - "3.4"
+- '2.6'
+- '2.7'
+- '3.2'
+- '3.3'
+- '3.4'
 install:
 - pip install pep8
 - pip install pyflakes
@@ -16,3 +16,6 @@ script:
 - coverage run archan/tests.py
 - coverage report -m
 after_success: coveralls
+notifications:
+  slack:
+    secure: a9wMNkhHLwLzO7Ix35x70h+bv+6jDpb1miyiCd3hWzcalcBhpP5lrS68tAxQkIIjG0oSWnBaMzTa5X/P6N2tSLDeyc/Ep3Hs/KCjA9E7xbv+5mLTCRgNzHc+Gzf33gwJxX3OpgjMnYD+PE4DVXbvvkCMAsIhpJtXs6BsCKBJTB0=
