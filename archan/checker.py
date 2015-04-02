@@ -46,7 +46,7 @@ class Archan(object):
     # over a broker; dependencies to data
     # data no dependencies at all (framework + libs would be tolerated)
     @staticmethod
-    def generate_mediation_matrix(dsm):
+    def _generate_mediation_matrix(dsm):
         """Generate the mediation matrix of the given matrix.
 
         :type dsm: :class:`DesignStructureMatrix`
@@ -115,20 +115,19 @@ class Archan(object):
         return mediation_matrix
 
     @staticmethod
-    def check_matrices_compliance(dependency_matrix,
-                                  complete_mediation_matrix):
+    def _check_matrices_compliance(matrix, complete_mediation_matrix):
         """Check if matrix and its mediation matrix are compliant.
 
-        :type dependency_matrix: list of list of int
-        :param dependency_matrix: 2-dim array (matrix)
+        :type matrix: list of list of int
+        :param matrix: 2-dim array (matrix)
         :type complete_mediation_matrix: list of list of int
         :param complete_mediation_matrix: 2-dim array (mediation matrix)
         :return: bool, True if compliant, else False
         """
 
         dep_matrix_ok = False
-        rows_dep_matrix = len(dependency_matrix)
-        cols_dep_matrix = len(dependency_matrix[0])
+        rows_dep_matrix = len(matrix)
+        cols_dep_matrix = len(matrix[0])
         rows_med_matrix = len(complete_mediation_matrix)
         cols_med_matrix = len(complete_mediation_matrix[0])
         if rows_dep_matrix == rows_med_matrix:
@@ -137,7 +136,7 @@ class Archan(object):
                 for i in range(0, rows_dep_matrix):
                     for j in range(0, cols_dep_matrix):
                         if ((complete_mediation_matrix[i][j] != -1) and
-                                (dependency_matrix[i][j] !=
+                                (matrix[i][j] !=
                                     complete_mediation_matrix[i][j])):
                             discrepancy_found = True
                             print("Matrix discrepancy found at %s:%s" % (i, j))
@@ -151,8 +150,7 @@ class Archan(object):
 
         return dep_matrix_ok
 
-    @staticmethod
-    def check_complete_mediation(dsm):
+    def check_complete_mediation(self, dsm):
         """Check if matrix and its mediation matrix are compliant.
 
         :type dsm: :class:`DesignStructureMatrix`
@@ -161,8 +159,8 @@ class Archan(object):
         """
 
         # generate complete_mediation_matrix according to each category
-        med_matrix = Archan.generate_mediation_matrix(dsm)
-        matrices_compliant = Archan.check_matrices_compliance(
+        med_matrix = Archan._generate_mediation_matrix(dsm)
+        matrices_compliant = Archan._check_matrices_compliance(
             dsm.get_dependency_matrix(),
             med_matrix)
         # check comparison result
@@ -203,13 +201,13 @@ class Archan(object):
             print("expected dependencies: %s" % self.simplicity_factor)
         return economy_of_mechanism
 
-    def check_separation_of_privileges(self, dependency_matrix):
+    def check_separation_of_privileges(self, dsm):
         # separation_of_privileges_matrix
         separation_of_privileges = False
         # check comparison result
         return separation_of_privileges
 
-    def check_least_privileges(self, dependency_matrix):
+    def check_least_privileges(self, dsm):
         # least_privileges_matrix
         least_privileges = False
         # check comparison result
@@ -282,3 +280,13 @@ class Archan(object):
     def check_code_clean(self):
         print("No code issue found.")
         return True
+
+    def check_all(self, dsm):
+        return {'CM': self.check_complete_mediation(dsm),
+                'EOM': self.check_economy_of_mechanism(dsm),
+                'SOP': self.check_separation_of_privileges(dsm),
+                'LP': self.check_least_privileges(dsm),
+                'LCM': self.check_least_common_mechanism(dsm),
+                'LA': self.check_layered_architecture(),
+                'OD': self.check_open_design(),
+                'CC': self.check_code_clean()}

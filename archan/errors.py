@@ -13,15 +13,7 @@ Created on 17 fevr. 2015
 """
 
 
-class Error(Exception):
-    """Base class for exceptions in this module.
-    """
-
-    def __init__(self, msg):
-        self.msg = msg
-
-
-class DSMError(Error):
+class DSMError(Exception):
     """Exception raised for errors in the input.
 
     Attributes:
@@ -32,7 +24,7 @@ class DSMError(Error):
     pass
 
 
-class ArchanError(Error):
+class ArchanError(Exception):
     """Exception raised for errors in the input.
 
     Attributes:
