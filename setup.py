@@ -9,7 +9,7 @@ os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 setup(
     name='archan',
-    version='0.0.1',
+    version='0.0.2',
     packages=['archan'],
     license='MPL 2.0',
 
@@ -23,6 +23,7 @@ setup(
                 "based on DSM data.",
     classifiers=[
         # "Development Status :: 5 - Production/Stable",
+        'Development Status :: 4 - Beta',
         "Environment :: Console",
         "Intended Audience :: Developers",
         "Topic :: Utilities",
