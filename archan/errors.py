@@ -11,6 +11,7 @@ Created on 17 fevr. 2015
 
 @author: Pierre.Parrend
 """
+from __future__ import unicode_literals
 
 
 class DSMError(Exception):

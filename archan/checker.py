@@ -11,6 +11,12 @@ Created on 8 janv. 2015
 
 @author: Pierre.Parrend
 """
+from __future__ import division
+from __future__ import print_function
+from __future__ import unicode_literals
+from builtins import range
+from builtins import object
+from past.utils import old_div
 
 from archan.dsm import DesignStructureMatrix
 from archan.errors import ArchanError
@@ -247,13 +253,13 @@ class Archan(object):
                 dependent_module_number[index] = 0
         if max(
                 dependent_module_number
-        ) <= dsm.get_size() / self.independence_factor:
+        ) <= old_div(dsm.get_size(), self.independence_factor):
             least_common_mechanism = True
         else:
             print('max number of dependencies to a module: %s' %
                   max(dependent_module_number))
             print('max number of expected dependencies: %s' %
-                  int(dsm.get_size() / self.independence_factor))
+                  int(old_div(dsm.get_size(), self.independence_factor)))
 
         return least_common_mechanism
 

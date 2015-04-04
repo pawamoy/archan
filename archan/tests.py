@@ -11,6 +11,8 @@ Created on 8 janv. 2015
 
 @author: Pierre.Parrend
 """
+from __future__ import unicode_literals
+from builtins import range
 
 import sys
 import os
@@ -204,7 +206,7 @@ class TestArchan(unittest.TestCase):
         archan = Archan()
         # referenceDSM = self.web_app_dependency_matrix.getDependencyMatrix()
         reference_mediation_matrix = self.completeMediationMatrixOnlineStore
-        generate_mediation_matrix = archan.generate_mediation_matrix(
+        generate_mediation_matrix = archan._generate_mediation_matrix(
             self.web_app_dependency_matrix)
 
         generation_complete = True
