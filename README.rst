@@ -44,6 +44,12 @@ Jerome H. Saltzer and Michael D. Schroeder.
 
 .. _The Protection of Information in Computer Systems : https://www.cs.virginia.edu/~evans/cs551/saltzer/
 
+Archan is used in combination with `dependenpy`_ in the Django app called
+`django-archan`_.
+
+.. _dependenpy: https://github.com/Pawamoy/dependenpy
+.. _django-archan:: https://github.com/Pawamoy/django-archan
+
 Installation
 ------------
 
@@ -52,9 +58,13 @@ Just run ``pip install archan``.
 Usage
 -----
 
-Archan takes a dependency matrix as parameter. It is a list of list of numeric values.
+Archan takes a dependency matrix as parameter. It is a list of list of numeric values,
+representing the dependencies between the packages that are used in your project.
 It also needs the keys (one string for each row of the matrix), and their associated
 group type.
+
+In django-archan, these data are provided by the dependenpy Python module,
+but you can build and use your own:
 
 .. code:: python
 
