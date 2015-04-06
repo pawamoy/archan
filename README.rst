@@ -48,7 +48,7 @@ Archan is used in combination with `dependenpy`_ in the Django app called
 `django-archan`_.
 
 .. _dependenpy: https://github.com/Pawamoy/dependenpy
-.. _django-archan:: https://github.com/Pawamoy/django-archan
+.. _django-archan: https://github.com/Pawamoy/django-archan
 
 Installation
 ------------
