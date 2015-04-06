@@ -81,7 +81,7 @@ Please take a look at the source code to see what other methods are available.
 License
 -------
 
-Copyright (c) 2015 Timothée Mazzucotelli
+Copyright (c) 2015 Pierre Parrend
 
 This Source Code is subject to the terms of the Mozilla Public
 License, v. 2.0. See the LICENSE.txt file for more details.
