@@ -7,3 +7,5 @@ docs/docs.html
 MANIFEST
 .coverage
 stats/
+*.egg-info/
+build/
