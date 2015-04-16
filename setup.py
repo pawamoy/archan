@@ -2,15 +2,14 @@
 # -*- coding: utf-8 -*-
 
 import os
-from setuptools import setup
+import setuptools
 
 # allow setup.py to be run from any path
 os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
-setup(
+setuptools.setup(
     name='archan',
     version='0.0.3',
-    packages=['archan'],
     license='MPL 2.0',
 
     author='Pierre Parrend',
@@ -18,6 +17,7 @@ setup(
     url='https://github.com/Pawamoy/archan',
     # download_url = 'https://github.com/Pawamoy/archan/tarball/0.0.1',
 
+    packages=setuptools.find_packages(),
     install_requires=['future'],
 
     keywords="architecture analysis dependency matrix dsm",
