@@ -266,6 +266,7 @@ class Archan(object):
 
     def check_layered_architecture(self):
         # TODO - precondition for subsequent checks?
+        # matrices diagonalisée (sauf pour le broker)
         layered_architecture = False
         return layered_architecture
 
@@ -285,6 +286,7 @@ class Archan(object):
         return open_design
 
     def check_code_clean(self):
+        # TODO: flake and mccabe for app_modules
         print("No code issue found.")
         return True
 
