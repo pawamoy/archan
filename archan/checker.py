@@ -38,20 +38,27 @@ class Archan(object):
         self.independence_factor = 5
         self.simplicity_factor = 2
 
-    # rules for mediation matrix generation
-    # TODO: set -1 for items NOT to be considered
-    # 0 for items which MUST NOT be present
-    # 1 for items which MUST be present
-    # each module has optional dependencies to himself
-    # framework has optional dependency to all framework items (-1), and
-    # to nothing else
-    # core libs: dependency to framework + oneself only
-    # (dep to other core_libs could be tolerated)
-    # application libs: dependency to framework, other core or app libs
-    # tolerated; no dependencies to apps
-    # app_modules: dependencies to libs; dependencies to app should be mediated
-    # over a broker; dependencies to data
-    # data no dependencies at all (framework + libs would be tolerated)
+    # Rules for mediation matrix generation:
+    #
+    # Set -1 for items NOT to be considered
+    # Set 0 for items which MUST NOT be present
+    # Set 1 for items which MUST be present
+    #
+    # Each module has optional dependencies to itself.
+    #
+    # - Framework has optional dependency to all framework items (-1),
+    #   and to nothing else.
+    # - Core libs have dependencies to framework.
+    #   Dependencies to other core libs are tolerated.
+    # - Application libs have dependencies to framework.
+    #   Dependencies to other core or application libs are tolerated.
+    #   No dependencies to application modules.
+    # - Application modules have dependencies to framework and libs.
+    #   Dependencies to other application modules
+    #   should be mediated over a broker.
+    #   Dependencies to data are tolerated.
+    # - Data have no dependencies at all
+    #   (but framework/libs would be tolerated).
     @staticmethod
     def _generate_mediation_matrix(dsm):
         """Generate the mediation matrix of the given matrix.
@@ -61,54 +68,63 @@ class Archan(object):
         :return: mediation matrix of dsm
         """
 
-        categories = dsm.get_categories()
-        dsm_size = dsm.get_size()
+        cat = dsm.categories
+        ent = dsm.entities
+        size = dsm.size
+        packages = [e.split('.')[0] for e in ent]
 
         # define and initialize the mediation matrix
-        mediation_matrix = [[0 for x in range(dsm_size)]
-                            for x in range(dsm_size)]
+        mediation_matrix = [[0 for x in range(size)]
+                            for x in range(size)]
 
-        for i in range(0, dsm_size):
-            for j in range(0, dsm_size):
-                if categories[i] == DesignStructureMatrix.framework:
-                    if categories[j] == DesignStructureMatrix.framework:
+        for i in range(0, size):
+            for j in range(0, size):
+                if cat[i] == DesignStructureMatrix.framework:
+                    if cat[j] == DesignStructureMatrix.framework:
                         mediation_matrix[i][j] = -1
                     else:
                         mediation_matrix[i][j] = 0
-                elif categories[i] == DesignStructureMatrix.core_lib:
-                    if (categories[j] == DesignStructureMatrix.framework or
+                elif cat[i] == DesignStructureMatrix.core_lib:
+                    if (cat[j] == DesignStructureMatrix.framework or
+                            ent[i].startswith(packages[j] + '.') or
                             i == j):
                         mediation_matrix[i][j] = -1
                     else:
                         mediation_matrix[i][j] = 0
-                elif categories[i] == DesignStructureMatrix.app_lib:
-                    if (categories[j] == DesignStructureMatrix.framework or
-                            categories[j] == DesignStructureMatrix.core_lib or
-                            categories[j] == DesignStructureMatrix.app_lib):
-                        mediation_matrix[i][j] = -1
-                    else:
-                        mediation_matrix[i][j] = 0
-                elif categories[i] == DesignStructureMatrix.broker:
-                    if categories[j] == DesignStructureMatrix.app_module:
-                        mediation_matrix[i][j] = 1
-                    elif (categories[j] == DesignStructureMatrix.framework or
+                elif cat[i] == DesignStructureMatrix.app_lib:
+                    if (cat[j] == DesignStructureMatrix.framework or
+                            cat[j] == DesignStructureMatrix.core_lib or
+                            cat[j] == DesignStructureMatrix.app_lib or
+                            ent[i].startswith(packages[j] + '.') or
                             i == j):
                         mediation_matrix[i][j] = -1
                     else:
                         mediation_matrix[i][j] = 0
-                elif categories[i] == DesignStructureMatrix.app_module:
-                    if (categories[j] == DesignStructureMatrix.framework or
-                            categories[j] == DesignStructureMatrix.core_lib or
-                            categories[j] == DesignStructureMatrix.app_lib or
-                            categories[j] == DesignStructureMatrix.data or
+                elif cat[i] == DesignStructureMatrix.app_module:
+                    # we cannot force an app module to import things from
+                    # the broker if the broker itself did not import anything
+                    if (cat[j] == DesignStructureMatrix.framework or
+                            cat[j] == DesignStructureMatrix.core_lib or
+                            cat[j] == DesignStructureMatrix.app_lib or
+                            cat[j] == DesignStructureMatrix.broker or
+                            cat[j] == DesignStructureMatrix.data or
+                            ent[i].startswith(packages[j] + '.') or
                             i == j):
                         mediation_matrix[i][j] = -1
-                    elif categories[j] == DesignStructureMatrix.broker:
-                        mediation_matrix[i][j] = 1
                     else:
                         mediation_matrix[i][j] = 0
-                elif categories[i] == DesignStructureMatrix.data:
-                    if (categories[j] == DesignStructureMatrix.framework or
+                elif cat[i] == DesignStructureMatrix.broker:
+                    # we cannot force the broker to import things from
+                    # app modules if there is nothing to be imported
+                    if (cat[j] == DesignStructureMatrix.app_module or
+                            cat[j] == DesignStructureMatrix.framework or
+                            ent[i].startswith(packages[j] + '.') or
+                            i == j):
+                        mediation_matrix[i][j] = -1
+                    else:
+                        mediation_matrix[i][j] = 0
+                elif cat[i] == DesignStructureMatrix.data:
+                    if (cat[j] == DesignStructureMatrix.framework or
                             i == j):
                         mediation_matrix[i][j] = -1
                     else:
@@ -122,16 +138,17 @@ class Archan(object):
         return mediation_matrix
 
     @staticmethod
-    def _check_matrices_compliance(matrix, complete_mediation_matrix):
+    def _check_matrices_compliance(dsm, complete_mediation_matrix):
         """Check if matrix and its mediation matrix are compliant.
 
-        :type matrix: list of list of int
-        :param matrix: 2-dim array (matrix)
+        :type dsm: :class:`DesignStructureMatrix`
+        :param dsm: matrix to check
         :type complete_mediation_matrix: list of list of int
         :param complete_mediation_matrix: 2-dim array (mediation matrix)
         :return: bool, True if compliant, else False
         """
 
+        matrix = dsm.dependency_matrix
         dep_matrix_ok = False
         rows_dep_matrix = len(matrix)
         cols_dep_matrix = len(matrix[0])
@@ -146,7 +163,9 @@ class Archan(object):
                                 (matrix[i][j] !=
                                     complete_mediation_matrix[i][j])):
                             discrepancy_found = True
-                            print("Matrix discrepancy found at %s:%s" % (i, j))
+                            print("Matrix discrepancy found at "
+                                  "%s:%s (%s:%s)" % (
+                                i, j, dsm.entities[i], dsm.entities[j]))
                 if not discrepancy_found:
                     dep_matrix_ok = True
             else:
@@ -167,9 +186,7 @@ class Archan(object):
 
         # generate complete_mediation_matrix according to each category
         med_matrix = Archan._generate_mediation_matrix(dsm)
-        matrices_compliant = Archan._check_matrices_compliance(
-            dsm.get_dependency_matrix(),
-            med_matrix)
+        matrices_compliant = Archan._check_matrices_compliance(dsm, med_matrix)
         # check comparison result
         return matrices_compliant
 
@@ -187,9 +204,9 @@ class Archan(object):
 
         # economy_of_mechanism
         economy_of_mechanism = False
-        dependency_matrix = dsm.get_dependency_matrix()
-        categories = dsm.get_categories()
-        dsm_size = dsm.get_size()
+        dependency_matrix = dsm.dependency_matrix
+        categories = dsm.categories
+        dsm_size = dsm.size
 
         dependency_number = 0
         # evaluate Matrix(dependency_matrix)
@@ -231,9 +248,9 @@ class Archan(object):
         # leastCommonMechanismMatrix
         least_common_mechanism = False
         # get the list of dependent modules for each module
-        dependency_matrix = dsm.get_dependency_matrix()
-        categories = dsm.get_categories()
-        dsm_size = dsm.get_size()
+        dependency_matrix = dsm.dependency_matrix
+        categories = dsm.categories
+        dsm_size = dsm.size
 
         dependent_module_number = []
         # evaluate Matrix(dependency_matrix)
@@ -248,19 +265,19 @@ class Archan(object):
         # overlapped
         #  index of brokers
         #  and app_libs are set to 0
-        for index, item in enumerate(dsm.get_categories()):
+        for index, item in enumerate(dsm.categories):
             if (item == DesignStructureMatrix.broker or
                     item == DesignStructureMatrix.app_lib):
                 dependent_module_number[index] = 0
         if max(
                 dependent_module_number
-        ) <= old_div(dsm.get_size(), self.independence_factor):
+        ) <= old_div(dsm.size, self.independence_factor):
             least_common_mechanism = True
         else:
             print('max number of dependencies to a module: %s' %
                   max(dependent_module_number))
             print('max number of expected dependencies: %s' %
-                  int(old_div(dsm.get_size(), self.independence_factor)))
+                  int(old_div(dsm.size, self.independence_factor)))
 
         return least_common_mechanism
 
