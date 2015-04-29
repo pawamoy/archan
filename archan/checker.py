@@ -27,16 +27,12 @@ class Archan(object):
     """Architecture analyser class.
     """
 
-    def __init__(self):
-        self.check_complete_mediation_implemented = True
-        self.check_economy_of_mechanism_implemented = True
-        self.check_separation_of_privileges_implemented = False
-        self.check_least_privileges_implemented = False
-        self.check_least_common_mechanism_implemented = True
-        self.check_layered_architecture_implemented = False
-        # Archan audit parameters
-        self.independence_factor = 5
-        self.simplicity_factor = 2
+    check_complete_mediation_implemented = True
+    check_economy_of_mechanism_implemented = True
+    check_separation_of_privileges_implemented = False
+    check_least_privileges_implemented = False
+    check_least_common_mechanism_implemented = True
+    check_layered_architecture_implemented = True
 
     # Rules for mediation matrix generation:
     #
@@ -176,7 +172,8 @@ class Archan(object):
 
         return dep_matrix_ok
 
-    def check_complete_mediation(self, dsm):
+    @staticmethod
+    def check_complete_mediation(dsm):
         """Check if matrix and its mediation matrix are compliant.
 
         :type dsm: :class:`DesignStructureMatrix`
@@ -190,7 +187,8 @@ class Archan(object):
         # check comparison result
         return matrices_compliant
 
-    def check_economy_of_mechanism(self, dsm):
+    @staticmethod
+    def check_economy_of_mechanism(dsm, simplicity_factor=2):
         """Check economy of mechanism.
 
         As first abstraction, number of dependencies between two modules
@@ -217,27 +215,30 @@ class Archan(object):
                         dependency_matrix[i][j] > 0):
                     dependency_number += 1
                     # check comparison result
-        if dependency_number < dsm_size * self.simplicity_factor:
+        if dependency_number < dsm_size * simplicity_factor:
             economy_of_mechanism = True
         else:
             print("dependency_number: %s" % dependency_number)
             print("rowsdep_matrix: %s" % dsm_size)
-            print("expected dependencies: %s" % self.simplicity_factor)
+            print("expected dependencies: %s" % simplicity_factor)
         return economy_of_mechanism
 
-    def check_separation_of_privileges(self, dsm):
+    @staticmethod
+    def check_separation_of_privileges(dsm):
         # separation_of_privileges_matrix
         separation_of_privileges = False
         # check comparison result
         return separation_of_privileges
 
-    def check_least_privileges(self, dsm):
+    @staticmethod
+    def check_least_privileges(dsm):
         # least_privileges_matrix
         least_privileges = False
         # check comparison result
         return least_privileges
 
-    def check_least_common_mechanism(self, dsm):
+    @staticmethod
+    def check_least_common_mechanism(dsm, independence_factor=5):
         """Check least common mechanism.
 
         :type dsm: :class:`DesignStructureMatrix`
@@ -271,48 +272,61 @@ class Archan(object):
                 dependent_module_number[index] = 0
         if max(
                 dependent_module_number
-        ) <= old_div(dsm.size, self.independence_factor):
+        ) <= old_div(dsm.size, independence_factor):
             least_common_mechanism = True
         else:
             print('max number of dependencies to a module: %s' %
                   max(dependent_module_number))
             print('max number of expected dependencies: %s' %
-                  int(old_div(dsm.size, self.independence_factor)))
+                  int(old_div(dsm.size, independence_factor)))
 
         return least_common_mechanism
 
-    def check_layered_architecture(self):
-        # TODO - precondition for subsequent checks?
-        # matrices diagonalisée (sauf pour le broker)
-        layered_architecture = False
-        return layered_architecture
+    @staticmethod
+    def check_layered_architecture(dsm):
+        """Check layered architecture.
 
-    def check_open_design(self):
+        :type dsm: :class:`DesignStructureMatrix`
+        :param dsm: matrix to check
+        :return: bool
+        """
+
+        for i in range(0, dsm.size-1):
+            for j in range(i+1, dsm.size):
+                if (dsm.categories[i] != DesignStructureMatrix.broker and
+                        dsm.categories[j] != DesignStructureMatrix.broker):
+                    if dsm.dependency_matrix[i][j] > 0:
+                        return False
+        return True
+
+    @staticmethod
+    def check_open_design():
         """Check if all criteria checking methods are implemented.
 
         :return: bool, True if all methods are implemented, else False
         """
 
         # check that compliance with secure design principles are performed
-        open_design = (self.check_complete_mediation_implemented and
-                       self.check_economy_of_mechanism_implemented and
-                       self.check_separation_of_privileges_implemented and
-                       self.check_least_privileges_implemented and
-                       self.check_least_common_mechanism_implemented and
-                       self.check_layered_architecture_implemented)
+        open_design = (Archan.check_complete_mediation_implemented and
+                       Archan.check_economy_of_mechanism_implemented and
+                       Archan.check_separation_of_privileges_implemented and
+                       Archan.check_least_privileges_implemented and
+                       Archan.check_least_common_mechanism_implemented and
+                       Archan.check_layered_architecture_implemented)
         return open_design
 
-    def check_code_clean(self):
-        # TODO: flake and mccabe for app_modules
-        print("No code issue found.")
+    @staticmethod
+    def check_code_clean():
+        # TODO: pyflakes and mccabe for app_modules ?
         return True
 
-    def check_all(self, dsm):
-        return {'CM': self.check_complete_mediation(dsm),
-                'EOM': self.check_economy_of_mechanism(dsm),
-                'SOP': self.check_separation_of_privileges(dsm),
-                'LP': self.check_least_privileges(dsm),
-                'LCM': self.check_least_common_mechanism(dsm),
-                'LA': self.check_layered_architecture(),
-                'OD': self.check_open_design(),
-                'CC': self.check_code_clean()}
+    @staticmethod
+    def check_all(dsm):
+        return {'CM': Archan.check_complete_mediation(dsm),
+                'EOM': Archan.check_economy_of_mechanism(dsm),
+                'SOP': Archan.check_separation_of_privileges(dsm),
+                'LP': Archan.check_least_privileges(dsm),
+                'LCM': Archan.check_least_common_mechanism(dsm),
+                'LA': Archan.check_layered_architecture(dsm),
+                'OD': Archan.check_open_design(),
+                'CC': Archan.check_code_clean()}
