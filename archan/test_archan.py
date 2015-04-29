@@ -11,6 +11,7 @@ Created on 8 janv. 2015
 
 @author: Pierre.Parrend
 """
+
 from __future__ import unicode_literals
 from builtins import range
 
@@ -144,64 +145,6 @@ class TestArchan(unittest.TestCase):
         [0, 0, 0, 0, 0, 0, 0, 0, 0, -1, -1],  # framework
         [0, 0, 0, 0, 0, 0, 0, 0, 0, -1, -1]]  # framework
 
-    # generated matrix - for reference and visualization
-    completeMediationMatrixGenida = [
-        [-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-         0, 0, 0, 0],
-        [-1, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-         0, 0, 0, 0],
-        [-1, 0, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-         0, 0, 0, 0],
-        [-1, 0, 0, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-         0, 0, 0, 0],
-        [-1, 0, 0, 0, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-         0, 0, 0, 0],
-        [-1, 0, 0, 0, 0, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-         0, 0, 0, 0],
-        [-1, 0, 0, 0, 0, 0, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-         0, 0, 0, 0],
-        [-1, 0, 0, 0, 0, 0, 0, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-         0, 0, 0, 0],
-        [-1, 0, 0, 0, 0, 0, 0, 0, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-         0, 0, 0, 0],
-        [-1, 0, 0, 0, 0, 0, 0, 0, 0, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-         0, 0, 0, 0],
-        [-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-         0, 0, 0, 0],
-        [-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-         0, 0, 0, 0],
-        [-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-         0, 0, 0, 0],
-        [-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-         0, 0, 0, 0],
-        [-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, 0, 0, 0, 0, 0, 0, 0, 0,
-         0, 0, 0, 0],
-        [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 0,
-         -1, -1, -1, 0, 0, 0, 0, 0, 0],
-        [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 0,
-         -1, -1, -1, 0, 0, 0, 0, 0, 0],
-        [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-         -1, -1, -1, -1, 0, 0, 0, 0, 0, 0],
-        [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 0,
-         -1, -1, -1, 0, 0, 0, 0, 0, 0],
-        [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 0,
-         -1, -1, -1, 0, 0, 0, 0, 0, 0],
-        [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 0,
-         -1, -1, -1, 0, 0, 0, 0, 0, 0],
-        [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 0,
-         -1, -1, -1, -1, 0, 0, 0, 0, 0],
-        [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 0,
-         -1, -1, -1, 0, -1, 0, 0, 0, 1],
-        [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 0,
-         -1, -1, -1, 0, 0, -1, 0, 0, 1],
-        [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 0,
-         -1, -1, -1, 0, 0, 0, -1, 0, 1],
-        [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 0,
-         -1, -1, -1, 0, 0, 0, 0, -1, 1],
-        [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 0,
-         -1, -1, -1, 0, 1, 1, 1, 1, -1],
-    ]
-
     def test_mediation_matrix_generation(self):
         archan = Archan()
         # referenceDSM = self.web_app_dependency_matrix.getDependencyMatrix()
@@ -249,31 +192,6 @@ class TestArchan(unittest.TestCase):
         open_design = archan.check_open_design()
         self.assertTrue(open_design,
                         "Open Design is NOT enforced")
-
-    # Test Genida
-    def test_economy_of_mechanism_genida(self):
-        archan = Archan()
-        economy_of_mechanism = archan.check_economy_of_mechanism(
-            self.genida_dm)
-        self.assertTrue(economy_of_mechanism,
-                        "Economy of Mechanism is NOT enforced for Genida")
-
-    def test_least_common_mechanism_genida(self):
-        archan = Archan()
-        least_common_mechanism = archan.check_least_common_mechanism(
-            self.genida_dm)
-        self.assertTrue(least_common_mechanism,
-                        "Least common Mechanism is NOT enforced for Genida")
-
-    def test_complete_mediation_genida(self):
-        archan = Archan()
-        compliant = archan.check_complete_mediation(self.genida_dm)
-        self.assertTrue(compliant,
-                        "Complete Mediation is NOT enforced for Genida")
-
-    def test_code_clean(self):
-        archan = Archan()
-        self.assertTrue(archan.check_code_clean())
 
 
 if __name__ == '__main__':
