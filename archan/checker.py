@@ -161,9 +161,9 @@ class Archan(object):
                             discrepancy_found = True
                             print("Matrix discrepancy found "
                                   "at %s:%s (%s:%s): %s/%s" % (
-                                i, j, dsm.entities[i], dsm.entities[j],
-                                complete_mediation_matrix[i][j],
-                                matrix[i][j]))
+                                      i, j, dsm.entities[i], dsm.entities[j],
+                                      complete_mediation_matrix[i][j],
+                                      matrix[i][j]))
                 if not discrepancy_found:
                     dep_matrix_ok = True
             else:
@@ -213,9 +213,8 @@ class Archan(object):
         for i in range(0, dsm_size):
             for j in range(0, dsm_size):
                 if (categories[i] != DesignStructureMatrix.framework and
-                            categories[
-                                j] != DesignStructureMatrix.framework and
-                            dependency_matrix[i][j] > 0):
+                        categories[j] != DesignStructureMatrix.framework and
+                        dependency_matrix[i][j] > 0):
                     dependency_number += 1
                     # check comparison result
         if dependency_number < dsm_size * simplicity_factor:
@@ -262,9 +261,8 @@ class Archan(object):
             dependent_module_number.append(0)
             for i in range(0, dsm_size):
                 if (categories[i] != DesignStructureMatrix.framework and
-                            categories[
-                                j] != DesignStructureMatrix.framework and
-                            dependency_matrix[i][j] > 0):
+                        categories[j] != DesignStructureMatrix.framework and
+                        dependency_matrix[i][j] > 0):
                     dependent_module_number[j] += 1
         # except for the broker if any  and libs, check that threshold is not
         # overlapped
@@ -272,11 +270,9 @@ class Archan(object):
         #  and app_libs are set to 0
         for index, item in enumerate(dsm.categories):
             if (item == DesignStructureMatrix.broker or
-                        item == DesignStructureMatrix.app_lib):
+                    item == DesignStructureMatrix.app_lib):
                 dependent_module_number[index] = 0
-        if max(
-                dependent_module_number
-        ) <= old_div(dsm.size, independence_factor):
+        if max(dependent_module_number) <= old_div(dsm.size, independence_factor):  # noqa
             least_common_mechanism = True
         else:
             print('max number of dependencies to a module: %s' %
@@ -298,7 +294,7 @@ class Archan(object):
         for i in range(0, dsm.size - 1):
             for j in range(i + 1, dsm.size):
                 if (dsm.categories[i] != DesignStructureMatrix.broker and
-                            dsm.categories[j] != DesignStructureMatrix.broker):
+                        dsm.categories[j] != DesignStructureMatrix.broker):
                     if dsm.dependency_matrix[i][j] > 0:
                         return False
         return True
