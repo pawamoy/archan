@@ -146,33 +146,32 @@ class Archan(object):
         """
 
         matrix = dsm.dependency_matrix
-        dep_matrix_ok = False
         rows_dep_matrix = len(matrix)
         cols_dep_matrix = len(matrix[0])
         rows_med_matrix = len(complete_mediation_matrix)
         cols_med_matrix = len(complete_mediation_matrix[0])
-        if rows_dep_matrix == rows_med_matrix:
-            if cols_dep_matrix == cols_med_matrix:
-                discrepancy_found = False
-                for i in range(0, rows_dep_matrix):
-                    for j in range(0, cols_dep_matrix):
-                        if ((complete_mediation_matrix[i][j] != -1) and
-                                (matrix[i][j] != complete_mediation_matrix[i][j])):  # noqa
-                            discrepancy_found = True
-                            print("Matrix discrepancy found "
-                                  "at %s:%s (%s:%s): %s/%s" % (
-                                      i, j, dsm.entities[i], dsm.entities[j],
-                                      complete_mediation_matrix[i][j],
-                                      matrix[i][j]))
-                if not discrepancy_found:
-                    dep_matrix_ok = True
-            else:
-                print("Matrices are NOT compliant"
-                      "(number of columns not equals)")
-        else:
-            print("Matrices are NOT compliant (number of rows not equals)")
 
-        return dep_matrix_ok
+        if (rows_dep_matrix != rows_med_matrix or
+                cols_dep_matrix != cols_med_matrix):
+            print("Matrices are NOT compliant "
+                  "(number of rows/columns not equal)")
+            return False
+
+        discrepancy_found = False
+        for i in range(0, rows_dep_matrix):
+            for j in range(0, cols_dep_matrix):
+                # FIXME: wrong: if med is 1, we cannot !=, we need to <=
+                # switch cases between -1, 0 and 1
+                if ((complete_mediation_matrix[i][j] != -1) and
+                        (matrix[i][j] != complete_mediation_matrix[i][j])):
+                    discrepancy_found = True
+                    print("Matrix discrepancy found "
+                          "at %s:%s (%s:%s): %s/%s" % (
+                              i, j, dsm.entities[i], dsm.entities[j],
+                              complete_mediation_matrix[i][j],
+                              matrix[i][j]))
+
+        return not discrepancy_found
 
     @staticmethod
     def check_complete_mediation(dsm):
