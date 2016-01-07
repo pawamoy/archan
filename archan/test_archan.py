@@ -127,11 +127,8 @@ class TestArchan(unittest.TestCase):
              1, 1, 1, 1, 1]]
         self.genida_dm = DesignStructureMatrix(
             genida_categories, genida_entities, genida_dsm)
-
-    # TODO: set -1 for items NOT to be considered
     # 0 for items which MUST NOT be present
     # 1 for items which MUST be present
-    # TODO: validate and check validity!!
     completeMediationMatrixOnlineStore = [
         [-1, 0, 0, 0, 1, -1, -1, -1, -1, -1, -1],  # app modules
         [0, -1, 0, 0, 1, -1, -1, -1, -1, -1, -1],
@@ -154,8 +151,8 @@ class TestArchan(unittest.TestCase):
 
         generation_complete = True
         ri, rj = [], []
-        for i in range(1, self.web_app_dependency_matrix.get_size()):
-            for j in range(1, self.web_app_dependency_matrix.get_size()):
+        for i in range(1, self.web_app_dependency_matrix.size):
+            for j in range(1, self.web_app_dependency_matrix.size):
                 if reference_mediation_matrix[i][j] != \
                         generate_mediation_matrix[i][j]:
                     generation_complete = False

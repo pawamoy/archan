@@ -160,10 +160,10 @@ class Archan(object):
         discrepancy_found = False
         for i in range(0, rows_dep_matrix):
             for j in range(0, cols_dep_matrix):
-                # FIXME: wrong: if med is 1, we cannot !=, we need to <=
-                # switch cases between -1, 0 and 1
-                if ((complete_mediation_matrix[i][j] != -1) and
-                        (matrix[i][j] != complete_mediation_matrix[i][j])):
+                if ((complete_mediation_matrix[i][j] == 0 and
+                        matrix[i][j] > 0) or
+                    (complete_mediation_matrix[i][j] == 1 and
+                        matrix[i][j] < 1)):
                     discrepancy_found = True
                     print("Matrix discrepancy found "
                           "at %s:%s (%s:%s): %s/%s" % (
@@ -175,7 +175,10 @@ class Archan(object):
 
     @staticmethod
     def check_complete_mediation(dsm):
-        """Check if matrix and its mediation matrix are compliant.
+        """Check if matrix and its mediation matrix are compliant, meaning
+        that number of dependencies for each (line, column) is either 0 if
+        the mediation matrix (line, column) is 0, or >0 if the mediation matrix
+        (line, column) is 1.
 
         :type dsm: :class:`DesignStructureMatrix`
         :param dsm: matrix to check
@@ -317,6 +320,7 @@ class Archan(object):
     @staticmethod
     def check_code_clean():
         # TODO: pyflakes and mccabe for app_modules ?
+        # or reuse the summary file of the previous lint
         return True
 
     @staticmethod

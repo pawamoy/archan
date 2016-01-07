@@ -20,8 +20,6 @@ from archan.errors import DSMError
 
 class DesignStructureMatrix(object):
     """Design Structure Matrix class.
-
-    TODO: doc
     """
 
     # class variables
@@ -31,9 +29,6 @@ class DesignStructureMatrix(object):
     app_lib = 'app_lib'
     broker = 'broker'
     data = 'data'
-
-    # entities
-    # dependency_matrix
 
     def __init__(self, categories, entities, dependency_matrix):
         # TODO - DSM: check compliance with DSM definitions and uses
