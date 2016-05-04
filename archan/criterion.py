@@ -126,8 +126,10 @@ def _generate_mediation_matrix(dsm):
                     mediation_matrix[i][j] = 0
             elif cat[i] == dsm.broker:
                 # we cannot force the broker to import things from
-                # app modules if there is nothing to be imported
+                # app modules if there is nothing to be imported.
+                # also broker should be authorized to use third apps
                 if (cat[j] == dsm.app_module or
+                        cat[j] == dsm.core_lib or
                         cat[j] == dsm.framework or
                         ent[i].startswith(packages[j] + '.') or
                         i == j):
@@ -166,7 +168,7 @@ def _matrices_compliance(dsm, complete_mediation_matrix):
     cols_med_matrix = len(complete_mediation_matrix[0])
 
     if (rows_dep_matrix != rows_med_matrix or
-                cols_dep_matrix != cols_med_matrix):
+            cols_dep_matrix != cols_med_matrix):
         raise ArchanError('Matrices are NOT compliant '
                           '(number of rows/columns not equal)')
 
@@ -318,35 +320,50 @@ def check_layered_architecture(dsm):
     return layered_architecture, '\n'.join(messages)
 
 
+COMPLETE_MEDIATION = Criterion(
+    'COMPLETE_MEDIATION', 'Complete Mediation',
+    description=read_criterion('complete_mediation'),
+    check=check_complete_mediation,
+    hint='Remove the dependencies or deviate them through a broker module.')
+ECONOMY_OF_MECHANISM = Criterion(
+    'ECONOMY_OF_MECHANISM', 'Economy Of Mechanism',
+    description=read_criterion('economy_of_mechanism'),
+    check=check_economy_of_mechanism,
+    hint='Reduce the number of dependencies in your own code '
+         'or increase the simplicity factor.',
+    simplicity_factor=2)
+SEPARATION_OF_PRIVILEGES = Criterion(
+    'SEPARATION_OF_PRIVILEGES', 'Separation Of Privileges',
+    description=read_criterion('separation_of_privileges'))
+LEAST_PRIVILEGES = Criterion(
+    'LEAST_PRIVILEGES', 'Least Privileges',
+    description=read_criterion('least_privileges'))
+LEAST_COMMON_MECHANISM = Criterion(
+    'LEAST_COMMON_MECHANISM', 'Least Common Mechanism',
+    description=read_criterion('least_common_mechanism'),
+    check=check_least_common_mechanism,
+    hint='Reduce number of modules having dependencies to the listed module.',
+    independence_factor=5)
+LAYERED_ARCHITECTURE = Criterion(
+    'LAYERED_ARCHITECTURE', 'Layered Architecture',
+    description=read_criterion('layered_architecture'),
+    check=check_layered_architecture,
+    hint='Ensure that your applications are listed in the right '
+         'order when building the DSM, or remove dependencies.')
+OPEN_DESIGN = Criterion(
+    'OPEN_DESIGN', 'Open Design',
+    description=read_criterion('open_design'))
+CODE_CLEAN = Criterion(
+    'CODE_CLEAN', 'Code Clean',
+    description=read_criterion('code_clean'))
+
 CRITERIA = [
-    Criterion('COMPLETE_MEDIATION', 'Complete Mediation',
-              description=read_criterion('complete_mediation'),
-              check=check_complete_mediation,
-              hint='Remove the dependencies or deviate them through '
-              'a broker module.'),
-    Criterion('ECONOMY_OF_MECHANISM', 'Economy Of Mechanism',
-              description=read_criterion('economy_of_mechanism'),
-              check=check_economy_of_mechanism,
-              hint='Reduce the number of dependencies in your own code '
-              'or increase the simplicity factor.',
-              simplicity_factor=2),
-    Criterion('SEPARATION_OF_PRIVILEGES', 'Separation Of Privileges',
-              description=read_criterion('separation_of_privileges')),
-    Criterion('LEAST_PRIVILEGES', 'Least Privileges',
-              description=read_criterion('least_privileges')),
-    Criterion('LEAST_COMMON_MECHANISM', 'Least Common Mechanism',
-              description=read_criterion('least_common_mechanism'),
-              check=check_least_common_mechanism,
-              hint='Reduce number of modules having dependencies '
-                   'to the listed module.',
-              independence_factor=5),
-    Criterion('LAYERED_ARCHITECTURE', 'Layered Architecture',
-              description=read_criterion('layered_architecture'),
-              check=check_layered_architecture,
-              hint='Ensure that your application are listed in the right '
-                   'order when building the DSM, or remove dependencies.'),
-    Criterion('OPEN_DESIGN', 'Open Design',
-              description=read_criterion('open_design')),
-    Criterion('CODE_CLEAN', 'Code Clean',
-              description=read_criterion('code_clean')),
+    COMPLETE_MEDIATION,
+    ECONOMY_OF_MECHANISM,
+    SEPARATION_OF_PRIVILEGES,
+    LEAST_PRIVILEGES,
+    LEAST_COMMON_MECHANISM,
+    LAYERED_ARCHITECTURE,
+    OPEN_DESIGN,
+    CODE_CLEAN
 ]
