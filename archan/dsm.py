@@ -13,7 +13,6 @@ Created on 8 janv. 2015
 """
 
 from __future__ import unicode_literals
-from builtins import object
 
 from archan.errors import DSMError
 

@@ -95,17 +95,14 @@ def _generate_mediation_matrix(dsm):
                 else:
                     mediation_matrix[i][j] = 0
             elif cat[i] == dsm.core_lib:
-                if (cat[j] == dsm.framework or
-                        cat[j] == dsm.core_lib or
+                if (cat[j] in (dsm.framework, dsm.core_lib) or
                         ent[i].startswith(packages[j] + '.') or
                         i == j):
                     mediation_matrix[i][j] = -1
                 else:
                     mediation_matrix[i][j] = 0
             elif cat[i] == dsm.app_lib:
-                if (cat[j] == dsm.framework or
-                        cat[j] == dsm.core_lib or
-                        cat[j] == dsm.app_lib or
+                if (cat[j] in (dsm.framework, dsm.core_lib, dsm.app_lib) or
                         ent[i].startswith(packages[j] + '.') or
                         i == j):
                     mediation_matrix[i][j] = -1
@@ -114,11 +111,8 @@ def _generate_mediation_matrix(dsm):
             elif cat[i] == dsm.app_module:
                 # we cannot force an app module to import things from
                 # the broker if the broker itself did not import anything
-                if (cat[j] == dsm.framework or
-                        cat[j] == dsm.core_lib or
-                        cat[j] == dsm.app_lib or
-                        cat[j] == dsm.broker or
-                        cat[j] == dsm.data or
+                if (cat[j] in (dsm.framework, dsm.core_lib,
+                               dsm.app_lib, dsm.broker, dsm.data) or
                         ent[i].startswith(packages[j] + '.') or
                         i == j):
                     mediation_matrix[i][j] = -1
@@ -128,9 +122,7 @@ def _generate_mediation_matrix(dsm):
                 # we cannot force the broker to import things from
                 # app modules if there is nothing to be imported.
                 # also broker should be authorized to use third apps
-                if (cat[j] == dsm.app_module or
-                        cat[j] == dsm.core_lib or
-                        cat[j] == dsm.framework or
+                if (cat[j] in (dsm.app_module, dsm.core_lib, dsm.framework) or
                         ent[i].startswith(packages[j] + '.') or
                         i == j):
                     mediation_matrix[i][j] = -1
