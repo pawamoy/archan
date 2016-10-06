@@ -15,7 +15,6 @@ Created on 8 janv. 2015
 from __future__ import unicode_literals
 
 import unittest
-from builtins import range
 
 from archan.checker import Archan
 from archan.dsm import DesignStructureMatrix
