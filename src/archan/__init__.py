@@ -9,4 +9,4 @@
 from __future__ import unicode_literals
 
 __author__ = 'Pierre Parrend <parrend@unistra.fr>'
-__version__ = '0.1.3'
+__version__ = '1.0.0'

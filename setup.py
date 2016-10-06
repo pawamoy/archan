@@ -20,7 +20,7 @@ def read(*names, **kwargs):
 
 setup(
     name='archan',
-    version='0.1.3',
+    version='1.0.0',
     license='MPL 2.0',
     description='A Python module that analyses your achitecture strength based on DSM data.',
     long_description='%s\n%s' % (
