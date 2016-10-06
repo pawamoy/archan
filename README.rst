@@ -1,97 +1,73 @@
-Archan
-======
+========
+Overview
+========
 
-.. image:: https://pypip.in/version/archan/badge.svg
-    :target: https://pypi.python.org/pypi/archan/
-    :alt: Latest Version
+.. start-badges
 
-.. image:: https://pypip.in/status/archan/badge.svg
-    :target: https://pypi.python.org/pypi/archan/
-    :alt: Development Status
+|travis|
 
-.. image:: https://pypip.in/format/archan/badge.svg
-    :target: https://pypi.python.org/pypi/archan/
-    :alt: Download format
 
-.. image:: https://travis-ci.org/Pawamoy/archan.svg?branch=master
-    :target: https://travis-ci.org/Pawamoy/archan
-    :alt: Build Status
 
-.. image:: https://readthedocs.org/projects/archan/badge/?version=latest
-    :target: https://readthedocs.org/projects/archan/?badge=latest
-    :alt: Documentation Status
+|codecov|
+|landscape|
 
-.. image:: https://coveralls.io/repos/Pawamoy/archan/badge.svg?branch=master
-    :target: https://coveralls.io/r/Pawamoy/archan?branch=master
+
+
+|version|
+|wheel|
+|gitter|
+.. |travis| image:: https://travis-ci.org/Pawamoy/archan.svg?branch=master
+    :alt: Travis-CI Build Status
+    :target: https://travis-ci.org/Pawamoy/archan/
+
+.. |codecov| image:: https://codecov.io/github/Pawamoy/archan/coverage.svg?branch=master
     :alt: Coverage Status
+    :target: https://codecov.io/github/Pawamoy/archan/
 
-.. image:: https://landscape.io/github/Pawamoy/archan/master/landscape.svg?style=flat
-   :target: https://landscape.io/github/Pawamoy/archan/master
-   :alt: Code Health
+.. |landscape| image:: https://landscape.io/github/Pawamoy/archan/master/landscape.svg?style=flat
+    :target: https://landscape.io/github/Pawamoy/archan/
+    :alt: Code Quality Status
 
-.. image:: https://pypip.in/py_versions/archan/badge.svg
+.. |version| image:: https://img.shields.io/pypi/v/archan.svg?style=flat
+    :alt: PyPI Package latest release
     :target: https://pypi.python.org/pypi/archan/
-    :alt: Supported Python versions
 
-.. image:: https://pypip.in/license/archan/badge.svg
+.. |wheel| image:: https://img.shields.io/pypi/wheel/archan.svg?style=flat
+    :alt: PyPI Wheel
     :target: https://pypi.python.org/pypi/archan/
-    :alt: License
 
-Archan is a Python module that analyzes the strength of your project architecture
-according to some criteria described in
-"`The Protection of Information in Computer Systems`_", written by
-Jerome H. Saltzer and Michael D. Schroeder.
 
-.. _The Protection of Information in Computer Systems : https://www.cs.virginia.edu/~evans/cs551/saltzer/
 
-Archan is used in combination with `dependenpy`_ in the Django app called
-`django-archan`_.
+.. |gitter| image:: https://badges.gitter.im/Pawamoy/archan.svg
+    :alt: Join the chat at https://gitter.im/Pawamoy/archan
+    :target: https://gitter.im/Pawamoy/archan?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
 
-.. _dependenpy: https://github.com/Pawamoy/dependenpy
-.. _django-archan: https://github.com/Pawamoy/django-archan
 
-Installation
-------------
+.. end-badges
 
-Just run ``pip install archan``.
-
-Usage
------
-
-Archan takes a dependency matrix as parameter. It is a list of list of numeric values,
-representing the dependencies between the packages that are used in your project.
-It also needs the keys (one string for each row of the matrix), and their associated
-group type.
-
-In django-archan, these data are provided by the dependenpy Python module,
-but you can build and use your own:
-
-.. code:: python
-
-    from archan.dsm import DesignStructureMatrix
-    from archan.checker import Archan
-
-    my_matrix = [[0, 1, 2, 0],
-                 [1, 1, 1, 0],
-                 [0, 0, 0, 3],
-                 [3, 3, 0, 1]]
-
-    my_keys = ['core', 'some_app', 'whatever', 'feature']
-    my_groups = ['core_lib', 'app_module', 'app_module', 'app_module']
-
-    archan = Archan()
-    my_dsm = DesignStructureMatrix(my_groups, my_keys, my_matrix)
-
-    complete_mediation = archan.check_complete_mediation(my_dsm)
-    economy_of_mechanism = archan.check_economy_of_mecanism(my_dsm)
-    ...
-
-Please take a look at the source code to see what other methods are available.
+A Python module that analyses your achitecture strength based on DSM data.
 
 License
--------
+=======
 
-Copyright (c) 2015 Pierre Parrend
+Software licensed under `MPL 2.0`_ license.
 
-This Source Code is subject to the terms of the Mozilla Public
-License, v. 2.0. See the LICENSE.txt file for more details.
+.. _BSD-2 : https://opensource.org/licenses/BSD-2-Clause
+.. _MPL 2.0 : https://www.mozilla.org/en-US/MPL/2.0/
+
+Installation
+============
+
+::
+
+    pip install archan
+
+Documentation
+=============
+
+https://github.com/Pawamoy/archan.wiki
+
+Development
+===========
+
+To run all the tests: ``tox``

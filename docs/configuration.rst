@@ -1,4 +1,0 @@
-Configuration
-=============
-
-*Contents coming later*
