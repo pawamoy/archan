@@ -13,7 +13,8 @@ Created on 8 janv. 2015
 """
 
 from __future__ import unicode_literals
-from archan.criterion import Criterion, CRITERIA
+
+from archan.criterion import CRITERIA, Criterion
 
 
 class Archan(object):

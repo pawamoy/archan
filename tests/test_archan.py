@@ -13,14 +13,10 @@ Created on 8 janv. 2015
 """
 
 from __future__ import unicode_literals
-from builtins import range
-
-import sys
-import os
-
-sys.path.append(os.path.abspath(os.path.dirname(os.path.dirname(__file__))))
 
 import unittest
+from builtins import range
+
 from archan.checker import Archan
 from archan.dsm import DesignStructureMatrix
 
