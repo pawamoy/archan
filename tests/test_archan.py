@@ -17,6 +17,10 @@ from __future__ import unicode_literals
 import unittest
 
 from archan.checker import Archan
+from archan.criterion import (
+    CODE_CLEAN, COMPLETE_MEDIATION, ECONOMY_OF_MECHANISM, LAYERED_ARCHITECTURE,
+    LEAST_COMMON_MECHANISM, LEAST_PRIVILEGES, OPEN_DESIGN,
+    SEPARATION_OF_PRIVILEGES, Criterion)
 from archan.dsm import DesignStructureMatrix
 
 
@@ -65,125 +69,169 @@ class TestArchan(unittest.TestCase):
                            'questionnaires', 'members', 'genida',
                            'security', 'services']
 
+        # NOQA
         genida_dsm = [
-            [4438, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-             0, 0, 0, 0, 0, 0],
-            [30, 14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-             0, 0, 0, 0, 0, 0],
-            [50, 0, 41, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-             0, 0, 0, 0, 0, 0],
-            [41, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-             0, 0, 0, 0, 0],
-            [3, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-             0, 0, 0, 0, 0],
-            [43, 0, 0, 0, 0, 45, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-             0, 0, 0, 0, 0, 0],
-            [32, 0, 0, 0, 0, 0, 31, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-             0, 0, 0, 0, 0, 0],
-            [12, 0, 0, 0, 0, 0, 0, 16, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-             0, 0, 0, 0, 0, 0],
-            [36, 0, 0, 0, 0, 0, 0, 0, 19, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-             0, 0, 0, 0, 0, 0],
-            [33, 0, 0, 0, 0, 0, 0, 0, 0, 66, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-             0, 0, 0, 0, 0, 0],
-            [12, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-             0, 0, 0, 0, 0],
-            [31, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 17, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-             0, 0, 0, 0, 0, 0],
-            [10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-             0, 0, 0, 0, 0],
-            [3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-             0, 0, 0, 0, 0],
-            [11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0,
-             0, 0, 0, 0, 0],
-            [75, 0, 2, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 97, 0, 0, 0, 0, 0,
-             0, 0, 0, 0, 0, 0],
-            [7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 2, 0,
-             0, 0, 0, 0, 0],
-            [12, 0, 2, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 1, 0, 0, 13, 0, 0, 0,
-             0, 0, 0, 0, 0, 1],
-            [5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-             0, 0, 0, 0, 0],
-            [7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 0,
-             0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-             0, 0, 0, 0, 0],
-            [13, 0, 0, 0, 0, 3, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 7,
-             0, 0, 0, 0, 1],
-            [8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0,
-             0, 0, 0, 0, 1],
-            [22, 0, 0, 0, 0, 2, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-             0, 0, 0, 0, 1],
-            [26, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 2, 0, 0,
-             0, 0, 0, 0, 1],
-            [4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-             0, 0, 0, 0, 1],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1,
-             1, 1, 1, 1, 1]]
-        self.genida_dm = DesignStructureMatrix(
+            [4438, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [30, 14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [50, 0, 41, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [41, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [3, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [43, 0, 0, 0, 0, 45, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [32, 0, 0, 0, 0, 0, 31, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [12, 0, 0, 0, 0, 0, 0, 16, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [36, 0, 0, 0, 0, 0, 0, 0, 19, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [33, 0, 0, 0, 0, 0, 0, 0, 0, 66, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [12, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [31, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 17, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [75, 0, 2, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 97, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0],
+            [12, 0, 2, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 1, 0, 0, 13, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [13, 0, 0, 0, 0, 3, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 7, 0, 0, 0, 0, 1],
+            [8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [22, 0, 0, 0, 0, 2, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [26, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 1],
+            [4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1]]
+        self.genida_dependency_matrix = DesignStructureMatrix(
             genida_categories, genida_entities, genida_dsm)
-    # 0 for items which MUST NOT be present
-    # 1 for items which MUST be present
-    completeMediationMatrixOnlineStore = [
-        [-1, 0, 0, 0, 1, -1, -1, -1, -1, -1, -1],  # app modules
-        [0, -1, 0, 0, 1, -1, -1, -1, -1, -1, -1],
-        [0, 0, -1, 0, 1, -1, -1, -1, -1, -1, -1],
-        [0, 0, 0, -1, 1, -1, -1, -1, -1, -1, -1],
-        [1, 1, 1, 1, -1, 0, 0, 0, 0, -1, -1],  # broker
-        [0, 0, 0, 0, 0, -1, 0, 0, 0, -1, -1],  # libs
-        [0, 0, 0, 0, 0, 0, -1, 0, 0, -1, -1],  # data
-        [0, 0, 0, 0, 0, 0, 0, -1, 0, -1, -1],
-        [0, 0, 0, 0, 0, 0, 0, 0, -1, -1, -1],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, -1, -1],  # framework
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, -1, -1]]  # framework
 
-    def test_mediation_matrix_generation(self):
         archan = Archan()
-        # referenceDSM = self.web_app_dependency_matrix.getDependencyMatrix()
-        reference_mediation_matrix = self.completeMediationMatrixOnlineStore
-        generate_mediation_matrix = archan._generate_mediation_matrix(
-            self.web_app_dependency_matrix)
+        self.result_webapp = archan.check(self.web_app_dependency_matrix)
+        self.result_genida = archan.check(
+            self.genida_dependency_matrix, criteria=[
+                COMPLETE_MEDIATION, ECONOMY_OF_MECHANISM,
+                LEAST_COMMON_MECHANISM])
 
-        generation_complete = True
-        ri, rj = [], []
-        for i in range(1, self.web_app_dependency_matrix.size):
-            for j in range(1, self.web_app_dependency_matrix.size):
-                if reference_mediation_matrix[i][j] != \
-                        generate_mediation_matrix[i][j]:
-                    generation_complete = False
-                    ri += i
-                    rj += j
+        self.message = {
+            Criterion.PASSED: 'PASSED',
+            Criterion.FAILED: 'FAILED',
+            Criterion.NOT_IMPLEMENTED: 'NOT IMPLEMENTED',
+            Criterion.IGNORED: 'IGNORED'
+        }
 
-        self.assertTrue(generation_complete,
-                        "Error in generation of the compliance matrix "
-                        "at lines %s, columns %s" % (ri, rj))
+    # Webapp tests
+    def test_webapp_complete_mediation(self):
+        result = self.result_webapp[COMPLETE_MEDIATION.codename]
+        self.assertEqual(result[0], Criterion.PASSED,
+                         'Complete mediation %s: %s' % (
+                             self.message[result[0]], result[1]))
 
-    def test_complete_mediation(self):
+    def test_webapp_economy_of_mechanism(self):
+        result = self.result_webapp[ECONOMY_OF_MECHANISM.codename]
+        self.assertEqual(result[0], Criterion.PASSED,
+                         'Economy of mechanism %s: %s' % (
+                             self.message[result[0]], result[1]))
+
+    def test_webapp_least_common_mechanism(self):
+        result = self.result_webapp[LEAST_COMMON_MECHANISM.codename]
+        self.assertEqual(result[0], Criterion.PASSED,
+                         'Least common mechanism %s: %s' % (
+                             self.message[result[0]], result[1]))
+
+    def test_webapp_code_clean(self):
+        result = self.result_webapp[CODE_CLEAN.codename]
+        self.assertEqual(result[0], Criterion.NOT_IMPLEMENTED,
+                         'Code clean %s: %s' % (
+                             self.message[result[0]], result[1]))
+
+    def test_webapp_layered_architecture(self):
+        result = self.result_webapp[LAYERED_ARCHITECTURE.codename]
+        self.assertEqual(result[0], Criterion.FAILED,
+                         'Layered architecture %s: %s' % (
+                             self.message[result[0]], result[1]))
+
+    def test_webapp_least_privileges(self):
+        result = self.result_webapp[LEAST_PRIVILEGES.codename]
+        self.assertEqual(result[0], Criterion.NOT_IMPLEMENTED,
+                         'Least privileges %s: %s' % (
+                             self.message[result[0]],
+                             result[1]))
+
+    def test_webapp_open_design(self):
+        result = self.result_webapp[OPEN_DESIGN.codename]
+        self.assertEqual(result[0], Criterion.NOT_IMPLEMENTED,
+                         'Open design %s: %s' % (
+                             self.message[result[0]], result[1]))
+
+    def test_webapp_separation_of_privileges(self):
+        result = self.result_webapp[SEPARATION_OF_PRIVILEGES.codename]
+        self.assertEqual(result[0], Criterion.NOT_IMPLEMENTED,
+                         'Separation of privileges %s: %s' % (
+                             self.message[result[0]], result[1]))
+
+    # Genida tests
+    def test_genida_complete_mediation(self):
+        result = self.result_genida[COMPLETE_MEDIATION.codename]
+        self.assertEqual(result[0], Criterion.PASSED,
+                         'Complete mediation %s: %s' % (
+                             self.message[result[0]], result[1]))
+
+    def test_genida_economy_of_mechanism(self):
+        result = self.result_genida[ECONOMY_OF_MECHANISM.codename]
+        self.assertEqual(result[0], Criterion.PASSED,
+                         'Economy of mechanism %s: %s' % (
+                             self.message[result[0]], result[1]))
+
+    def test_genida_least_common_mechanism(self):
+        result = self.result_genida[LEAST_COMMON_MECHANISM.codename]
+        self.assertEqual(result[0], Criterion.PASSED,
+                         'Least common mechanism %s: %s' % (
+                             self.message[result[0]], result[1]))
+
+    def test_genida_code_clean(self):
+        result = self.result_genida[CODE_CLEAN.codename]
+        self.assertEqual(result[0], Criterion.IGNORED,
+                         'Code clean %s: %s' % (
+                             self.message[result[0]], result[1]))
+
+    def test_genida_layered_architecture(self):
+        result = self.result_genida[LAYERED_ARCHITECTURE.codename]
+        self.assertEqual(result[0], Criterion.IGNORED,
+                         'Layered architecture %s: %s' % (
+                             self.message[result[0]], result[1]))
+
+    def test_genida_least_privileges(self):
+        result = self.result_genida[LEAST_PRIVILEGES.codename]
+        self.assertEqual(result[0], Criterion.IGNORED,
+                         'Least privileges %s: %s' % (
+                             self.message[result[0]], result[1]))
+
+    def test_genida_open_design(self):
+        result = self.result_genida[OPEN_DESIGN.codename]
+        self.assertEqual(result[0], Criterion.IGNORED,
+                         'Open design %s: %s' % (
+                             self.message[result[0]], result[1]))
+
+    def test_genida_separation_of_privileges(self):
+        result = self.result_genida[SEPARATION_OF_PRIVILEGES.codename]
+        self.assertEqual(result[0], Criterion.IGNORED,
+                         'Separation of privileges %s: %s' % (
+                             self.message[result[0]], result[1]))
+
+    # General tests
+    def test_ignored(self):
         archan = Archan()
-        compliant = archan.check_complete_mediation(
-            self.web_app_dependency_matrix)
-        self.assertTrue(compliant,
-                        "Complete Mediation is NOT enforced")
+        result = archan.check(self.web_app_dependency_matrix,
+                              criteria=[CODE_CLEAN])
+        self.assertEqual(result[OPEN_DESIGN.codename][0],
+                         Criterion.IGNORED,
+                         'Ignored criteria do not return IGNORED.')
 
-    def test_economy_of_mechanism(self):
-        archan = Archan()
-        economy_of_mechanism = archan.check_economy_of_mechanism(
-            self.web_app_dependency_matrix)
-        self.assertTrue(economy_of_mechanism,
-                        "Economy of Mechanism is NOT enforced")
-
-    def test_least_common_mechanism(self):
-        archan = Archan()
-        least_common_mechanism = archan.check_least_common_mechanism(
-            self.web_app_dependency_matrix)
-        self.assertTrue(least_common_mechanism,
-                        "Least common Mechanism is NOT enforced")
-
-    def test_open_design(self):
-        archan = Archan()
-        open_design = archan.check_open_design()
-        self.assertTrue(open_design,
-                        "Open Design is NOT enforced")
+    def test_not_implemented(self):
+        archan = Archan(criteria=[CODE_CLEAN])
+        result = archan.check(self.web_app_dependency_matrix)
+        self.assertEqual(result[CODE_CLEAN.codename][0],
+                         Criterion.NOT_IMPLEMENTED,
+                         'Not implemented criteria '
+                         'do not return NOT IMPLEMENTED.')
+        self.assertNotIn(OPEN_DESIGN.codename, result,
+                         'Open design should NOT be in the criteria list.')
 
 
 if __name__ == '__main__':
