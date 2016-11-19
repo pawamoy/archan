@@ -101,7 +101,7 @@ but you can build and use your own:
 Documentation
 =============
 
-https://github.com/Pawamoy/archan.wiki
+https://github.com/Pawamoy/archan/wiki
 
 Development
 ===========
