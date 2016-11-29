@@ -21,7 +21,8 @@ setup(
     name='archan',
     version='0.1.0',
     license='MPL 2.0',
-    description='A Python module that analyses your achitecture strength based on DSM data.',
+    description='A Python module that analyses '
+                'your achitecture strength based on DSM data.',
     long_description='%s\n%s' % (
         re.compile('^.. start-badges.*^.. end-badges', re.M | re.S)
             .sub('', read('README.rst')),
