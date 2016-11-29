@@ -1,15 +1,18 @@
-========
-Overview
-========
+======
+Archan
+======
 
 .. start-badges
+
 
 |travis|
 |codecov|
 |landscape|
 |version|
 |wheel|
+|pyup|
 |gitter|
+
 
 .. |travis| image:: https://travis-ci.org/Pawamoy/archan.svg?branch=master
     :alt: Travis-CI Build Status
@@ -30,6 +33,10 @@ Overview
 .. |wheel| image:: https://img.shields.io/pypi/wheel/archan.svg?style=flat
     :alt: PyPI Wheel
     :target: https://pypi.python.org/pypi/archan/
+
+.. |pyup| image:: https://pyup.io/repos/github/pawamoy/archan/shield.svg
+    :target: https://pyup.io/repos/github/pawamoy/archan/
+    :alt: Updates
 
 .. |gitter| image:: https://badges.gitter.im/Pawamoy/archan.svg
     :alt: Join the chat at https://gitter.im/Pawamoy/archan
@@ -59,7 +66,6 @@ License
 
 Software licensed under `MPL 2.0`_ license.
 
-.. _BSD-2 : https://opensource.org/licenses/BSD-2-Clause
 .. _MPL 2.0 : https://www.mozilla.org/en-US/MPL/2.0/
 
 Installation
