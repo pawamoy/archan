@@ -1,0 +1,16 @@
+[paths]
+source =
+   src/archan
+   */site-packages/archan
+
+[run]
+branch = true
+source =
+    archan
+    tests
+parallel = true
+
+[report]
+show_missing = true
+precision = 2
+omit = *migrations*

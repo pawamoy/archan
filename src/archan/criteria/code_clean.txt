@@ -1,0 +1,1 @@
+The code base should be kept coherent and consistent. Complexity of functions must not be too important. Conventions and standards must be used in order to maintain a very human readable and maintainable code.
