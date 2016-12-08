@@ -7,25 +7,44 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 """
-Created on 8 janv. 2015
+Checker module.
 
-@author: Pierre.Parrend
+Contains the Archan class.
 """
 
-from __future__ import unicode_literals
+from __future__ import absolute_import, unicode_literals
 
-from archan.criterion import CRITERIA, Criterion
+from .criterion import CRITERIA, Criterion
 
 
 class Archan(object):
     """Architecture analyser class."""
-    def __init__(self, criteria=None):
 
+    def __init__(self, criteria=None):
+        """
+        Init method.
+
+        Args:
+            criteria (list): list of criteria to attach. These are the
+                default criteria that will be checked when running check
+                command without a criteria argument.
+        """
         if criteria is None:
             criteria = CRITERIA
         self.criteria = criteria
 
     def check(self, dsm, criteria=None):
+        """
+        Check given criteria on given DSM.
+
+        Args:
+            dsm (:class:`DesignStructureMatrix`): the DSM to check.
+            criteria (list): the list of criteria to check for.
+
+        Returns:
+            dict: {criterion codename:
+                   Criterion.FAILED, PASSED, NOT_IMPLEMENTED or IGNORED}
+        """
         if criteria:
             return {
                 criterion.codename:

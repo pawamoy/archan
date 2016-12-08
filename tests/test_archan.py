@@ -6,12 +6,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-"""
-Created on 8 janv. 2015
-
-<<<<<<< HEAD
-@author: Pierre.Parrend
-"""
+"""Main test module."""
 
 from __future__ import unicode_literals
 
@@ -26,7 +21,14 @@ from archan.dsm import DesignStructureMatrix
 
 
 class TestArchan(unittest.TestCase):
+    """
+    Main test class.
+
+    It sets up two fake "webapp" and "genida" DSMs to check them.
+    """
+
     def setUp(self):
+        """Setup function."""
         web_app_categories = ['app_module', 'app_module', 'app_module',
                               'app_module', 'broker',
                               'app_lib', 'data', 'data',
@@ -118,36 +120,42 @@ class TestArchan(unittest.TestCase):
 
     # Webapp tests
     def test_webapp_complete_mediation(self):
+        """Test complete mediation for webapp."""
         result = self.result_webapp[COMPLETE_MEDIATION.codename]
         self.assertEqual(result[0], Criterion.PASSED,
                          'Complete mediation %s: %s' % (
                              self.message[result[0]], result[1]))
 
     def test_webapp_economy_of_mechanism(self):
+        """Test economoy of mechanism for webapp."""
         result = self.result_webapp[ECONOMY_OF_MECHANISM.codename]
         self.assertEqual(result[0], Criterion.PASSED,
                          'Economy of mechanism %s: %s' % (
                              self.message[result[0]], result[1]))
 
     def test_webapp_least_common_mechanism(self):
+        """Test least common mechanism for webapp."""
         result = self.result_webapp[LEAST_COMMON_MECHANISM.codename]
         self.assertEqual(result[0], Criterion.PASSED,
                          'Least common mechanism %s: %s' % (
                              self.message[result[0]], result[1]))
 
     def test_webapp_code_clean(self):
+        """Test code clean for webapp."""
         result = self.result_webapp[CODE_CLEAN.codename]
         self.assertEqual(result[0], Criterion.NOT_IMPLEMENTED,
                          'Code clean %s: %s' % (
                              self.message[result[0]], result[1]))
 
     def test_webapp_layered_architecture(self):
+        """Test layered architecture for webapp."""
         result = self.result_webapp[LAYERED_ARCHITECTURE.codename]
         self.assertEqual(result[0], Criterion.FAILED,
                          'Layered architecture %s: %s' % (
                              self.message[result[0]], result[1]))
 
     def test_webapp_least_privileges(self):
+        """Test least privileges for webapp."""
         result = self.result_webapp[LEAST_PRIVILEGES.codename]
         self.assertEqual(result[0], Criterion.NOT_IMPLEMENTED,
                          'Least privileges %s: %s' % (
@@ -155,12 +163,14 @@ class TestArchan(unittest.TestCase):
                              result[1]))
 
     def test_webapp_open_design(self):
+        """Test open design for webapp."""
         result = self.result_webapp[OPEN_DESIGN.codename]
         self.assertEqual(result[0], Criterion.NOT_IMPLEMENTED,
                          'Open design %s: %s' % (
                              self.message[result[0]], result[1]))
 
     def test_webapp_separation_of_privileges(self):
+        """Test separation of privileges for webapp."""
         result = self.result_webapp[SEPARATION_OF_PRIVILEGES.codename]
         self.assertEqual(result[0], Criterion.NOT_IMPLEMENTED,
                          'Separation of privileges %s: %s' % (
@@ -168,48 +178,56 @@ class TestArchan(unittest.TestCase):
 
     # Genida tests
     def test_genida_complete_mediation(self):
+        """Test complete mediation for webapp."""
         result = self.result_genida[COMPLETE_MEDIATION.codename]
         self.assertEqual(result[0], Criterion.PASSED,
                          'Complete mediation %s: %s' % (
                              self.message[result[0]], result[1]))
 
     def test_genida_economy_of_mechanism(self):
+        """Test economoy of mechanism for webapp."""
         result = self.result_genida[ECONOMY_OF_MECHANISM.codename]
         self.assertEqual(result[0], Criterion.PASSED,
                          'Economy of mechanism %s: %s' % (
                              self.message[result[0]], result[1]))
 
     def test_genida_least_common_mechanism(self):
+        """Test least common mechanism for webapp."""
         result = self.result_genida[LEAST_COMMON_MECHANISM.codename]
         self.assertEqual(result[0], Criterion.PASSED,
                          'Least common mechanism %s: %s' % (
                              self.message[result[0]], result[1]))
 
     def test_genida_code_clean(self):
+        """Test code clean for webapp."""
         result = self.result_genida[CODE_CLEAN.codename]
         self.assertEqual(result[0], Criterion.IGNORED,
                          'Code clean %s: %s' % (
                              self.message[result[0]], result[1]))
 
     def test_genida_layered_architecture(self):
+        """Test layered architecture for webapp."""
         result = self.result_genida[LAYERED_ARCHITECTURE.codename]
         self.assertEqual(result[0], Criterion.IGNORED,
                          'Layered architecture %s: %s' % (
                              self.message[result[0]], result[1]))
 
     def test_genida_least_privileges(self):
+        """Test least privileges for webapp."""
         result = self.result_genida[LEAST_PRIVILEGES.codename]
         self.assertEqual(result[0], Criterion.IGNORED,
                          'Least privileges %s: %s' % (
                              self.message[result[0]], result[1]))
 
     def test_genida_open_design(self):
+        """Test open design for webapp."""
         result = self.result_genida[OPEN_DESIGN.codename]
         self.assertEqual(result[0], Criterion.IGNORED,
                          'Open design %s: %s' % (
                              self.message[result[0]], result[1]))
 
     def test_genida_separation_of_privileges(self):
+        """Test separation of privileges for webapp."""
         result = self.result_genida[SEPARATION_OF_PRIVILEGES.codename]
         self.assertEqual(result[0], Criterion.IGNORED,
                          'Separation of privileges %s: %s' % (
@@ -217,6 +235,7 @@ class TestArchan(unittest.TestCase):
 
     # General tests
     def test_ignored(self):
+        """Test that an ignored criterion returns IGNORED."""
         archan = Archan()
         result = archan.check(self.web_app_dependency_matrix,
                               criteria=[CODE_CLEAN])
@@ -225,6 +244,7 @@ class TestArchan(unittest.TestCase):
                          'Ignored criteria do not return IGNORED.')
 
     def test_not_implemented(self):
+        """Test that a not implemented criterion returns NOT_IMPLEMENTED."""
         archan = Archan(criteria=[CODE_CLEAN])
         result = archan.check(self.web_app_dependency_matrix)
         self.assertEqual(result[CODE_CLEAN.codename][0],

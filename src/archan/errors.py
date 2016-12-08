@@ -7,15 +7,17 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 """
-Created on 17 fevr. 2015
+Errors module.
 
-@author: Pierre.Parrend
+Contains DSMError and ArchanError.
 """
+
 from __future__ import unicode_literals
 
 
 class DSMError(Exception):
-    """Exception raised for errors in the input.
+    """
+    Exception raised for errors in the input.
 
     Attributes:
         expr -- input expression in which the error occurred
@@ -26,7 +28,8 @@ class DSMError(Exception):
 
 
 class ArchanError(Exception):
-    """Exception raised for errors in the input.
+    """
+    Exception raised for errors in the input.
 
     Attributes:
         expr -- input expression in which the error occurred

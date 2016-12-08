@@ -6,13 +6,44 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from __future__ import unicode_literals
+"""
+Criterion module.
+
+Contains the Criterion class, a function to read a file (to get a criterion
+description), and a basic set of criteria:
+
+- COMPLETE_MEDIATION
+- ECONOMY_OF_MECHANISM
+- SEPARATION_OF_PRIVILEGES
+- LEAST_PRIVILEGES
+- LEAST_COMMON_MECHANISM
+- LAYERED_ARCHITECTURE
+- OPEN_DESIGN
+- CODE_CLEAN
+
+Also, the CRITERIA list contains all the previous criteria.
+
+"""
+
+from __future__ import absolute_import, unicode_literals
+
 import os
 import archan
-from archan.errors import ArchanError
+
+from .errors import ArchanError
 
 
 def read_criterion(criterion, folder=None):
+    """
+    Read a criterion file to get a description.
+
+    Args:
+        criterion (str): name of the file to read.
+        folder (str): path to the folder containing the file.
+
+    Returns:
+        str: the file's contents (criterion description).
+    """
     if folder:
         paper_dir = folder
     else:
@@ -26,6 +57,19 @@ def read_criterion(criterion, folder=None):
 
 
 class Criterion(object):
+    """
+    Criterion class.
+
+    A criterion is callable: you must implement the check function or pass it
+    when initializing. This class also contains constant values for the return
+    code of the check:
+
+    - FAILED = 0
+    - PASSED = 1
+    - NOT_IMPLEMENTED = -1
+    - IGNORED = -2
+    """
+
     FAILED = 0
     PASSED = 1
     NOT_IMPLEMENTED = -1
@@ -33,6 +77,18 @@ class Criterion(object):
 
     def __init__(self, codename, title, description='',
                  hint='', check=None, **kwargs):
+        """
+        Init method.
+
+        Args:
+            codename (str): a simple and unique string identifier.
+            title (str): a brief title.
+            description (str): a descriptive text.
+            hint (str): a hint for when the criterion is not verified.
+            check (callable): the function used to check the criterion.
+            **kwargs (): additional parameters that will be passed to
+                the check function.
+        """
         self.codename = codename
         self.title = title
         self.description = description
@@ -42,6 +98,17 @@ class Criterion(object):
         self.kwargs = kwargs
 
     def __call__(self, *args, **kwargs):
+        """
+        Call method.
+
+        Args:
+            *args (): args passed to the check function.
+            **kwargs (): kwargs passed to the check function.
+
+        Returns:
+            const: a Criterion return value (FAILED, PASSED, NOT_IMPLEMENTED or
+                IGNORED).
+        """
         kwargs.update(self.kwargs)
         if hasattr(self, 'check') and callable(self.check):
             success, message = self.check(*args, **kwargs)
@@ -76,8 +143,10 @@ def _generate_mediation_matrix(dsm):
     - Data have no dependencies at all
       (but framework/libs would be tolerated).
 
+    Args:
+        dsm (:class:`DesignStructureMatrix`): the DSM to generate
+            the mediation matrix for.
     """
-
     cat = dsm.categories
     ent = dsm.entities
     size = dsm.size
@@ -144,15 +213,16 @@ def _generate_mediation_matrix(dsm):
 
 
 def _matrices_compliance(dsm, complete_mediation_matrix):
-    """Check if matrix and its mediation matrix are compliant.
-
-    :type dsm: :class:`DesignStructureMatrix`
-    :param dsm: matrix to check
-    :type complete_mediation_matrix: list of list of int
-    :param complete_mediation_matrix: 2-dim array (mediation matrix)
-    :return: bool, True if compliant, else False
     """
+    Check if matrix and its mediation matrix are compliant.
 
+    Args:
+        dsm (:class:`DesignStructureMatrix`): the DSM to check.
+        complete_mediation_matrix (list of list of int): 2-dim array
+
+    Returns:
+        bool: True if compliant, else False
+    """
     matrix = dsm.dependency_matrix
     rows_dep_matrix = len(matrix)
     cols_dep_matrix = len(matrix[0])
@@ -185,16 +255,19 @@ def _matrices_compliance(dsm, complete_mediation_matrix):
 
 
 def check_complete_mediation(dsm):
-    """Check if matrix and its mediation matrix are compliant, meaning
-    that number of dependencies for each (line, column) is either 0 if
+    """
+    Check if matrix and its mediation matrix are compliant.
+
+    It means that number of dependencies for each (line, column) is either 0 if
     the mediation matrix (line, column) is 0, or >0 if the mediation matrix
     (line, column) is 1.
 
-    :type dsm: :class:`DesignStructureMatrix`
-    :param dsm: matrix to check
-    :return: bool, True if compliant, else False
-    """
+    Args:
+        dsm (:class:`DesignStructureMatrix`): the DSM to check.
 
+    Returns:
+        bool: True if compliant, else False
+    """
     # generate complete_mediation_matrix according to each category
     med_matrix = _generate_mediation_matrix(dsm)
     matrices_compliant = _matrices_compliance(dsm, med_matrix)
@@ -203,17 +276,19 @@ def check_complete_mediation(dsm):
 
 
 def check_economy_of_mechanism(dsm, simplicity_factor=2):
-    """Check economy of mechanism.
+    """
+    Check economy of mechanism.
 
     As first abstraction, number of dependencies between two modules
     < 2 * the number of modules
     (dependencies to the framework are NOT considered).
 
-    :type dsm: :class:`DesignStructureMatrix`
-    :param dsm: matrix to check
-    :return: bool, True if economic, else False
-    """
+    Args:
+        dsm (:class:`DesignStructureMatrix`: the DSM to check.
 
+    Returns:
+        bool: True if economic, else False
+    """
     # economy_of_mechanism
     economy_of_mechanism = False
     message = ''
@@ -242,13 +317,18 @@ def check_economy_of_mechanism(dsm, simplicity_factor=2):
 
 
 def check_least_common_mechanism(dsm, independence_factor=5):
-    """Check least common mechanism.
-
-    :type dsm: :class:`DesignStructureMatrix`
-    :param dsm: matrix to check
-    :return: bool
     """
+    Check least common mechanism.
 
+    Args:
+        dsm (:class:`DesignStructureMatrix`: the DSM to check.
+        independence_factor (int): if the maximum dependencies for one module
+            is inferior or equal to the DSM size divided by the independence
+            factor, then this criterion is verified.
+
+    Returns:
+        bool: True if least common mechanism, else False
+    """
     # leastCommonMechanismMatrix
     least_common_mechanism = False
     message = ''
@@ -287,13 +367,15 @@ def check_least_common_mechanism(dsm, independence_factor=5):
 
 
 def check_layered_architecture(dsm):
-    """Check layered architecture.
-
-    :type dsm: :class:`DesignStructureMatrix`
-    :param dsm: matrix to check
-    :return: bool
     """
+    Check layered architecture.
 
+    Args:
+        dsm (:class:`DesignStructureMatrix`: the DSM to check.
+
+    Returns:
+        bool: True if layered architecture, else False
+    """
     layered_architecture = True
     messages = []
     for i in range(0, dsm.size - 1):

@@ -7,14 +7,14 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 """
-Created on 8 janv. 2015
+DSM module.
 
-@author: Pierre.Parrend
+Contains the DesignStructureMatrix class.
 """
 
-from __future__ import unicode_literals
+from __future__ import absolute_import, unicode_literals
 
-from archan.errors import DSMError
+from .errors import DSMError
 
 
 class DesignStructureMatrix(object):
@@ -27,6 +27,20 @@ class DesignStructureMatrix(object):
                  app_module='app_module',
                  broker='broker',
                  data='data'):
+        """
+        Init method.
+
+        Args:
+            categories (list): list of the names of the group of entities.
+            entities (list): list of entities.
+            dependency_matrix (list of list of int): 2-dim array.
+            framework (str): name of framework group.
+            core_lib (str): name of core_lib group.
+            app_lib (str): name of app_lib group.
+            app_module (str): name of app_module group.
+            broker (str): name of broker group.
+            data (str): name of data group.
+        """
         # TODO - DSM: check compliance with DSM definitions and uses
         self.categories = categories
         self.entities = entities
