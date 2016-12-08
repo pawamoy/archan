@@ -9,6 +9,7 @@
 """
 Created on 8 janv. 2015
 
+<<<<<<< HEAD
 @author: Pierre.Parrend
 """
 
@@ -236,3 +237,4 @@ class TestArchan(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
