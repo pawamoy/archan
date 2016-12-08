@@ -22,6 +22,9 @@ install:
   - easy_install --version
   - pip --version
   - tox --version
+branches:
+  only:
+    - master
 script:
   - tox -v
 after_failure:
