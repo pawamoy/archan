@@ -29,7 +29,7 @@ def read(*names, **kwargs):
 setup(
     name='archan',
     version='1.0.0',
-    license='MPL 2.0',
+    license='ISC',
     description='A Python module that analyses your achitecture strength '
                 'based on DSM data.',
     long_description='%s\n%s' % (
@@ -49,7 +49,7 @@ setup(
         # http://pypi.python.org/pypi?%3Aaction=list_classifiers
         'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',
-        'License :: OSI Approved :: Mozilla Public License 2.0 (MPL 2.0)',
+        'License :: OSI Approved :: ISC License (ISCL)',
         'Operating System :: Unix',
         'Operating System :: POSIX',
         'Operating System :: Microsoft :: Windows',

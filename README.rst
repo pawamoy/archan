@@ -64,9 +64,9 @@ Archan is used in combination with `dependenpy`_ in the Django app called
 License
 =======
 
-Software licensed under `MPL 2.0`_ license.
+Software licensed under `ISC`_ license.
 
-.. _MPL 2.0 : https://www.mozilla.org/en-US/MPL/2.0/
+.. _ISC : https://www.isc.org/downloads/software-support-policy/isc-license/
 
 Installation
 ============
