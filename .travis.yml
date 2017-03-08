@@ -7,7 +7,7 @@ cache:
 matrix:
   include:
   - {python: '3.5', env: TOX_ENV=check}
-  - {python: '3.5', env: TOX_ENV=docs, ENCHANT=1}
+  - {python: '3.5', env: TOX_ENV=docs, ENCHANT: 1}
   - {python: '3.5', env: TOX_ENV=linkcheck}
   - {python: '2.7', env: 'TOX_ENV=py27,codacy'}
   - {python: '3.4', env: 'TOX_ENV=py34,codacy'}
