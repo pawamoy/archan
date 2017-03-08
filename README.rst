@@ -18,7 +18,7 @@ Archan
     :alt: Travis-CI Build Status
     :target: https://travis-ci.org/Pawamoy/archan/
 
-.. |codacy-grade| image:: https://api.codacy.com/project/badge/Grade/REPLACE_WITH_PROJECT_ID
+.. |codacy-grade| image:: https://api.codacy.com/project/badge/Grade/338f6c7d06664cae86d66eb289a5e424
     :target: https://www.codacy.com/app/Pawamoy/archan?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Pawamoy/archan&amp;utm_campaign=Badge_Grade
     :alt: Codacy Code Quality Status
 
