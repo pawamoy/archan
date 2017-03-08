@@ -7,7 +7,7 @@ Archan
 
 
 |travis|
-|codecov|
+|codacy|
 |landscape|
 |version|
 |wheel|
@@ -19,16 +19,16 @@ Archan
     :alt: Travis-CI Build Status
     :target: https://travis-ci.org/Pawamoy/archan/
 
-.. |codecov| image:: https://codecov.io/github/Pawamoy/archan/coverage.svg?branch=master
-    :alt: Coverage Status
-    :target: https://codecov.io/github/Pawamoy/archan/
-
 .. |landscape| image:: https://landscape.io/github/Pawamoy/archan/master/landscape.svg?style=flat
     :target: https://landscape.io/github/Pawamoy/archan/
     :alt: Code Quality Status
 
-.. |pyup| image:: https://pyup.io/repos/github/pawamoy/archan/shield.svg
-    :target: https://pyup.io/repos/github/pawamoy/archan/
+.. |codacy| image:: https://api.codacy.com/project/badge/Grade/REPLACE_WITH_PROJECT_ID
+    :target: https://www.codacy.com/app/Pawamoy/archan/
+    :alt: Codacy Code Quality Status
+
+.. |pyup| image:: https://pyup.io/account/repos/github/pawamoy/archan/shield.svg
+    :target: https://pyup.io/account/repos/github/pawamoy/archan/
     :alt: Updates
 
 .. |gitter| image:: https://badges.gitter.im/Pawamoy/archan.svg
@@ -53,7 +53,7 @@ License
 
 Software licensed under `ISC`_ license.
 
-.. _ISC : https://www.isc.org/downloads/software-support-policy/isc-license/
+.. _ISC: https://www.isc.org/downloads/software-support-policy/isc-license/
 
 Installation
 ============
