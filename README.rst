@@ -27,7 +27,6 @@ Archan
     :target: https://landscape.io/github/Pawamoy/archan/
     :alt: Code Quality Status
 
-
 .. |pyup| image:: https://pyup.io/repos/github/pawamoy/archan/shield.svg
     :target: https://pyup.io/repos/github/pawamoy/archan/
     :alt: Updates
@@ -66,7 +65,8 @@ Installation
 Documentation
 =============
 
-https://github.com/Pawamoy/archan/wiki
+http://archan.readthedocs.io/en/latest/
+
 
 Development
 ===========
