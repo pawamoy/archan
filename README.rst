@@ -19,11 +19,11 @@ Archan
     :target: https://travis-ci.org/Pawamoy/archan/
 
 .. |codacy| image:: https://api.codacy.com/project/badge/Grade/REPLACE_WITH_PROJECT_ID
-    :target: https://www.codacy.com/app/Pawamoy/archan/
+    :target: https://www.codacy.com/app/Pawamoy/archan/dashboard
     :alt: Codacy Code Quality Status
 
-.. |pyup| image:: https://pyup.io/account/repos/github/pawamoy/archan/shield.svg
-    :target: https://pyup.io/account/repos/github/pawamoy/archan/
+.. |pyup| image:: https://pyup.io/repos/github/Pawamoy/archan/shield.svg
+    :target: https://pyup.io/repos/github/Pawamoy/archan/
     :alt: Updates
 
 .. |gitter| image:: https://badges.gitter.im/Pawamoy/archan.svg
