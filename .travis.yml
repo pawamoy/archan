@@ -1,4 +1,4 @@
-sudo: true
+sudo: false
 branches:
   only: [master]
 cache:
@@ -18,7 +18,5 @@ matrix:
   allow_failures:
   - {python: '3.5', env: TOX_ENV=linkcheck}
   - {python: 3.7-dev}
-install:
-- sudo rm -rf $HOME/.cache/pip
-- pip install -r requirements/ci.txt
+install: [pip install -r requirements/ci.txt]
 script: ['tox -e ${TOX_ENV}']
