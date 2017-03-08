@@ -31,7 +31,7 @@ default_context:
     full_name:                       'Timothee Mazzucotelli'
     github_username:                 'Pawamoy'
     gitter:                          'yes'
-    landscape:                       'yes'
+    landscape:                       'no'
     package_name:                    'archan'
     project_name:                    'Archan'
     project_short_description:       'A Python module that analyses your achitecture strength based on DSM data.'
