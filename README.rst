@@ -17,6 +17,18 @@ Archan
     :alt: Travis-CI Build Status
     :target: https://travis-ci.org/Pawamoy/archan/
 
+.. |codacy| image:: https://api.codacy.com/project/badge/Grade/338f6c7d06664cae86d66eb289a5e424
+    :target: https://www.codacy.com/app/Pawamoy/archan/dashboard
+    :alt: Codacy Code Quality Status
+
+.. |pyup| image:: https://pyup.io/repos/github/Pawamoy/archan/shield.svg
+    :target: https://pyup.io/repos/github/Pawamoy/archan/
+    :alt: Updates
+
+.. |gitter| image:: https://badges.gitter.im/Pawamoy/archan.svg
+    :alt: Join the chat at https://gitter.im/Pawamoy/archan
+    :target: https://gitter.im/Pawamoy/archan?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
+
 .. |version| image:: https://img.shields.io/pypi/v/archan.svg?style=flat
     :alt: PyPI Package latest release
     :target: https://pypi.python.org/pypi/archan/
@@ -24,18 +36,6 @@ Archan
 .. |wheel| image:: https://img.shields.io/pypi/wheel/archan.svg?style=flat
     :alt: PyPI Wheel
     :target: https://pypi.python.org/pypi/archan/
-
-.. |codacy| image:: https://api.codacy.com/project/badge/Grade/338f6c7d06664cae86d66eb289a5e424
-    :target: https://www.codacy.com/app/Pawamoy/archan/dashboard
-    :alt: Codacy Code Quality Status
-
-.. |pyup| image:: https://pyup.io/account/repos/github/pawamoy/archan/shield.svg
-    :target: https://pyup.io/account/repos/github/pawamoy/archan/
-    :alt: Updates
-
-.. |gitter| image:: https://badges.gitter.im/Pawamoy/archan.svg
-    :alt: Join the chat at https://gitter.im/Pawamoy/archan
-    :target: https://gitter.im/Pawamoy/archan?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
 
 
 .. end-badges
