@@ -25,8 +25,8 @@ Archan
     :alt: PyPI Wheel
     :target: https://pypi.python.org/pypi/archan/
 
-.. |codacy| image:: https://api.codacy.com/project/badge/Grade/REPLACE_WITH_PROJECT_ID
-    :target: https://www.codacy.com/app/Pawamoy/archan/
+.. |codacy| image:: https://api.codacy.com/project/badge/Grade/338f6c7d06664cae86d66eb289a5e424
+    :target: https://www.codacy.com/app/Pawamoy/archan/dashboard
     :alt: Codacy Code Quality Status
 
 .. |pyup| image:: https://pyup.io/account/repos/github/pawamoy/archan/shield.svg
