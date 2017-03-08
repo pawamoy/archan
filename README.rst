@@ -66,7 +66,7 @@ License
 
 Software licensed under `ISC`_ license.
 
-.. _ISC : https://www.isc.org/downloads/software-support-policy/isc-license/
+.. _ISC: https://www.isc.org/downloads/software-support-policy/isc-license/
 
 Installation
 ============
@@ -107,7 +107,8 @@ but you can build and use your own:
 Documentation
 =============
 
-https://github.com/Pawamoy/archan/wiki
+http://archan.readthedocs.io/en/latest/
+
 
 Development
 ===========
