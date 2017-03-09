@@ -31,7 +31,7 @@ Archan
     :alt: Updates
 
 .. |gitter| image:: https://badges.gitter.im/Pawamoy/archan.svg
-    :target: https://gitter.im/Pawamoy/archan?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
+    :target: https://gitter.im/Pawamoy/archan
     :alt: Join the chat at https://gitter.im/Pawamoy/archan
 
 .. |version| image:: https://img.shields.io/pypi/v/archan.svg?style=flat
