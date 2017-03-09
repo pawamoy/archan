@@ -1,4 +1,4 @@
-sudo: true
+sudo: false
 language: python
 branches:
   only:
@@ -21,8 +21,8 @@ matrix:
   allow_failures:
   - {python: '3.5', env: TOX_ENV=linkcheck}
   - {python: 3.7-dev}
-install:
-- sudo apt-get update -qq
-- sudo apt-get install -y enchant
-- pip install -r requirements/ci.txt
+addons:
+  apt:
+    packages: [libenchant-dev]
+install: [pip install -r requirements/ci.txt]
 script: ['tox -e ${TOX_ENV}']
