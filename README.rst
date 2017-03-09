@@ -45,7 +45,7 @@ Archan
 
 .. end-badges
 
-A Python module that analyses your architecture strength based on DSM data.
+A Python module that analyzes your architecture strength based on DSM data.
 
 Archan is a Python module that analyzes the strength of your
 project architecture according to some criteria described in
