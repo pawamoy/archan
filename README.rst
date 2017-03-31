@@ -6,8 +6,8 @@ Archan
 
 
 |travis|
-|codacy-grade|
-|codacy-coverage|
+|codacygrade|
+|codacycoverage|
 |version|
 |wheel|
 |pyup|
@@ -30,10 +30,6 @@ Archan
     :target: https://pyup.io/repos/github/Pawamoy/archan/
     :alt: Updates
 
-.. |gitter| image:: https://badges.gitter.im/Pawamoy/archan.svg
-    :target: https://gitter.im/Pawamoy/archan
-    :alt: Join the chat at https://gitter.im/Pawamoy/archan
-
 .. |version| image:: https://img.shields.io/pypi/v/archan.svg?style=flat
     :target: https://pypi.python.org/pypi/archan/
     :alt: PyPI Package latest release
@@ -41,6 +37,10 @@ Archan
 .. |wheel| image:: https://img.shields.io/pypi/wheel/archan.svg?style=flat
     :target: https://pypi.python.org/pypi/archan/
     :alt: PyPI Wheel
+
+.. |gitter| image:: https://badges.gitter.im/Pawamoy/archan.svg
+    :target: https://gitter.im/Pawamoy/archan
+    :alt: Join the chat at https://gitter.im/Pawamoy/archan
 
 
 .. end-badges
@@ -107,8 +107,9 @@ but you can build and use your own:
 Documentation
 =============
 
-http://archan.readthedocs.io/en/latest/
+`On ReadTheDocs`_
 
+.. _`On ReadTheDocs`: http://archan.readthedocs.io/
 
 Development
 ===========
