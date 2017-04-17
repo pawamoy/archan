@@ -18,11 +18,11 @@ Archan
     :target: https://travis-ci.org/Pawamoy/archan/
     :alt: Travis-CI Build Status
 
-.. |codacy-grade| image:: https://api.codacy.com/project/badge/Grade/338f6c7d06664cae86d66eb289a5e424
+.. |codacygrade| image:: https://api.codacy.com/project/badge/Grade/338f6c7d06664cae86d66eb289a5e424
     :target: https://www.codacy.com/app/Pawamoy/archan/dashboard
     :alt: Codacy Code Quality Status
 
-.. |codacy-coverage| image:: https://api.codacy.com/project/badge/Coverage/338f6c7d06664cae86d66eb289a5e424
+.. |codacycoverage| image:: https://api.codacy.com/project/badge/Coverage/338f6c7d06664cae86d66eb289a5e424
     :target: https://www.codacy.com/app/Pawamoy/archan/dashboard
     :alt: Codacy Code Coverage
 
