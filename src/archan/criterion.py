@@ -239,9 +239,9 @@ def _matrices_compliance(dsm, complete_mediation_matrix):
     for i in range(0, rows_dep_matrix):
         for j in range(0, cols_dep_matrix):
             if ((complete_mediation_matrix[i][j] == 0 and
-                    matrix[i][j] > 0) or
-                (complete_mediation_matrix[i][j] == 1 and
-                    matrix[i][j] < 1)):
+                 matrix[i][j] > 0) or
+                    (complete_mediation_matrix[i][j] == 1 and
+                     matrix[i][j] < 1)):
                 discrepancy_found = True
                 message.append(
                     '  Untolerated dependency at %s:%s (%s:%s): '
@@ -382,8 +382,7 @@ def check_layered_architecture(dsm):
         for j in range(i + 1, dsm.size):
             if (dsm.categories[i] != dsm.broker and
                     dsm.categories[j] != dsm.broker and
-                    (dsm.entities[i].split('.')[0] !=
-                        dsm.entities[j].split('.')[0])):
+                    dsm.entities[i].split('.')[0] != dsm.entities[j].split('.')[0]):  # noqa
                 if dsm.dependency_matrix[i][j] > 0:
                     layered_architecture = False
                     messages.append(

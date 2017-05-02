@@ -12,6 +12,7 @@ from __future__ import unicode_literals
 
 import unittest
 
+
 from archan.checker import Archan
 from archan.criterion import (
     CODE_CLEAN, COMPLETE_MEDIATION, ECONOMY_OF_MECHANISM, LAYERED_ARCHITECTURE,

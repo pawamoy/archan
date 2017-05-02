@@ -32,7 +32,7 @@ project = u'Archan'
 year = '2017'
 author = u'Timothee Mazzucotelli'
 copyright = '{0}, {1}'.format(year, author)
-version = release = u'0.1.0'
+version = release = u'1.0.0'
 
 pygments_style = 'trac'
 templates_path = ['.']

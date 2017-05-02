@@ -53,8 +53,7 @@ class Archan(object):
                     else (Criterion.IGNORED, '')
                 for criterion in self.criteria
             }
-        else:
-            return {
-                criterion.codename: criterion(dsm)
-                for criterion in self.criteria
-            }
+        return {
+            criterion.codename: criterion(dsm)
+            for criterion in self.criteria
+        }
