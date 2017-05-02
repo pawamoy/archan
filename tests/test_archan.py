@@ -6,7 +6,6 @@
 
 import archan
 
-
 def test_main():
     """Main test method."""
     assert archan  # use your library here
