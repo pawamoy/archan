@@ -1,11 +1,5 @@
 # -*- coding: utf-8 -*-
 
-# Copyright (c) 2015 Timothée Mazzucotelli
-#
-# This Source Code Form is subject to the terms of the Mozilla Public
-# License, v. 2.0. If a copy of the MPL was not distributed with this
-# file, You can obtain one at http://mozilla.org/MPL/2.0/.
-
 """
 Criterion module.
 
@@ -25,35 +19,33 @@ Also, the CRITERIA list contains all the previous criteria.
 
 """
 
-from __future__ import absolute_import, unicode_literals
-
 import os
 import archan
 
 from .errors import ArchanError
 
 
-def read_criterion(criterion, folder=None):
+def read_criterion(path):
     """
     Read a criterion file to get a description.
 
     Args:
-        criterion (str): name of the file to read.
-        folder (str): path to the folder containing the file.
+        path (str): path to the file to read.
 
     Returns:
         str: the file's contents (criterion description).
     """
-    if folder:
-        paper_dir = folder
-    else:
-        paper_dir = os.path.abspath(
-            os.path.join(os.path.dirname(archan.__file__), 'criteria'))
-    try:
-        with open(os.path.join(paper_dir, criterion + '.txt')) as f:
+    if os.path.exists(path):
+        with open(path) as f:
             return f.read()
-    except IOError:
-        return ''
+    else:
+        try:
+            criteria_dir = os.path.abspath(
+                os.path.join(os.path.dirname(archan.__file__), 'criteria'))
+            with open(os.path.join(criteria_dir, path + '.txt')) as f:
+                return f.read()
+        except IOError:
+            return ''
 
 
 class Criterion(object):
@@ -78,7 +70,7 @@ class Criterion(object):
     def __init__(self, codename, title, description='',
                  hint='', check=None, **kwargs):
         """
-        Init method.
+        Initialization method.
 
         Args:
             codename (str): a simple and unique string identifier.
@@ -112,14 +104,17 @@ class Criterion(object):
         kwargs.update(self.kwargs)
         if hasattr(self, 'check') and callable(self.check):
             success, message = self.check(*args, **kwargs)
-            if success:
+            if success is True:
                 return Criterion.PASSED, message
-            return Criterion.FAILED, message
+            elif success is False:
+                return Criterion.FAILED, message
+            return Criterion.NOT_IMPLEMENTED, message
         return Criterion.NOT_IMPLEMENTED, ''
 
 
 def _generate_mediation_matrix(dsm):
-    """Generate the mediation matrix of the given matrix.
+    """
+    Generate the mediation matrix of the given matrix.
 
     Rules for mediation matrix generation:
 
@@ -275,6 +270,14 @@ def check_complete_mediation(dsm):
     return matrices_compliant
 
 
+def check_separation_of_privileges(dsm):
+    return None, ''  # FIXME: to implement
+
+
+def check_least_privileges(dsm):
+    return None, ''  # FIXME: to implement
+
+
 def check_economy_of_mechanism(dsm, simplicity_factor=2):
     """
     Check economy of mechanism.
@@ -284,7 +287,8 @@ def check_economy_of_mechanism(dsm, simplicity_factor=2):
     (dependencies to the framework are NOT considered).
 
     Args:
-        dsm (:class:`DesignStructureMatrix`: the DSM to check.
+        dsm (:class:`DesignStructureMatrix`): the DSM to check.
+        simplicity_factor (int): simplicity factor.
 
     Returns:
         bool: True if economic, else False
@@ -393,6 +397,14 @@ def check_layered_architecture(dsm):
     return layered_architecture, '\n'.join(messages)
 
 
+def check_open_design(dsm):
+    return None, ''  # FIXME: to implement
+
+
+def check_code_clean(dsm):
+    return None, ''  # FIXME: to implement
+
+
 COMPLETE_MEDIATION = Criterion(
     'COMPLETE_MEDIATION', 'Complete Mediation',
     description=read_criterion('complete_mediation'),
@@ -403,32 +415,38 @@ ECONOMY_OF_MECHANISM = Criterion(
     description=read_criterion('economy_of_mechanism'),
     check=check_economy_of_mechanism,
     hint='Reduce the number of dependencies in your own code '
-         'or increase the simplicity factor.',
-    simplicity_factor=2)
+         'or increase the simplicity factor.')
+# FIXME: add hint
 SEPARATION_OF_PRIVILEGES = Criterion(
     'SEPARATION_OF_PRIVILEGES', 'Separation Of Privileges',
+    check=check_separation_of_privileges,
     description=read_criterion('separation_of_privileges'))
+# FIXME: add hint
 LEAST_PRIVILEGES = Criterion(
     'LEAST_PRIVILEGES', 'Least Privileges',
+    check=check_least_privileges,
     description=read_criterion('least_privileges'))
 LEAST_COMMON_MECHANISM = Criterion(
     'LEAST_COMMON_MECHANISM', 'Least Common Mechanism',
     description=read_criterion('least_common_mechanism'),
     check=check_least_common_mechanism,
-    hint='Reduce number of modules having dependencies to the listed module.',
-    independence_factor=5)
+    hint='Reduce number of modules having dependencies to the listed module.')
 LAYERED_ARCHITECTURE = Criterion(
     'LAYERED_ARCHITECTURE', 'Layered Architecture',
     description=read_criterion('layered_architecture'),
     check=check_layered_architecture,
     hint='Ensure that your applications are listed in the right '
          'order when building the DSM, or remove dependencies.')
+# FIXME: add hint
 OPEN_DESIGN = Criterion(
     'OPEN_DESIGN', 'Open Design',
-    description=read_criterion('open_design'))
+    description=read_criterion('open_design'),
+    check=check_open_design)
+# FIXME: add hint
 CODE_CLEAN = Criterion(
     'CODE_CLEAN', 'Code Clean',
-    description=read_criterion('code_clean'))
+    description=read_criterion('code_clean'),
+    check=check_code_clean)
 
 CRITERIA = [
     COMPLETE_MEDIATION,
