@@ -30,8 +30,7 @@ setup(
     name='archan',
     version='1.0.0',
     license='ISC',
-    description='A Python module that analyses your achitecture strength '
-                'based on DSM data.',
+    description='Analysis of your architecture strength based on DSM data.',
     long_description='%s\n%s' % (
         re.compile('^.. start-badges.*^.. end-badges', re.M | re.S)
         .sub('', read('README.rst')),
@@ -70,5 +69,10 @@ setup(
         # eg:
         #   'rst': ['docutils>=0.11'],
         #   ':python_version=="2.6"': ['argparse'],
+    },
+    entry_points={
+        'console_scripts': [
+            'archan = archan.cli:main',
+        ]
     },
 )

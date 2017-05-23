@@ -25,7 +25,7 @@ class Archan(object):
             criteria = CRITERIA
         self.criteria = criteria
 
-    def check(self, dsm, criteria=None):
+    def check(self, dsm, *criteria):
         """
         Check given criteria on given DSM.
 

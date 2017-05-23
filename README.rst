@@ -79,26 +79,25 @@ Usage
 Archan takes a dependency matrix as parameter. It is a list of list of
 numeric values, representing the dependencies between the packages
 that are used in your project. It also needs the keys (one string for each
-row of the matrix), and their associated
-group type.
+row of the matrix), and their associated group type.
 
-In django-meerkat, these data are provided by the dependenpy Python module,
-but you can build and use your own:
+In `django-meerkat`_, these data are provided by the `dependenpy`_
+Python module, but you can build and use your own:
+
 
 .. code:: python
 
     from archan.dsm import DesignStructureMatrix
     from archan.checker import Archan
 
-    my_matrix = [[0, 1, 2, 0],
-                 [1, 1, 1, 0],
-                 [0, 0, 0, 3],
-                 [3, 3, 0, 1]]
+    keys = ['core', 'some_app', 'whatever', 'feature']
+    groups = ['core_lib', 'app_module', 'app_module', 'app_module']
+    matrix = [[0, 1, 2, 0],
+              [1, 1, 1, 0],
+              [0, 0, 0, 3],
+              [3, 3, 0, 1]]
 
-    my_keys = ['core', 'some_app', 'whatever', 'feature']
-    my_groups = ['core_lib', 'app_module', 'app_module', 'app_module']
-
-    my_dsm = DesignStructureMatrix(my_groups, my_keys, my_matrix)
+    dsm = DesignStructureMatrix(groups, keys, matrix)
     archan = Archan()
     results = archan.check(dsm)
     print(results)
