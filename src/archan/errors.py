@@ -8,20 +8,8 @@ Contains DSMError and ArchanError.
 
 
 class DSMError(Exception):
-    """
-    Exception raised for errors in the input.
-
-    Attributes:
-        expr -- input expression in which the error occurred
-        msg  -- explanation of the error
-    """
+    """Exception raised for errors in the input."""
 
 
 class ArchanError(Exception):
-    """
-    Exception raised for errors in the input.
-
-    Attributes:
-        expr -- input expression in which the error occurred
-        msg  -- explanation of the error
-    """
+    """Exception raised for errors in the input."""
