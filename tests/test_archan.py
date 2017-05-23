@@ -100,9 +100,9 @@ class TestArchan(unittest.TestCase):
         archan = Archan()
         self.result_webapp = archan.check(self.web_app_dependency_matrix)
         self.result_genida = archan.check(
-            self.genida_dependency_matrix, criteria=[
+            self.genida_dependency_matrix,
                 COMPLETE_MEDIATION, ECONOMY_OF_MECHANISM,
-                LEAST_COMMON_MECHANISM])
+                LEAST_COMMON_MECHANISM)
 
         self.message = {
             Criterion.PASSED: 'PASSED',
@@ -231,7 +231,7 @@ class TestArchan(unittest.TestCase):
         """Test that an ignored criterion returns IGNORED."""
         archan = Archan()
         result = archan.check(self.web_app_dependency_matrix,
-                              criteria=[CODE_CLEAN])
+                              CODE_CLEAN)
         self.assertEqual(result[OPEN_DESIGN.codename][0],
                          Criterion.IGNORED,
                          'Ignored criteria do not return IGNORED.')

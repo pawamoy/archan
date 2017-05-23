@@ -270,12 +270,14 @@ def check_complete_mediation(dsm):
     return matrices_compliant
 
 
+# FIXME: to implement
 def check_separation_of_privileges(dsm):
-    return None, ''  # FIXME: to implement
+    return None, ''
 
 
+# FIXME: to implement
 def check_least_privileges(dsm):
-    return None, ''  # FIXME: to implement
+    return None, ''
 
 
 def check_economy_of_mechanism(dsm, simplicity_factor=2):
@@ -397,8 +399,9 @@ def check_layered_architecture(dsm):
     return layered_architecture, '\n'.join(messages)
 
 
+# FIXME: to implement
 def check_open_design(dsm):
-    return None, ''  # FIXME: to implement
+    return None, ''
 
 
 # FIXME: implement this
@@ -406,16 +409,26 @@ def check_code_clean(dsm):
     return None, ''
 
 
+def jaccard_similarity(x, y):
+    # also https://github.com/PyCQA/pylint/blob/master/pylint/checkers/similar.py
+    intersection_cardinality = len(set(x) & set(y))
+    union_cardinality = len(set(x) | set(y))
+    return intersection_cardinality / float(union_cardinality)
+
+
 def issues_per_file(path):
     try:
-        from pylama.main import check_path, parse_options
+        from prospector import ProspectorConfig, Prospector
     except ImportError:
         return None, ''
 
-    options = parse_options([path])
-    errors = check_path(options)
-
-    loc = count_lines(path)
+    prospector = Prospector(ProspectorConfig())
+    prospector.execute()
+    number_of_issues = len(prospector.messages)
+    min_lines_of_code, max_lines_of_code = count_lines(path)
+    issue_percentage = (
+        (number_of_issues / min_lines_of_code * 100) +
+        (number_of_issues / max_lines_of_code * 100)) / 2
 
 
 def count_lines(path):
@@ -423,13 +436,13 @@ def count_lines(path):
     import os
     import fnmatch
 
-
-    def Walk(root='.', recurse=True, pattern='*'):
+    def walk(root='.', recurse=True, pattern='*'):
         """
-            Generator for walking a directory tree.
-            Starts at specified root folder, returning files
-            that match our pattern. Optionally will also
-            recurse through sub-folders.
+        Generator for walking a directory tree.
+        
+        Starts at specified root folder, returning files
+        that match our pattern. Optionally will also
+        recurse through sub-folders.
         """
         for path, subdirs, files in os.walk(root):
             for name in files:
@@ -438,18 +451,18 @@ def count_lines(path):
             if not recurse:
                 break
 
-
-    def LOC(root='', recurse=True):
+    def loc(root='', recurse=True):
         """
-            Counts lines of code in two ways:
-                maximal size (source LOC) with blank lines and comments
-                minimal size (logical LOC) stripping same
-    
-            Sums all Python files in the specified folder.
-            By default recurses through subfolders.
+        Count lines of code in two ways.
+        
+        - maximal size (source LOC) with blank lines and comments
+        - minimal size (logical LOC) stripping same
+
+        Sum all Python files in the specified folder.
+        By default recurse through sub-folders.
         """
         count_mini, count_maxi = 0, 0
-        for fspec in Walk(root, recurse, '*.py'):
+        for fspec in walk(root, recurse, '*.py'):
             skip = False
             for line in open(fspec).readlines():
                 count_maxi += 1
@@ -466,7 +479,7 @@ def count_lines(path):
 
         return count_mini, count_maxi
 
-    return LOC(path)
+    return loc(path)
 
 
 COMPLETE_MEDIATION = Criterion(
