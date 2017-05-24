@@ -270,16 +270,6 @@ def check_complete_mediation(dsm):
     return matrices_compliant
 
 
-# FIXME: to implement
-def check_separation_of_privileges(dsm):
-    return None, ''
-
-
-# FIXME: to implement
-def check_least_privileges(dsm):
-    return None, ''
-
-
 def check_economy_of_mechanism(dsm, simplicity_factor=2):
     """
     Check economy of mechanism.
@@ -320,6 +310,16 @@ def check_economy_of_mechanism(dsm, simplicity_factor=2):
             '* simplicity factor (%s) = %s' % (
                 simplicity_factor, dsm_size * simplicity_factor)])
     return economy_of_mechanism, message
+
+
+# FIXME: to implement
+def check_separation_of_privileges(dsm):
+    return None, ''
+
+
+# FIXME: to implement
+def check_least_privileges(dsm):
+    return None, ''
 
 
 def check_least_common_mechanism(dsm, independence_factor=5):
@@ -409,77 +409,80 @@ def check_code_clean(dsm):
     return None, ''
 
 
-def jaccard_similarity(x, y):
-    # also https://github.com/PyCQA/pylint/blob/master/pylint/checkers/similar.py
-    intersection_cardinality = len(set(x) & set(y))
-    union_cardinality = len(set(x) | set(y))
-    return intersection_cardinality / float(union_cardinality)
+class CodeCleanMatrix(object):
+    def issues_per_file(self, path):
+        try:
+            from prospector import ProspectorConfig, Prospector
+        except ImportError:
+            return None, ''
 
+        prospector = Prospector(ProspectorConfig())
+        prospector.execute()
+        number_of_issues = len(prospector.messages)
+        min_lines_of_code, max_lines_of_code = count_lines(path)
+        issue_percentage = (
+            (number_of_issues / min_lines_of_code * 100) +
+            (number_of_issues / max_lines_of_code * 100)) / 2
 
-def issues_per_file(path):
-    try:
-        from prospector import ProspectorConfig, Prospector
-    except ImportError:
-        return None, ''
+    def count_lines(self, path):
+        # http://code.activestate.com/recipes/527746-line-of-code-counter/
+        import os
+        import fnmatch
 
-    prospector = Prospector(ProspectorConfig())
-    prospector.execute()
-    number_of_issues = len(prospector.messages)
-    min_lines_of_code, max_lines_of_code = count_lines(path)
-    issue_percentage = (
-        (number_of_issues / min_lines_of_code * 100) +
-        (number_of_issues / max_lines_of_code * 100)) / 2
+        def walk(root='.', recurse=True, pattern='*'):
+            """
+            Generator for walking a directory tree.
+            
+            Starts at specified root folder, returning files
+            that match our pattern. Optionally will also
+            recurse through sub-folders.
+            """
+            for path, subdirs, files in os.walk(root):
+                for name in files:
+                    if fnmatch.fnmatch(name, pattern):
+                        yield os.path.join(path, name)
+                if not recurse:
+                    break
 
+        def loc(root='', recurse=True):
+            """
+            Count lines of code in two ways.
+            
+            - maximal size (source LOC) with blank lines and comments
+            - minimal size (logical LOC) stripping same
+    
+            Sum all Python files in the specified folder.
+            By default recurse through sub-folders.
+            """
+            count_mini, count_maxi = 0, 0
+            for fspec in walk(root, recurse, '*.py'):
+                skip = False
+                for line in open(fspec).readlines():
+                    count_maxi += 1
 
-def count_lines(path):
-    # http://code.activestate.com/recipes/527746-line-of-code-counter/
-    import os
-    import fnmatch
+                    line = line.strip()
+                    if line:
+                        if line.startswith('#'):
+                            continue
+                        if line.startswith('"""'):
+                            skip = not skip
+                            continue
+                        if not skip:
+                            count_mini += 1
 
-    def walk(root='.', recurse=True, pattern='*'):
-        """
-        Generator for walking a directory tree.
-        
-        Starts at specified root folder, returning files
-        that match our pattern. Optionally will also
-        recurse through sub-folders.
-        """
-        for path, subdirs, files in os.walk(root):
-            for name in files:
-                if fnmatch.fnmatch(name, pattern):
-                    yield os.path.join(path, name)
-            if not recurse:
-                break
+            return count_mini, count_maxi
 
-    def loc(root='', recurse=True):
-        """
-        Count lines of code in two ways.
-        
-        - maximal size (source LOC) with blank lines and comments
-        - minimal size (logical LOC) stripping same
+        return loc(path)
 
-        Sum all Python files in the specified folder.
-        By default recurse through sub-folders.
-        """
-        count_mini, count_maxi = 0, 0
-        for fspec in walk(root, recurse, '*.py'):
-            skip = False
-            for line in open(fspec).readlines():
-                count_maxi += 1
-
-                line = line.strip()
-                if line:
-                    if line.startswith('#'):
-                        continue
-                    if line.startswith('"""'):
-                        skip = not skip
-                        continue
-                    if not skip:
-                        count_mini += 1
-
-        return count_mini, count_maxi
-
-    return loc(path)
+    def get_sims(self, *packages):
+        from dependenpy import DSM
+        from pylint.checkers.similar import Similar
+        dsm = DSM(*packages, build_dependencies=False)
+        sim = Similar()
+        for m in dsm.submodules:
+            with open(m.path) as stream:
+                sim.append_stream(m.absolute_name(), stream)
+        return sim._compute_sims()
 
 
 COMPLETE_MEDIATION = Criterion(
