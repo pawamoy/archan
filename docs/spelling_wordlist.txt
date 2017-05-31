@@ -13,6 +13,7 @@ docstrings
 archan
 Pawamoy
 Timothee
+Timothée
 Mazzucotelli
 saltzer
 django

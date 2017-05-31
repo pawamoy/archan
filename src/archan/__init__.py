@@ -22,5 +22,4 @@ from .errors import ArchanError, DSMError
 
 __all__ = ('Archan', 'Criterion', 'DesignStructureMatrix',
            'ArchanError', 'DSMError')
-__author__ = 'Pierre Parrend <parrend@unistra.fr>'
 __version__ = '1.0.0'
