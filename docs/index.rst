@@ -7,6 +7,7 @@ Contents
 
    readme
    reference
+   roadmap
    contributing
    authors
    changelog
