@@ -22,4 +22,3 @@ from .errors import ArchanError, DSMError
 
 __all__ = ('Archan', 'Criterion', 'DesignStructureMatrix',
            'ArchanError', 'DSMError')
-__version__ = '1.0.0'
