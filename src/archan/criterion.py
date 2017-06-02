@@ -327,7 +327,7 @@ def check_least_common_mechanism(dsm, independence_factor=5):
     Check least common mechanism.
 
     Args:
-        dsm (:class:`DesignStructureMatrix`: the DSM to check.
+        dsm (:class:`DesignStructureMatrix`): the DSM to check.
         independence_factor (int): if the maximum dependencies for one module
             is inferior or equal to the DSM size divided by the independence
             factor, then this criterion is verified.
@@ -377,7 +377,7 @@ def check_layered_architecture(dsm):
     Check layered architecture.
 
     Args:
-        dsm (:class:`DesignStructureMatrix`: the DSM to check.
+        dsm (:class:`DesignStructureMatrix`): the DSM to check.
 
     Returns:
         bool: True if layered architecture, else False
@@ -432,7 +432,7 @@ class CodeCleanMatrix(object):
         def walk(root='.', recurse=True, pattern='*'):
             """
             Generator for walking a directory tree.
-            
+
             Starts at specified root folder, returning files
             that match our pattern. Optionally will also
             recurse through sub-folders.
@@ -447,10 +447,10 @@ class CodeCleanMatrix(object):
         def loc(root='', recurse=True):
             """
             Count lines of code in two ways.
-            
+
             - maximal size (source LOC) with blank lines and comments
             - minimal size (logical LOC) stripping same
-    
+
             Sum all Python files in the specified folder.
             By default recurse through sub-folders.
             """
