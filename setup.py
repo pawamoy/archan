@@ -74,10 +74,15 @@ setup(
         'console_scripts': [
             'archan = archan.cli:main',
         ],
-        'archan_analyzers': [],
-        'archan_providers': [],
-        'archan_checkers': [
-            'LayeredArchitecture = archan.criterion:LAYERED_ARCHITECTURE'
+        'archan': [
+            'archan.LayeredArchitecture = archan.checkers:LAYERED_ARCHITECTURE',
+            'archan.SeparationOfPrivileges = archan.checkers:SEPARATION_OF_PRIVILEGES',
+            'archan.LeastPrivileges = archan.checkers:LEAST_PRIVILEGES',
+            'archan.EconomyOfMechanism = archan.checkers:ECONOMY_OF_MECHANISM',
+            'archan.CodeClean = archan.checkers:CODE_CLEAN',
+            'archan.OpenDesign = archan.checkers:OPEN_DESIGN',
+            'archan.LeastCommonMechanism = archan.checkers:LEAST_COMMON_MECHANISM',
+            'archan.CompleteMediation = archan.checkers:COMPLETE_MEDIATION'
         ]
     },
 )

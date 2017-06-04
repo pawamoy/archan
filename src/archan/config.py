@@ -7,6 +7,8 @@ import importlib
 import pkg_resources
 import yaml
 
+from .checkers import Checker
+
 
 class ConfigError(Exception):
     pass
@@ -84,10 +86,6 @@ class Analyzer(object):
 
 
 class Provider(object):
-    pass
-
-
-class Checker(object):
     pass
 
 

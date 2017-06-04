@@ -25,6 +25,10 @@ import archan
 from .errors import ArchanError
 
 
+class Checker(object):
+    pass
+
+
 def read_criterion(path):
     """
     Read a criterion file to get a description.
@@ -48,7 +52,7 @@ def read_criterion(path):
             return ''
 
 
-class Criterion(object):
+class Criterion(Checker):
     """
     Criterion class.
 

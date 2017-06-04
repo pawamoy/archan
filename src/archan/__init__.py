@@ -15,8 +15,8 @@ using a DSM (Design Structure Matrix) on which certain criteria will be
 verified.
 """
 
-from .checker import Archan
-from .criterion import Criterion
+from .analyzers import Archan
+from .checkers import Criterion
 from .dsm import DesignStructureMatrix
 from .errors import ArchanError, DSMError
 

@@ -8,7 +8,7 @@ Contains the ``Archan`` class.
 
 from collections import OrderedDict
 
-from .criterion import CRITERIA, Criterion
+from .checkers import CRITERIA, Criterion
 
 
 class Archan(object):
