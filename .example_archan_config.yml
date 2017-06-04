@@ -1,0 +1,23 @@
+analyzers:
+- data:
+    file:
+      path: path/to/my/file.csv
+      delimiter: ","
+  checkers:
+  - archan.LayeredArchitecture
+  - archan.OpenDesign:
+    pass: true
+  - archan.EconomyOfMechanism:
+    independence_factor: 2
+- data:
+    provider:
+      dependenpy.ArchanProvider:
+        packages:
+        - path/to/my/package
+        - python_package
+        depth: 1
+- data:
+    provider: archan.DummyProvider
+  checkers:
+  - archan.DummyCheck
+- archan.DependencyAnalyzer

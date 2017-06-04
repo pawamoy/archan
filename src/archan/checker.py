@@ -6,6 +6,8 @@ Checker module.
 Contains the ``Archan`` class.
 """
 
+from collections import OrderedDict
+
 from .criterion import CRITERIA, Criterion
 
 
@@ -38,15 +40,14 @@ class Archan(object):
                 code names as keys, Criterion.FAILED, PASSED, NOT_IMPLEMENTED
                 or IGNORED as values.
         """
+        result = OrderedDict()
         if criteria:
-            return {
-                criterion.codename:
-                    criterion(dsm)
-                    if criterion in criteria
-                    else (Criterion.IGNORED, '')
-                for criterion in self.criteria
-            }
-        return {
-            criterion.codename: criterion(dsm)
-            for criterion in self.criteria
-        }
+            for criterion in self.criteria:
+                if criterion in criteria:
+                    result[criterion] = criterion(dsm)
+                else:
+                    result[criterion] = (Criterion.IGNORED, '')
+        else:
+            for criterion in self.criteria:
+                result[criterion] = criterion(dsm)
+        return result

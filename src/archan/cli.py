@@ -41,6 +41,8 @@ def main(args=None):
 
     args = parser.parse_args(args=args)
     stdin_text = ''.join(sys.stdin)
+    if not stdin_text:
+        return
     lines = stdin_text.split('\n')
     columns = lines[0].split(',')[1:]
     size = len(columns)
@@ -48,8 +50,8 @@ def main(args=None):
     archan = Archan()
     dsm = DesignStructureMatrix(['app_module'] * size, columns, data)
     report = archan.check(dsm)
-    for code, (result, messages) in report.items():
-        print('%s :%s' % ('{:<25}'.format(code), {
+    for criterion, (result, messages) in report.items():
+        print('%s :%s' % ('{:<25}'.format(criterion.title), {
             Criterion.NOT_IMPLEMENTED: '{}not implemented{}'.format(yellow, default),
             Criterion.IGNORED: 'ignored',
             Criterion.FAILED: '{}failed{}'.format(red, default),

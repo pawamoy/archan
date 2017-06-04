@@ -73,6 +73,11 @@ setup(
     entry_points={
         'console_scripts': [
             'archan = archan.cli:main',
+        ],
+        'archan_analyzers': [],
+        'archan_providers': [],
+        'archan_checkers': [
+            'LayeredArchitecture = archan.criterion:LAYERED_ARCHITECTURE'
         ]
     },
 )
