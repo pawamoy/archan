@@ -3,22 +3,19 @@
 """
 Archan package.
 
-This Python package provides four modules:
-
-- ``checker``, with Archan class
-- ``criterion``, with Criterion class
-- ``dsm``, with DesignStructureMatrix class
-- ``errors``, for exceptions
-
 The purpose of this package is to make possible the analysis of a problem
 using a DSM (Design Structure Matrix) on which certain criteria will be
 verified.
 """
 
-from .analyzers import Archan
-from .checkers import Criterion
 from .dsm import DesignStructureMatrix
-from .errors import ArchanError, DSMError
+from .errors import DSMError
+from .analyzers import Analyzer
+from .providers import Provider, CSVFileProvider
+from .checkers import (
+    Checker, CodeClean, CompleteMediation, LeastCommonMechanism,
+    EconomyOfMechanism, LayeredArchitecture, LeastPrivileges,
+    SeparationOfPrivileges, OpenDesign)
+from .utils import Argument
 
-__all__ = ('Archan', 'Criterion', 'DesignStructureMatrix',
-           'ArchanError', 'DSMError')
+__version__ = '1.0.0'

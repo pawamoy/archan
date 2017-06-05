@@ -1,15 +1,11 @@
 # -*- coding: utf-8 -*-
 
-"""
-Errors module.
-
-Contains DSMError and ArchanError.
-"""
+"""Errors module."""
 
 
 class DSMError(Exception):
     """Exception raised for errors in the input."""
 
 
-class ArchanError(Exception):
-    """Exception raised for errors in the input."""
+class ConfigError(Exception):
+    """Exception raised for errors in the configuration."""

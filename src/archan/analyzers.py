@@ -1,53 +1,27 @@
 # -*- coding: utf-8 -*-
 
-"""
-Checker module.
-
-Contains the ``Archan`` class.
-"""
-
-from collections import OrderedDict
-
-from .checkers import CRITERIA, Criterion
+"""Analyzer module."""
 
 
-class Archan(object):
-    """Architecture analysis class."""
+class Analyzer(object):
+    def __init__(self, providers, checkers):
+        self.providers = providers
+        self.checkers = checkers
+        self.results = []
 
-    def __init__(self, criteria=None):
-        """
-        Initialization method.
+    def run(self):
+        self.results.clear()
+        for provider in self.providers:
+            provider.run()
+        for provider in self.providers:
+            for checker in self.checkers:
+                self.results.append({
+                    'provider': provider,
+                    'checker': checker,
+                    'result': checker.run(provider.dsm)
+                })
 
-        Args:
-            criteria (list): list of criteria to attach. These are the
-                default criteria that will be checked when running check
-                command without a criteria argument.
-        """
-        if criteria is None:
-            criteria = CRITERIA
-        self.criteria = criteria
-
-    def check(self, dsm, *criteria):
-        """
-        Check given criteria on given DSM.
-
-        Args:
-            dsm (:class:`DesignStructureMatrix`): the DSM to check.
-            criteria (list): the list of criteria to check for.
-
-        Returns:
-            dict:
-                code names as keys, Criterion.FAILED, PASSED, NOT_IMPLEMENTED
-                or IGNORED as values.
-        """
-        result = OrderedDict()
-        if criteria:
-            for criterion in self.criteria:
-                if criterion in criteria:
-                    result[criterion] = criterion(dsm)
-                else:
-                    result[criterion] = (Criterion.IGNORED, '')
-        else:
-            for criterion in self.criteria:
-                result[criterion] = criterion(dsm)
-        return result
+    def collect_results(self):
+        if not self.results:
+            self.run()
+        return self.results

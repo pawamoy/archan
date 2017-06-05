@@ -75,14 +75,15 @@ setup(
             'archan = archan.cli:main',
         ],
         'archan': [
-            'archan.LayeredArchitecture = archan.checkers:LAYERED_ARCHITECTURE',
-            'archan.SeparationOfPrivileges = archan.checkers:SEPARATION_OF_PRIVILEGES',
-            'archan.LeastPrivileges = archan.checkers:LEAST_PRIVILEGES',
-            'archan.EconomyOfMechanism = archan.checkers:ECONOMY_OF_MECHANISM',
-            'archan.CodeClean = archan.checkers:CODE_CLEAN',
-            'archan.OpenDesign = archan.checkers:OPEN_DESIGN',
-            'archan.LeastCommonMechanism = archan.checkers:LEAST_COMMON_MECHANISM',
-            'archan.CompleteMediation = archan.checkers:COMPLETE_MEDIATION'
+            'archan.LayeredArchitecture = archan.checkers:LayeredArchitecture',
+            'archan.SeparationOfPrivileges = archan.checkers:SeparationOfPrivileges',
+            'archan.LeastPrivileges = archan.checkers:LeastPrivileges',
+            'archan.EconomyOfMechanism = archan.checkers:EconomyOfMechanism',
+            'archan.CodeClean = archan.checkers:CodeClean',
+            'archan.OpenDesign = archan.checkers:OpenDesign',
+            'archan.LeastCommonMechanism = archan.checkers:LeastCommonMechanism',
+            'archan.CompleteMediation = archan.checkers:CompleteMediation',
+            'archan.CSVFileProvider = archan.providers:CSVFileProvider'
         ]
     },
 )

@@ -5,11 +5,6 @@
 import unittest
 
 
-from archan.checker import Archan
-from archan.criterion import (
-    CODE_CLEAN, COMPLETE_MEDIATION, ECONOMY_OF_MECHANISM, LAYERED_ARCHITECTURE,
-    LEAST_COMMON_MECHANISM, LEAST_PRIVILEGES, OPEN_DESIGN,
-    SEPARATION_OF_PRIVILEGES, Criterion)
 from archan.dsm import DesignStructureMatrix
 
 

@@ -12,7 +12,7 @@ Why does this file exist, and why __main__? For more info, read:
 
 import sys
 
-from .cli import main
+from archan.cli import main
 
 
 if __name__ == "__main__":
