@@ -12,12 +12,12 @@ from .errors import DSMError
 class DSM(object):
     """Design Structure Matrix class."""
 
-    def __init__(self, dependency_matrix, entities, categories=None):
+    def __init__(self, data, entities, categories=None):
         """
         Initialization method.
 
         Args:
-            dependency_matrix (list of list of int): 2-dim array.
+            data (list of list of int): 2-dim array.
             entities (list): list of entities.
             categories (list): list of the names of the group of entities.
         """
@@ -27,13 +27,13 @@ class DSM(object):
         else:
             self.categories = categories
         self.entities = entities
-        self.dependency_matrix = dependency_matrix
-        self.size = len(dependency_matrix)
+        self.data = data
+        self.size = len(data)
 
         cat_nb = len(self.categories)
         ent_nb = len(entities)
         rows = self.size
-        columns = len(dependency_matrix[0])
+        columns = len(data[0])
         if categories is not None and cat_nb != ent_nb:
             raise DSMError(
                 'Beware: nb of categories: %s != nb of entities: %s' % (

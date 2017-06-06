@@ -4,11 +4,11 @@ analyzers:
       packages:
       - archan
   checkers:
-  - archan.CodeClean
   - archan.CompleteMediation
   - archan.EconomyOfMechanism:
-      independence_factor: 4
+      simplicity_factor: 2
   - archan.LayeredArchitecture
-  - archan.LeastCommonMechanism
+  - archan.LeastCommonMechanism:
+      independence_factor: 5
   - archan.OpenDesign:
       ok: true

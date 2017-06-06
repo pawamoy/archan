@@ -185,7 +185,7 @@ class CompleteMediation(Checker):
         Returns:
             bool: True if compliant, else False
         """
-        matrix = dsm.dependency_matrix
+        matrix = dsm.data
         rows_dep_matrix = len(matrix)
         cols_dep_matrix = len(matrix[0])
         rows_med_matrix = len(complete_mediation_matrix)
@@ -206,7 +206,7 @@ class CompleteMediation(Checker):
                                  matrix[i][j] < 1)):
                     discrepancy_found = True
                     message.append(
-                        '  Untolerated dependency at %s:%s (%s:%s): '
+                        'Untolerated dependency at %s:%s (%s:%s): '
                         '%s instead of %s' % (
                             i, j, dsm.entities[i], dsm.entities[j],
                             matrix[i][j], complete_mediation_matrix[i][j]))
@@ -276,7 +276,7 @@ class EconomyOfMechanism(Checker):
         # economy_of_mechanism
         economy_of_mechanism = False
         message = ''
-        dependency_matrix = dsm.dependency_matrix
+        data = dsm.data
         categories = dsm.categories
         dsm_size = dsm.size
 
@@ -284,19 +284,19 @@ class EconomyOfMechanism(Checker):
             categories = ['appmodule'] * dsm_size
 
         dependency_number = 0
-        # evaluate Matrix(dependency_matrix)
+        # evaluate Matrix(data)
         for i in range(0, dsm_size):
             for j in range(0, dsm_size):
                 if (categories[i] not in ('framework', 'corelib') and
                         categories[j] not in ('framework', 'corelib') and
-                        dependency_matrix[i][j] > 0):
+                        data[i][j] > 0):
                     dependency_number += 1
                     # check comparison result
         if dependency_number < dsm_size * simplicity_factor:
             economy_of_mechanism = True
         else:
             message = ' '.join([
-                '  Number of dependencies (%s)' % dependency_number,
+                'Number of dependencies (%s)' % dependency_number,
                 '> number of rows (%s)' % dsm_size,
                 '* simplicity factor (%s) = %s' % (
                     simplicity_factor, dsm_size * simplicity_factor)])
@@ -324,7 +324,7 @@ class SeparationOfPrivileges(Checker):
 
     # FIXME: to implement
     def check(self, dsm, **kwargs):
-        return None, ''
+        raise NotImplementedError
 
 
 class LeastPrivileges(Checker):
@@ -345,7 +345,7 @@ class LeastPrivileges(Checker):
 
     # FIXME: to implement
     def check(self, dsm, **kwargs):
-        return None, ''
+        raise NotImplementedError
 
 
 class LeastCommonMechanism(Checker):
@@ -390,7 +390,7 @@ class LeastCommonMechanism(Checker):
         least_common_mechanism = False
         message = ''
         # get the list of dependent modules for each module
-        dependency_matrix = dsm.dependency_matrix
+        data = dsm.data
         categories = dsm.categories
         dsm_size = dsm.size
 
@@ -398,13 +398,13 @@ class LeastCommonMechanism(Checker):
             categories = ['appmodule'] * dsm_size
 
         dependent_module_number = []
-        # evaluate Matrix(dependency_matrix)
+        # evaluate Matrix(data)
         for j in range(0, dsm_size):
             dependent_module_number.append(0)
             for i in range(0, dsm_size):
                 if (categories[i] != 'framework' and
                         categories[j] != 'framework' and
-                        dependency_matrix[i][j] > 0):
+                        data[i][j] > 0):
                     dependent_module_number[j] += 1
         # except for the broker if any  and libs, check that threshold is not
         # overlapped
@@ -417,7 +417,7 @@ class LeastCommonMechanism(Checker):
             least_common_mechanism = True
         else:
             maximum = max(dependent_module_number)
-            message = ('  Dependencies to %s (%s) '
+            message = ('Dependencies to %s (%s) '
                        '> matrix size (%s) / independence factor (%s) = %s' % (
                            dsm.entities[dependent_module_number.index(maximum)],
                            maximum, dsm.size, independence_factor,
@@ -460,10 +460,10 @@ class LayeredArchitecture(Checker):
                 if (categories[i] != 'broker' and
                         categories[j] != 'broker' and
                         dsm.entities[i].split('.')[0] != dsm.entities[j].split('.')[0]):  # noqa
-                    if dsm.dependency_matrix[i][j] > 0:
+                    if dsm.data[i][j] > 0:
                         layered_architecture = False
                         messages.append(
-                            '  Dependency from %s to %s breaks the '
+                            'Dependency from %s to %s breaks the '
                             'layered architecture.' % (
                                 dsm.entities[i], dsm.entities[j]))
 
@@ -504,4 +504,4 @@ class CodeClean(Checker):
 
     # FIXME: implement this
     def check(self, dsm, **kwargs):
-        return None, ''
+        raise NotImplementedError

@@ -6,9 +6,6 @@ from __future__ import unicode_literals
 
 import os
 
-
-
-
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.autosummary',
@@ -19,6 +16,12 @@ extensions = [
     'sphinx.ext.napoleon',
     'sphinx.ext.todo',
     'sphinx.ext.viewcode',
+]
+
+autodoc_default_flags = [
+    'members',
+    'special-members',
+    'show-inheritance'
 ]
 
 if os.getenv('SPELLCHECK'):

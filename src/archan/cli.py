@@ -55,14 +55,15 @@ def valid_file(value):
 
 parser = argparse.ArgumentParser(
     add_help=False,
-    description='analysis of your architecture strength based on DSM data')
+    description='Analysis of your architecture strength based on DSM data')
 parser.add_argument('-c', '--config', action='store', type=valid_file,
-                    dest='config_file', help='Configuration file to use.')
+                    dest='config_file', metavar='FILE',
+                    help='Configuration file to use.')
 parser.add_argument('-h', '--help', action='help', default=argparse.SUPPRESS,
                     help='Show this help message and exit.')
-parser.add_argument('-v', '--version', action='version',
-                    version='archan %s' % __version__,
-                    help='Show the current version of the program and exit.')
+parser.add_argument('-i', '--input', action='store', type=valid_file,
+                    dest='input_file', metavar='FILE',
+                    help='Input file containing CSV data.')
 parser.add_argument('-l', '--list-plugins', action='store_true',
                     dest='list_plugins', default=False,
                     help='Show the available plugins. Default: false.')
@@ -71,8 +72,9 @@ parser.add_argument('--no-color', action='store_true', dest='no_color',
 parser.add_argument('--no-config', action='store_true', dest='no_config',
                     default=False, help='Do not load configuration from file. '
                                         'Default: false.')
-parser.add_argument('-i', '--input', action='store', type=valid_file,
-                    dest='input_file', help='Input file containing CSV data.')
+parser.add_argument('-v', '--version', action='version',
+                    version='archan %s' % __version__,
+                    help='Show the current version of the program and exit.')
 
 
 def main(args=None):
@@ -112,4 +114,5 @@ def main(args=None):
         return
 
     config.run()
-    config.print_results()
+    # config.print_results()
+    return 0 if config.successful else 1

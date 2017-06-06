@@ -21,3 +21,5 @@ __version__ = '1.0.0'
 # TODO: checker result should be a class to simplify printing and stuff
 # TODO: DSM class should have more methods to sort the data,
 # fill the matrix with transitive dependencies, etc.
+# TODO: add option on checker to "ignore" the result (fail in yellow)
+# FIXME: use if not sys.stdin.isatty() to detect stdin input or not

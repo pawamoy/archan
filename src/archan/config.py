@@ -108,7 +108,7 @@ class Config(object):
 
     @staticmethod
     def print_result(result):
-        print('%s %s' % ('{:<30}'.format(result['checker'].name + ':'), {
+        print('%s %s' % ('{}'.format(result['checker'].name + ':'), {
             Checker.NOT_IMPLEMENTED: '{}not implemented{}'.format(
                 Fore.YELLOW, Style.RESET_ALL),
             Checker.IGNORED: 'ignored',
@@ -119,6 +119,8 @@ class Config(object):
         }.get(result['result'][0])))
         if result['result'][1]:
             print('  ' + result['result'][1])
+            if result['checker'].hint:
+                print('  Hint: ' + result['checker'].hint)
 
     @property
     def available_analyzers(self):
@@ -131,6 +133,13 @@ class Config(object):
     @property
     def available_checkers(self):
         return self.plugins.checkers
+
+    @property
+    def successful(self):
+        for result in self.results:
+            if result['result'][0] == Checker.FAILED:
+                return False
+        return True
 
     def get_plugin(self, name, cls=None):
         if cls:

@@ -46,16 +46,19 @@ class Analyzer(object):
         return self.__class__.get_help()
 
     def run(self):
+        from .config import Config
         self.results.clear()
         for provider in self.providers:
             provider.run()
         for provider in self.providers:
             for checker in self.checkers:
-                self.results.append({
+                result = {
                     'provider': provider,
                     'checker': checker,
                     'result': checker.run(provider.dsm)
-                })
+                }
+                self.results.append(result)
+                Config.print_result(result)
 
     def collect_results(self):
         if not self.results:

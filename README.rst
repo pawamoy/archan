@@ -45,63 +45,41 @@ Archan
 
 .. end-badges
 
-A Python module that analyzes your architecture strength based on DSM data.
+A Python module that analyzes your architecture strength
+based on `Design Structure Matrix (DSM)`_ data.
 
 Archan is a Python module that analyzes the strength of your
 project architecture according to some criteria described in
 "`The Protection of Information in Computer Systems`_", written by
-Jerome H. Saltzer and Michael D. Schroeder.
+Jerome H. Saltzer and Michael D. Schroe
+der.
 
+.. _`Design Structure Matrix (DSM)`: https://en.wikipedia.org/wiki/Design_structure_matrix
 .. _The Protection of Information in Computer Systems : https://www.cs.virginia.edu/~evans/cs551/saltzer/
 
-Archan is used in combination with `dependenpy`_ in the Django app called
-`django-meerkat`_.
+.. note::
+
+    The following contents apply for the next version of Archan (2.0.0) which
+    has not been released yet.
+
+Features
+========
+
+- Usable directly on the command-line.
+- Support for plugins. See for example the `Provider plugin`_ in `dependenpy`_.
+  You can also take a look at `django-meerkat`_, a Django app using Archan.
+- Configurable through command-line or configuration file (YAML format).
+- Read DSM data on standard input.
 
 .. _dependenpy: https://github.com/Pawamoy/dependenpy
 .. _django-meerkat: https://github.com/Pawamoy/django-meerkat
+.. _`Provider plugin`: https://github.com/Pawamoy/dependenpy/blob/master/src/dependenpy/plugins.py
 
-
-License
-=======
-
-Software licensed under `ISC`_ license.
-
-.. _ISC: https://www.isc.org/downloads/software-support-policy/isc-license/
 
 Installation
 ============
 
 Just run ``pip install archan``.
-
-Usage
-=====
-
-Archan takes a dependency matrix as parameter. It is a list of list of
-numeric values, representing the dependencies between the packages
-that are used in your project. It also needs the keys (one string for each
-row of the matrix), and their associated group type.
-
-In `django-meerkat`_, these data are provided by the `dependenpy`_
-Python module, but you can build and use your own:
-
-
-.. code:: python
-
-    from archan.dsm import DesignStructureMatrix
-    from archan.checker import Archan
-
-    keys = ['core', 'some_app', 'whatever', 'feature']
-    groups = ['core_lib', 'app_module', 'app_module', 'app_module']
-    matrix = [[0, 1, 2, 0],
-              [1, 1, 1, 0],
-              [0, 0, 0, 3],
-              [3, 3, 0, 1]]
-
-    dsm = DesignStructureMatrix(groups, keys, matrix)
-    archan = Archan()
-    results = archan.check(dsm)
-    print(results)
-
 
 Documentation
 =============
@@ -109,6 +87,265 @@ Documentation
 `On ReadTheDocs`_
 
 .. _`On ReadTheDocs`: http://archan.readthedocs.io/
+
+Archan defines three main classes: Analyzer, Provider and Checker.
+A provider is an object that will produce data and return it in the form of
+a DSM (Design Structure Matrix). The checker is an object that
+will analyze this DSM according to some criteria, and return a status code
+saying if the criteria are verified or not. An analyzer is just a combination
+of providers and checkers to run a analysis test suite.
+
+Usage
+=====
+
+On the command-line
+-------------------
+
+Example:
+
+.. code:: bash
+
+    archan -h
+
+Output:
+
+.. code:: bash
+
+    usage: archan [-c FILE] [-h] [-i FILE] [-l] [--no-color] [--no-config] [-v]
+
+    Analysis of your architecture strength based on DSM data
+
+    optional arguments:
+      -c FILE, --config FILE  Configuration file to use.
+      -h, --help              Show this help message and exit.
+      -i FILE, --input FILE   Input file containing CSV data.
+      -l, --list-plugins      Show the available plugins. Default: false.
+      --no-color              Do not use colors. Default: false.
+      --no-config             Do not load configuration from file. Default: false.
+      -v, --version           Show the current version of the program and exit.
+
+Other examples:
+
+.. code:: bash
+
+    # Load configuration file and run archan
+    # See Configuration section to know how archan finds the config file
+    archan
+
+    # No configuration, read CSV data from file
+    archan --no-config --input FILE.CSV
+
+    # No configuration, read CSV data from stdin
+    dependenpy archan --format=csv | archan --no-config
+
+    # Specify configuration file to load
+    archan --config my_config.yml
+
+    # Output the list of available plugins in the current environment
+    archan --list-plugins
+
+Programmatically
+----------------
+
+.. code:: python
+
+    # TODO
+
+Configuration
+=============
+
+Archan applies the following methods to find the configuration file folder:
+
+1. read the contents of the file ``.configconfig`` in the current directory
+   to get the path to the configuration directory,
+2. use ``config`` folder in the current directory if it exists,
+3. use the current directory.
+
+It then searches for a configuration file named:
+
+1. ``archan.yml``
+2. ``archan.yaml``
+3. ``.archan.yml``
+4. ``.archan.yaml``
+
+Format of the configuration file is as follow:
+
+.. code:: yaml
+
+    analyzers: [list of strings and/or dict]
+    - providers: [string or list]
+      - provider.Name: [as string or dict]
+          provider_arguments: as key value pairs
+      checkers: [string or list]
+      - checker.Name: [as string or dict]
+          checker_arguments: as key value pairs
+
+It means you can write:
+
+.. code:: yaml
+
+    analyzers:
+    # a first analyzer with one provider and several checker
+    - providers: just.UseThisProvider
+      checkers:
+      - and.ThisChecker
+      - and.ThisOtherChecker:
+          which: has
+          some: arguments
+    # a second analyzer with several providers and one checker
+    - providers:
+      - use.ThisProvider
+      checkers: and.ThisChecker
+    # a third analyzer, using its name directly
+    - some.Analyzer
+
+You can reuse the same providers and checkers in different analyzers, they
+will be instantiated as different objects and won't interfere between each other.
+
+An an example, see `Archan's own configuration file`_.
+
+.. _`Archan's own configuration file`: https://github.com/Pawamoy/archan/blob/master/config/archan.yml
+
+To get the list of available plugins in your current environment,
+run ``archan --list-plugins`` or ``archan -l``.
+
+Writing a plugin
+================
+
+Plugin discovery
+----------------
+
+You can write three types of plugins: analyzers, providers and checkers.
+Your plugin does not need to be in an installable package. All it needs to
+be summoned is to be available in your current Python path. However, if you want
+it to be automatically discovered by Archan, you will have to make it installable,
+through pip or simply ``python setup.py install`` command or equivalent.
+
+If you decide to write a Python package for your plugin, I recommend you
+to name it ``archan-your-plugin`` for consistency. If you plan to make it live
+along other code in an already existing package, just leave the name as it is.
+
+To make your plugin discoverable by Archan, use the ``archan`` entry point
+in your ``setup.py``:
+
+.. code:: python
+
+    from setuptools import setup
+
+    setup(
+        ...,
+        'entry_points': {
+            'archan': [
+                'mypackage.MyPlugin = mypackage.mymodule:MyPlugin',
+            ]
+        }
+
+The name of the entry point should by convention be composed of the name of
+your package in lower case, a dot, and the name of the Python class, though
+you can name it whatever you want. Remember that this name will be the one
+used in the configuration file.
+
+Also a good thing is to make the plugin importable thanks to its name only:
+
+.. code:: python
+
+    import mypackage.MyPlugin
+
+But again, this is just a convention.
+
+Plugin class
+------------
+
+You can write three types of plugins: analyzers, providers and checkers.
+For each of them, you have to inherit from its corresponding class:
+
+.. code:: python
+
+    from archan import Analyzer, Provider, Checker
+
+    class MyAnalyzer(Analyzer): ...
+    class MyProvider(Provider): ...
+    class MyChecker(Checker): ...
+
+A provider or checker plugin must have the following class attributes:
+
+- name: the name of the plugin. It should be the same name as in your entry
+  points, so that displaying its help tells how to summon it.
+- description: a description to explain what it does.
+- (optional) arguments: a tuple/list of Argument instances. This one is only
+  used to display some help for the plugin. An argument is composed of a name,
+  a type, a description and a default value.
+
+.. code:: python
+
+    from archan import Provider, Argument
+
+    class MyProvider(Provider):
+        name = 'mypackage.MyProvider'
+        description = """
+        Don't hesitate to use multi-line strings as the lines will be de-indented,
+        concatenated again and wrapped to match the console width.
+
+        Blank lines will be kept though, so the above line will not be removed.
+        """
+
+        arguments = (
+            Argument('my_arg', int, 'This argument is useful.', 42),
+            # don't forget the ending comma if you have just one   ^   argument
+        )
+
+Additionally, a checker plugin should have the ``hint`` class attribute (string).
+The hint describe what you should do if the check fails.
+
+For now, the analyzers plugins just have the ``providers`` and ``checkers``
+class attributes.
+
+Plugin methods
+--------------
+
+A provider must implement the ``get_dsm(self, **kwargs)`` method. This method
+must return an instance of ``DSM``. A DSM is composed of a two-dimensions
+array, the matrix, a list of strings, the keys or names for each line/column
+of the matrix, and optionally the categories for each key (a list of same size).
+
+.. code:: python
+
+    from archan import DSM, Provider
+
+    class MyProvider(Provider):
+        name = 'mypackage.MyProvider'
+
+        def get_dsm(self, my_arg=42, **kwargs):
+            # this is where you compute your stuff
+            matrix_data = [...]
+            entities = [...]
+            categories = [...] or None
+            # and return a DSM instance
+            return DSM(matrix_data, entities, categories)
+
+A checker must implement the ``check(self, dsm, **kwargs)`` method.
+
+.. code:: python
+
+    from archan import DSM, Checker
+
+    class MyChecker(Checker):
+        name = 'mypackage.MyChecker'
+
+        def check(self, dsm, **kwargs):
+            # this is where you check your stuff
+            # with dsm.data, dsm.entities, dsm.categories, dsm.size
+            ...
+            # and return True, False, or a constant from Checker: PASSED or FAILED
+            # with an optional message
+            return Checker.FAILED, 'too much issues in module XXX'
+
+License
+=======
+
+Software licensed under `ISC`_ license.
+
+.. _ISC: https://www.isc.org/downloads/software-support-policy/isc-license/
 
 Development
 ===========
