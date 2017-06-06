@@ -202,7 +202,7 @@ It means you can write:
 You can reuse the same providers and checkers in different analyzers, they
 will be instantiated as different objects and won't interfere between each other.
 
-An an example, see `Archan's own configuration file`_.
+As an example, see `Archan's own configuration file`_.
 
 .. _`Archan's own configuration file`: https://github.com/Pawamoy/archan/blob/master/config/archan.yml
 
