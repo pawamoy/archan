@@ -2,62 +2,85 @@
 
 """Provider module."""
 
+from colorama import Fore, Style
+
 import os
 import fnmatch
 import sys
 
-from .utils import Argument
+from .dsm import DSM
+from .utils import Argument, pretty_description
 
 
 class Provider(object):
-    name = 'Generic provider'
+    name = 'archan.AbstractProvider'
     description = ''
     arguments = ()
+
+    @classmethod
+    def get_help(cls):
+        return (
+            '{bold}Name:{none} {blue}{name}{none}\n'
+            '{bold}Description:{none}\n{description}\n' +
+            ('{bold}Arguments:{none}\n{arguments}\n' if cls.arguments else '')
+        ).format(
+            bold=Style.BRIGHT,
+            blue=Fore.BLUE + Style.BRIGHT,
+            none=Style.RESET_ALL,
+            name=cls.name,
+            description=pretty_description(cls.description, indent='  '),
+            arguments='\n'.join([a.help for a in cls.arguments])
+        )
 
     def __init__(self, **run_kwargs):
         self.run_kwargs = run_kwargs
         self.dsm = None
 
+    @property
+    def help(self):
+        return self.__class__.get_help()
+
     def get_dsm(self, **kwargs):
         raise NotImplementedError
-
-    @classmethod
-    def get_help(cls):
-        return 'Name: %s\nDescription: %s\nArguments:\n%s\n' % (
-            cls.name,
-            cls.description,
-            '\n'.join([str(a) for a in cls.arguments])
-        )
 
     def run(self):
         self.dsm = self.get_dsm(**self.run_kwargs)
 
 
-class CSVFileProvider(Provider):
-    name = 'File provider'
+class CSVInput(Provider):
+    name = 'archan.CSVInput'
     description = 'Parse a CSV file to provide a matrix.'
     arguments = (
-        Argument('file_path', str, 'Path to the CSV file to parse.'),
-        Argument('delimiter', str, 'Delimiter used in the CSV file.', ',')
+        Argument('file_path', str,
+                 'Path to the CSV file to parse.', 'sys.stdin'),
+        Argument('delimiter', str, 'Delimiter used in the CSV file.', ','),
+        Argument('categories_delimiter', str,
+                 'If set, used as delimiter for categories.')
     )
 
-    def get_dsm(self, file_path='', delimiter=','):
-        if not file_path:
-            return {}
+    def get_dsm(self, file_path=sys.stdin, delimiter=',',
+                categories_delimiter=None):
         if file_path == sys.stdin:
-            lines = ''.join(file_path)
+            lines = [line.replace('\n', '') for line in file_path]
         else:
             with open(file_path) as f:
                 lines = list(f)
-        columns = lines[0].split(',')[1:]
+        columns = lines[0].split(delimiter)[1:]
+        categories = None
+        if categories_delimiter:
+            columns, categories = zip(*[c.split(categories_delimiter, 1)
+                                        for c in columns])
         size = len(columns)
-        data = [list(map(int, l.split(',')[1:])) for l in
-                lines[1:size + 1]]
-        return {'keys': columns, 'data': data}
+        data = [list(map(int, l.split(delimiter)[1:]))
+                for l in lines[1:size + 1]]
+        return DSM(data, columns, categories)
 
 
 # FIXME: move this provider in its own repo? it's not ready
-class CodeCleanProvider(Provider):
+class CodeIssuesAndSimilarities(Provider):
+    name = 'archan.CodeIssuesAndSimilarities'
+    description = 'Parse a CSV file to provide a matrix.'
+
     def issues_per_file(self, path):
         try:
             from prospector import ProspectorConfig, Prospector

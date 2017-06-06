@@ -21,8 +21,11 @@ import argparse
 import os
 import sys
 
+import colorama
+
 from . import __version__
-from .providers import CSVFileProvider
+from .analyzers import DefaultAnalyzer
+from .providers import CSVInput
 from .config import Config
 
 
@@ -63,6 +66,8 @@ parser.add_argument('-v', '--version', action='version',
 parser.add_argument('-l', '--list-plugins', action='store_true',
                     dest='list_plugins', default=False,
                     help='Show the available plugins. Default: false.')
+parser.add_argument('--no-color', action='store_true', dest='no_color',
+                    default=False, help='Do not use colors. Default: false.')
 parser.add_argument('--no-config', action='store_true', dest='no_config',
                     default=False, help='Do not load configuration from file. '
                                         'Default: false.')
@@ -74,6 +79,22 @@ def main(args=None):
     """Main function."""
 
     args = parser.parse_args(args=args)
+
+    colorama_args = {'autoreset': True}
+    if args.no_color:
+        colorama_args['strip'] = True
+    colorama.init(**colorama_args)
+
+    if args.no_config:
+        if args.input_file:
+            file_path = args.input_file
+        else:
+            file_path = sys.stdin
+
+        analyzer = DefaultAnalyzer(providers=[CSVInput(file_path=file_path)])
+        for result in analyzer.collect_results():
+            Config.print_result(result)
+        return
 
     config = None
     if not args.no_config:
@@ -87,33 +108,8 @@ def main(args=None):
         config = Config.default_config()
 
     if args.list_plugins:
-        for analyzer in config.available_analyzers:
-            print(analyzer.get_help())
-        for provider in config.available_providers:
-            print(provider.get_help())
-        for checker in config.available_checkers:
-            print(checker.get_help())
+        config.print_plugins()
         return
 
     config.run()
-
-    if args.no_config and not args.input_file:
-        green = '\033[;32m'
-        yellow = '\033[;33m'
-        red = '\033[;31m'
-        blue = '\033[;34m'
-        default = '\033[;39m'
-
-        dsm = CSVFileProvider().get_dsm(file_path=sys.stdin)
-
-        # report = archan.check(dsm)
-        # for criterion, (result, messages) in report.items():
-        #     print('%s :%s' % ('{:<25}'.format(criterion.title), {
-        #         Criterion.NOT_IMPLEMENTED: '{}not implemented{}'.format(yellow, default),
-        #         Criterion.IGNORED: 'ignored',
-        #         Criterion.FAILED: '{}failed{}'.format(red, default),
-        #         Criterion.PASSED: '{}passed{}'.format(green, default),
-        #     }.get(result)))
-        #     if messages:
-        #         print(messages)
-        return
+    config.print_results()

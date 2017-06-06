@@ -2,13 +2,15 @@
 
 """Checker module."""
 
+from colorama import Fore, Style
+
 from .errors import DSMError
-from .utils import Argument
+from .utils import Argument, pretty_description
 
 
 # TODO: also add some "expect" attribute to describe the expected data format
 class Checker(object):
-    name = 'Generic checker'
+    name = 'archan.AbstractChecker'
     description = ''
     hint = ''
     arguments = ()
@@ -18,27 +20,47 @@ class Checker(object):
     IGNORED = -1
     NOT_IMPLEMENTED = -2
 
+    @classmethod
+    def get_help(cls):
+        return (
+            '{bold}Name:{none} {blue}{name}{none}\n'
+            '{bold}Description:{none}\n{description}\n' +
+            ('{bold}Arguments:{none}\n{arguments}\n' if cls.arguments else '')
+        ).format(
+            bold=Style.BRIGHT,
+            blue=Fore.BLUE + Style.BRIGHT,
+            none=Style.RESET_ALL,
+            name=cls.name,
+            description=pretty_description(cls.description, indent='  '),
+            arguments='\n'.join([a.help for a in cls.arguments])
+        )
+
     def __init__(self, **run_kwargs):
         self.run_kwargs = run_kwargs
         self.result = None
+
+    @property
+    def help(self):
+        return self.__class__.get_help()
 
     def check(self, dsm, **kwargs):
         raise NotImplementedError
 
     def run(self, dsm):
-        return self.check(dsm, **self.run_kwargs)
-
-    @classmethod
-    def get_help(cls):
-        return 'Name: %s\nDescription: %s\nArguments:\n%s\n' % (
-            cls.name,
-            cls.description,
-            '\n'.join([str(a) for a in cls.arguments])
-        )
+        try:
+            result = self.check(dsm, **self.run_kwargs)
+            messages = ''
+            if isinstance(result, tuple):
+                result, messages = result
+            return {True: Checker.PASSED, Checker.PASSED: Checker.PASSED,
+                    False: Checker.FAILED, Checker.FAILED: Checker.FAILED,
+                    Checker.IGNORED: Checker.IGNORED}.get(result), messages
+        except NotImplementedError:
+            return Checker.NOT_IMPLEMENTED, ''
 
 
 class CompleteMediation(Checker):
-    name = 'Complete Mediation'
+    name = 'archan.CompleteMediation'
     description = """
     Every access to every object must be checked for authority.
     This principle, when systematically applied, is the primary underpinning
@@ -85,6 +107,10 @@ class CompleteMediation(Checker):
         cat = dsm.categories
         ent = dsm.entities
         size = dsm.size
+
+        if not cat:
+            cat = ['appmodule'] * size
+
         packages = [e.split('.')[0] for e in ent]
 
         # define and initialize the mediation matrix
@@ -93,49 +119,49 @@ class CompleteMediation(Checker):
 
         for i in range(0, size):
             for j in range(0, size):
-                if cat[i] == dsm.framework:
-                    if cat[j] == dsm.framework:
+                if cat[i] == 'framework':
+                    if cat[j] == 'framework':
                         mediation_matrix[i][j] = -1
                     else:
                         mediation_matrix[i][j] = 0
-                elif cat[i] == dsm.core_lib:
-                    if (cat[j] in (dsm.framework, dsm.core_lib) or
+                elif cat[i] == 'corelib':
+                    if (cat[j] in ('framework', 'corelib') or
                             ent[i].startswith(packages[j] + '.') or
                                 i == j):
                         mediation_matrix[i][j] = -1
                     else:
                         mediation_matrix[i][j] = 0
-                elif cat[i] == dsm.app_lib:
-                    if (cat[j] in (dsm.framework, dsm.core_lib, dsm.app_lib) or
+                elif cat[i] == 'applib':
+                    if (cat[j] in ('framework', 'corelib', 'applib') or
                             ent[i].startswith(packages[j] + '.') or
                                 i == j):
                         mediation_matrix[i][j] = -1
                     else:
                         mediation_matrix[i][j] = 0
-                elif cat[i] == dsm.app_module:
+                elif cat[i] == 'appmodule':
                     # we cannot force an app module to import things from
                     # the broker if the broker itself did not import anything
-                    if (cat[j] in (dsm.framework, dsm.core_lib,
-                                   dsm.app_lib, dsm.broker, dsm.data) or
+                    if (cat[j] in ('framework', 'corelib',
+                                   'applib', 'broker', 'data') or
                             ent[i].startswith(packages[j] + '.') or
                                 i == j):
                         mediation_matrix[i][j] = -1
                     else:
                         mediation_matrix[i][j] = 0
-                elif cat[i] == dsm.broker:
+                elif cat[i] == 'broker':
                     # we cannot force the broker to import things from
                     # app modules if there is nothing to be imported.
                     # also broker should be authorized to use third apps
                     if (cat[j] in (
-                    dsm.app_module, dsm.core_lib, dsm.framework) or
+                            'appmodule', 'corelib', 'framework') or
                             ent[i].startswith(packages[j] + '.') or
-                                i == j):
+                            i == j):
                         mediation_matrix[i][j] = -1
                     else:
                         mediation_matrix[i][j] = 0
-                elif cat[i] == dsm.data:
-                    if (cat[j] == dsm.framework or
-                                i == j):
+                elif cat[i] == 'data':
+                    if (cat[j] == 'framework' or
+                            i == j):
                         mediation_matrix[i][j] = -1
                     else:
                         mediation_matrix[i][j] = 0
@@ -211,7 +237,7 @@ class CompleteMediation(Checker):
 
 
 class EconomyOfMechanism(Checker):
-    name = 'Economy of Mechanism'
+    name = 'archan.EconomyOfMechanism'
     hint = 'Reduce the number of dependencies in your own code ' \
            'or increase the simplicity factor.'
     description = """
@@ -225,9 +251,12 @@ class EconomyOfMechanism(Checker):
     necessary. For such techniques to be successful, a small and simple design
     is essential."""
 
-    arguments = [
-        Argument('simplicity_factor', int, default=2)
-    ]
+    arguments = (
+        Argument('simplicity_factor', int,
+                 'If the number of cells with dependencies in the DSM '
+                 'is lower than the DSM size multiplied by the simplicity '
+                 'factor, then this criterion is verified.', 2),
+    )
 
     def check(self, dsm, simplicity_factor=2, **kwargs):
         """
@@ -251,12 +280,15 @@ class EconomyOfMechanism(Checker):
         categories = dsm.categories
         dsm_size = dsm.size
 
+        if not categories:
+            categories = ['appmodule'] * dsm_size
+
         dependency_number = 0
         # evaluate Matrix(dependency_matrix)
         for i in range(0, dsm_size):
             for j in range(0, dsm_size):
-                if (categories[i] not in (dsm.framework, dsm.core_lib) and
-                        categories[j] not in (dsm.framework, dsm.core_lib) and
+                if (categories[i] not in ('framework', 'corelib') and
+                        categories[j] not in ('framework', 'corelib') and
                         dependency_matrix[i][j] > 0):
                     dependency_number += 1
                     # check comparison result
@@ -272,7 +304,7 @@ class EconomyOfMechanism(Checker):
 
 
 class SeparationOfPrivileges(Checker):
-    name = 'Separation of Privileges'
+    name = 'archan.SeparationOfPrivileges'
     description = """
     Where feasible, a protection mechanism that requires two keys to unlock it
     is more robust and flexible than one that allows access to the presenter of
@@ -296,7 +328,7 @@ class SeparationOfPrivileges(Checker):
 
 
 class LeastPrivileges(Checker):
-    name = 'Least Privileges'
+    name = 'archan.LeastPrivileges'
     description = """
     Every program and every user of the system should operate using the least
     set of privileges necessary to complete the job. Primarily, this principle
@@ -317,7 +349,7 @@ class LeastPrivileges(Checker):
 
 
 class LeastCommonMechanism(Checker):
-    name = 'Least Common Mechanism'
+    name = 'archan.LeastCommonMechanism'
     hint = 'Reduce number of modules having dependencies to the listed module.'
     description = """
     Minimize the amount of mechanism common to more than one user and depended
@@ -334,12 +366,12 @@ class LeastCommonMechanism(Checker):
     a substitute or not use it at all. Either way, they can avoid being harmed
     by a mistake in it."""
 
-    arguments = [
+    arguments = (
         Argument('independence_factor', int,
-                 'if the maximum dependencies for one module is inferior or '
+                 'If the maximum dependencies for one module is inferior or '
                  'equal to the DSM size divided by the independence factor, '
-                 'then this criterion is verified', 5)
-    ]
+                 'then this criterion is verified.', 5),
+    )
 
     def check(self, dsm, independence_factor=5, **kwargs):
         """
@@ -362,13 +394,16 @@ class LeastCommonMechanism(Checker):
         categories = dsm.categories
         dsm_size = dsm.size
 
+        if not categories:
+            categories = ['appmodule'] * dsm_size
+
         dependent_module_number = []
         # evaluate Matrix(dependency_matrix)
         for j in range(0, dsm_size):
             dependent_module_number.append(0)
             for i in range(0, dsm_size):
-                if (categories[i] != dsm.framework and
-                        categories[j] != dsm.framework and
+                if (categories[i] != 'framework' and
+                        categories[j] != 'framework' and
                         dependency_matrix[i][j] > 0):
                     dependent_module_number[j] += 1
         # except for the broker if any  and libs, check that threshold is not
@@ -376,7 +411,7 @@ class LeastCommonMechanism(Checker):
         #  index of brokers
         #  and app_libs are set to 0
         for index, item in enumerate(dsm.categories):
-            if item == dsm.broker or item == dsm.app_lib:
+            if item == 'broker' or item == 'applib':
                 dependent_module_number[index] = 0
         if max(dependent_module_number) <= dsm.size / independence_factor:
             least_common_mechanism = True
@@ -392,7 +427,7 @@ class LeastCommonMechanism(Checker):
 
 
 class LayeredArchitecture(Checker):
-    name = 'Layered Architecture'
+    name = 'archan.LayeredArchitecture'
     description = """
     The modules that are part of the project should be organized in a layered
     way by means of groups. Modules like frameworks and librairies should be
@@ -415,10 +450,15 @@ class LayeredArchitecture(Checker):
         """
         layered_architecture = True
         messages = []
+        categories = dsm.categories
+
+        if not categories:
+            categories = ['appmodule'] * dsm.size
+
         for i in range(0, dsm.size - 1):
             for j in range(i + 1, dsm.size):
-                if (dsm.categories[i] != dsm.broker and
-                        dsm.categories[j] != dsm.broker and
+                if (categories[i] != 'broker' and
+                        categories[j] != 'broker' and
                         dsm.entities[i].split('.')[0] != dsm.entities[j].split('.')[0]):  # noqa
                     if dsm.dependency_matrix[i][j] > 0:
                         layered_architecture = False
@@ -431,7 +471,7 @@ class LayeredArchitecture(Checker):
 
 
 class OpenDesign(Checker):
-    name = 'Open Design'
+    name = 'archan.OpenDesign'
     description = """
     The design should not be secret. The mechanisms should not depend on the
     ignorance of potential attackers, but rather on the possession of specific,
@@ -444,18 +484,18 @@ class OpenDesign(Checker):
     system which receives wide distribution."""
     # FIXME: add hint
 
-    arguments = [
+    arguments = (
         Argument('ok', bool,
-                 'since Open Design computes nothing, you need to tell'
-                 'it if the check should succeed or not.', False)
-    ]
+                 'Since Open Design computes nothing, you need to tell '
+                 'it if the check should succeed or not.', False),
+    )
 
     def check(self, dsm, ok=False, **kwargs):
         return ok
 
 
 class CodeClean(Checker):
-    name = 'Code Clean'
+    name = 'archan.CodeClean'
     description = """
     The code base should be kept coherent and consistent. Complexity of
     functions must not be too important. Conventions and standards must be used

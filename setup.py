@@ -48,6 +48,7 @@ setup(
         # http://pypi.python.org/pypi?%3Aaction=list_classifiers
         'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',
+        'Intended Audience :: Science/Research',
         'License :: OSI Approved :: ISC License (ISCL)',
         'Operating System :: Unix',
         'Programming Language :: Python',
@@ -60,15 +61,13 @@ setup(
         'Topic :: Utilities',
     ],
     keywords=[
-        'archan',
+        'archan', 'architecture', 'analysis', 'security', 'dsm', 'audit'
     ],
     install_requires=[
-        # eg: 'aspectlib==1.1.1', 'six>=1.7',
+        'colorama', 'pyyaml'
     ],
     extras_require={
-        # eg:
-        #   'rst': ['docutils>=0.11'],
-        #   ':python_version=="2.6"': ['argparse'],
+        'with_dependenpy': ['dependenpy'],
     },
     entry_points={
         'console_scripts': [
@@ -83,7 +82,7 @@ setup(
             'archan.OpenDesign = archan.checkers:OpenDesign',
             'archan.LeastCommonMechanism = archan.checkers:LeastCommonMechanism',
             'archan.CompleteMediation = archan.checkers:CompleteMediation',
-            'archan.CSVFileProvider = archan.providers:CSVFileProvider'
+            'archan.CSVInput = archan.providers:CSVInput'
         ]
     },
 )

@@ -8,14 +8,16 @@ using a DSM (Design Structure Matrix) on which certain criteria will be
 verified.
 """
 
-from .dsm import DesignStructureMatrix
-from .errors import DSMError
+from .dsm import DSM
 from .analyzers import Analyzer
-from .providers import Provider, CSVFileProvider
-from .checkers import (
-    Checker, CodeClean, CompleteMediation, LeastCommonMechanism,
-    EconomyOfMechanism, LayeredArchitecture, LeastPrivileges,
-    SeparationOfPrivileges, OpenDesign)
+from .providers import Provider
+from .checkers import Checker
 from .utils import Argument
 
+__all__ = ('DSM', 'Analyzer', 'Provider', 'Checker', 'Argument')
 __version__ = '1.0.0'
+
+
+# TODO: checker result should be a class to simplify printing and stuff
+# TODO: DSM class should have more methods to sort the data,
+# fill the matrix with transitive dependencies, etc.

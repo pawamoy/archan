@@ -8,10 +8,13 @@ import os
 import pkg_resources
 import yaml
 
+from colorama import Fore, Style
+
 from .analyzers import Analyzer
 from .checkers import Checker
 from .errors import ConfigError
 from .providers import Provider
+from .utils import console_width
 
 
 class Config(object):
@@ -88,7 +91,7 @@ class Config(object):
         default_config_dir = os.path.join(current_dir, 'config')
         if os.path.isfile(configconfig_file):
             with open(configconfig_file) as f:
-                config_dir = os.path.join(current_dir, f.read())
+                config_dir = os.path.join(current_dir, f.read()).strip()
         elif os.path.isdir(default_config_dir):
             config_dir = default_config_dir
         else:
@@ -103,17 +106,31 @@ class Config(object):
     def default_config():
         return Config()
 
+    @staticmethod
+    def print_result(result):
+        print('%s %s' % ('{:<30}'.format(result['checker'].name + ':'), {
+            Checker.NOT_IMPLEMENTED: '{}not implemented{}'.format(
+                Fore.YELLOW, Style.RESET_ALL),
+            Checker.IGNORED: 'ignored',
+            Checker.FAILED: '{}failed{}'.format(
+                Fore.RED, Style.RESET_ALL),
+            Checker.PASSED: '{}passed{}'.format(
+                Fore.GREEN, Style.RESET_ALL),
+        }.get(result['result'][0])))
+        if result['result'][1]:
+            print('  ' + result['result'][1])
+
     @property
     def available_analyzers(self):
-        return self.plugins.analyzers.values()
+        return self.plugins.analyzers
 
     @property
     def available_providers(self):
-        return self.plugins.providers.values()
+        return self.plugins.providers
 
     @property
     def available_checkers(self):
-        return self.plugins.checkers.values()
+        return self.plugins.checkers
 
     def get_plugin(self, name, cls=None):
         if cls:
@@ -201,3 +218,25 @@ class Config(object):
         for analyzer in self.analyzers:
             results.extend(analyzer.collect_results())
         self.results = results
+
+    def print_results(self):
+        for result in self.results:
+            Config.print_result(result)
+
+    def print_plugins(self):
+        line = Fore.MAGENTA + Style.BRIGHT + '-' * console_width()
+        if self.available_analyzers:
+            print(line + '\nAnalyzers\n' + line)
+            for analyzer in sorted(self.available_analyzers.values(),
+                                   key=lambda x: x.name):
+                print(analyzer.get_help())
+        if self.available_providers:
+            print(line + '\nProviders\n' + line)
+            for provider in sorted(self.available_providers.values(),
+                                   key=lambda x: x.name):
+                print(provider.get_help())
+        if self.available_checkers:
+            print(line + '\nCheckers\n' + line)
+            for checker in sorted(self.available_checkers.values(),
+                                  key=lambda x: x.name):
+                print(checker.get_help())
