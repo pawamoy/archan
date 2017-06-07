@@ -18,15 +18,15 @@ Why does this file exist, and why not put this in __main__?
 """
 
 import argparse
+import logging
 import os
 import sys
 
 import colorama
 
 from . import __version__
-from .analyzers import DefaultAnalyzer
-from .providers import CSVInput
 from .config import Config
+from .utils import Logger
 
 
 def valid_file(value):
@@ -53,6 +53,13 @@ def valid_file(value):
     return value
 
 
+def valid_level(value):
+    value = value.upper()
+    if getattr(logging, value, None) is None:
+        raise argparse.ArgumentTypeError("%s is not a valid level" % value)
+    return value
+
+
 parser = argparse.ArgumentParser(
     add_help=False,
     description='Analysis of your architecture strength based on DSM data')
@@ -72,7 +79,10 @@ parser.add_argument('--no-color', action='store_true', dest='no_color',
 parser.add_argument('--no-config', action='store_true', dest='no_config',
                     default=False, help='Do not load configuration from file. '
                                         'Default: false.')
-parser.add_argument('-v', '--version', action='version',
+parser.add_argument('-v', '--verbose-level', action='store', dest='level',
+                    type=valid_level, default='ERROR',
+                    help='Level of verbosity.')
+parser.add_argument('-V', '--version', action='version',
                     version='archan %s' % __version__,
                     help='Show the current version of the program and exit.')
 
@@ -81,38 +91,43 @@ def main(args=None):
     """Main function."""
 
     args = parser.parse_args(args=args)
+    Logger.set_level(args.level)
+    logger = Logger.get_logger(__name__)
 
     colorama_args = {'autoreset': True}
     if args.no_color:
         colorama_args['strip'] = True
     colorama.init(**colorama_args)
 
+    config = None
     if args.no_config:
+        logger.info('No configuration flag used, use default configuration')
         if args.input_file:
             file_path = args.input_file
         else:
             file_path = sys.stdin
-
-        analyzer = DefaultAnalyzer(providers=[CSVInput(file_path=file_path)])
-        for result in analyzer.collect_results():
-            Config.print_result(result)
-        return
-
-    config = None
-    if not args.no_config:
+        config = Config.default_config(file_path)
+    else:
         if args.config_file:
+            logger.ingo('Configuration file specified: %s' % args.config_file)
             config_file = args.config_file
         else:
+            logger.info('No configuration file specified, searching')
             config_file = Config.find()
         if config_file:
+            logger.info('Load configuration from %s' % config_file)
             config = Config.from_file(config_file)
-    if config is None:
-        config = Config.default_config()
+        if config is None:
+            logger.info('Use default configuration')
+            config = Config.default_config()
 
     if args.list_plugins:
+        logger.info('Print list of plugins')
+        logger.debug('Plugins = {}'.format(config.plugins))
         config.print_plugins()
         return
 
+    logger.info('Run analysis with configuration = %s' % config)
     config.run()
-    # config.print_results()
+    config.print_results()
     return 0 if config.successful else 1

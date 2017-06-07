@@ -6,19 +6,21 @@ import collections
 import importlib
 import os
 import pkg_resources
+import sys
 import yaml
 
-from colorama import Fore, Style
+from colorama import Style
 
-from .analyzers import Analyzer
+from .analyzers import Analyzer, DefaultAnalyzer
 from .checkers import Checker
 from .errors import ConfigError
-from .providers import Provider
-from .utils import console_width
+from .providers import Provider, CSVInput
+from .utils import console_width, Logger
 
 
 class Config(object):
     def __init__(self, config_dict=None):
+        self.logger = Logger.get_logger(__name__)
         self.plugins = Config.load_installed_plugins()
         self.analyzers = []
 
@@ -103,24 +105,9 @@ class Config(object):
         return None
 
     @staticmethod
-    def default_config():
-        return Config()
-
-    @staticmethod
-    def print_result(result):
-        print('%s %s' % ('{}'.format(result['checker'].name + ':'), {
-            Checker.NOT_IMPLEMENTED: '{}not implemented{}'.format(
-                Fore.YELLOW, Style.RESET_ALL),
-            Checker.IGNORED: 'ignored',
-            Checker.FAILED: '{}failed{}'.format(
-                Fore.RED, Style.RESET_ALL),
-            Checker.PASSED: '{}passed{}'.format(
-                Fore.GREEN, Style.RESET_ALL),
-        }.get(result['result'][0])))
-        if result['result'][1]:
-            print('  ' + result['result'][1])
-            if result['checker'].hint:
-                print('  Hint: ' + result['checker'].hint)
+    def default_config(file_path=sys.stdin):
+        return Config(dict(analyzers=[DefaultAnalyzer(
+            providers=[CSVInput(file_path=file_path)])]))
 
     @property
     def available_analyzers(self):
@@ -137,11 +124,11 @@ class Config(object):
     @property
     def successful(self):
         for result in self.results:
-            if result['result'][0] == Checker.FAILED:
+            if result.code == Checker.FAILED:
                 return False
         return True
 
-    def get_plugin(self, name, cls=None):
+    def get_plugin(self, identifier, cls=None):
         if cls:
             search_in = {}
             if cls == 'analyzer':
@@ -150,21 +137,22 @@ class Config(object):
                 search_in = self.available_providers
             elif cls == 'checker':
                 search_in = self.available_checkers
-            if name in search_in:
-                return search_in[name]
+            if identifier in search_in:
+                return search_in[identifier]
         try:
-            return Config.load_local_plugin(name)
+            return Config.load_local_plugin(identifier)
         except ImportError:
+            self.logger.warning('Plugin %s is not importable' % identifier)
             return None
 
-    def get_analyzer(self, name):
-        return self.get_plugin(name, cls='analyzer')
+    def get_analyzer(self, identifier):
+        return self.get_plugin(identifier, cls='analyzer')
 
-    def get_provider(self, name):
-        return self.get_plugin(name, cls='provider')
+    def get_provider(self, identifier):
+        return self.get_plugin(identifier, cls='provider')
 
-    def get_checker(self, name):
-        return self.get_plugin(name, cls='checker')
+    def get_checker(self, identifier):
+        return self.get_plugin(identifier, cls='checker')
 
     def analyzer_from_dict(self, d):
         providers = d['providers']
@@ -185,7 +173,6 @@ class Config(object):
                 elif issubclass(provider, provider):
                     provider = provider()
                 else:
-                    # TODO: warn
                     provider = None
                 if provider is not None:
                     real_providers.append(provider)
@@ -203,24 +190,28 @@ class Config(object):
                 elif issubclass(checker, Checker):
                     checker = checker()
                 else:
-                    # TODO: warn
                     checker = None
                 if checker is not None:
                     real_checkers.append(checker)
 
-        return Analyzer(providers=real_providers, checkers=real_checkers)
+        return Analyzer(
+            identifier=d.get('identifier', None),
+            name=d.get('name', None), description=d.get('description', None),
+            providers=real_providers, checkers=real_checkers)
 
     def provider_from_dict(self, d):
-        provider_name = list(d.keys())[0]
-        provider_class = self.get_provider(provider_name)
-        provider = provider_class(**d[provider_name])
-        return provider
+        provider_identifier = list(d.keys())[0]
+        provider_class = self.get_provider(provider_identifier)
+        if provider_class:
+            return provider_class(**d[provider_identifier])
+        return None
 
     def checker_from_dict(self, d):
-        checker_name = list(d.keys())[0]
-        checker_class = self.get_checker(checker_name)
-        checker = checker_class(**d[checker_name])
-        return checker
+        checker_identifier = list(d.keys())[0]
+        checker_class = self.get_checker(checker_identifier)
+        if checker_class:
+            return checker_class(**d[checker_identifier])
+        return None
 
     def run(self):
         results = []
@@ -229,23 +220,27 @@ class Config(object):
         self.results = results
 
     def print_results(self):
+        one_analyzer = len(self.analyzers) == 1
         for result in self.results:
-            Config.print_result(result)
+            one_provider = len(result.analyzer.providers) == 1
+            result.print(analyzer=not one_analyzer, provider=not one_provider)
 
     def print_plugins(self):
-        line = Fore.MAGENTA + Style.BRIGHT + '-' * console_width()
+        width = console_width()
+        line = Style.BRIGHT + '=' * width + '\n'
+        middle = int(width / 2)
         if self.available_analyzers:
-            print(line + '\nAnalyzers\n' + line)
+            print(line + ' ' * middle + 'ANALYZERS')
             for analyzer in sorted(self.available_analyzers.values(),
-                                   key=lambda x: x.name):
+                                   key=lambda x: x.identifier):
                 print(analyzer.get_help())
         if self.available_providers:
-            print(line + '\nProviders\n' + line)
+            print(line + ' ' * middle + 'PROVIDERS')
             for provider in sorted(self.available_providers.values(),
-                                   key=lambda x: x.name):
+                                   key=lambda x: x.identifier):
                 print(provider.get_help())
         if self.available_checkers:
-            print(line + '\nCheckers\n' + line)
+            print(line + ' ' * middle + 'CHECKERS')
             for checker in sorted(self.available_checkers.values(),
-                                  key=lambda x: x.name):
+                                  key=lambda x: x.identifier):
                 print(checker.get_help())

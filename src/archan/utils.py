@@ -2,10 +2,11 @@
 
 """Utils module."""
 
+import logging
 import textwrap
 import subprocess
 
-from colorama import Fore, Style
+from colorama import Back, Fore, Style
 
 
 def console_width(default=80):
@@ -68,7 +69,7 @@ class Argument(object):
             'default {bold}{default}{none})'
         ).format(
             bold=Style.BRIGHT,
-            yellow=Fore.YELLOW + Style.BRIGHT,
+            yellow=Back.YELLOW + Fore.BLACK,
             none=Style.RESET_ALL,
             name=self.name,
             type=self.type,
@@ -79,3 +80,51 @@ class Argument(object):
             text += ':\n' + pretty_description(self.description, indent='    ')
 
         return text
+
+
+class Logger(object):
+    loggers = {}
+    level = None
+
+    @staticmethod
+    def set_level(level):
+        Logger.level = level
+        for logger in Logger.loggers.values():
+            logger.setLevel(level)
+
+    @staticmethod
+    def get_logger(name, level=None, format='%(message)s'):
+        if name not in Logger.loggers:
+            if Logger.level is None and level is None:
+                Logger.level = level = logging.ERROR
+            elif Logger.level is None:
+                Logger.level = level
+            elif level is None:
+                level = Logger.level
+            logger = logging.getLogger(name)
+            logger_handler = logging.StreamHandler()
+            format_string = '%s: ' % name + format
+            logger_handler.setFormatter(LoggingFormatter(fmt=format_string))
+            logger.addHandler(logger_handler)
+            logger.setLevel(level)
+            Logger.loggers[name] = logger
+        return Logger.loggers[name]
+
+
+class LoggingFormatter(logging.Formatter):
+    def format(self, record):
+        if record.levelno == logging.DEBUG:
+            string = Back.WHITE + Fore.BLACK + ' debug '
+        elif record.levelno == logging.INFO:
+            string = Back.BLUE + Fore.WHITE + ' info '
+        elif record.levelno == logging.WARNING:
+            string = Back.YELLOW + Fore.BLACK + ' warning '
+        elif record.levelno == logging.ERROR:
+            string = Back.RED + Fore.WHITE + ' error '
+        elif record.levelno == logging.CRITICAL:
+            string = Back.BLACK + Fore.WHITE + ' critical '
+        else:
+            string = ''
+        return string + Style.RESET_ALL + ' ' + super().format(record)
+
+

@@ -18,8 +18,11 @@ __all__ = ('DSM', 'Analyzer', 'Provider', 'Checker', 'Argument')
 __version__ = '1.0.0'
 
 
-# TODO: checker result should be a class to simplify printing and stuff
-# TODO: DSM class should have more methods to sort the data,
-# fill the matrix with transitive dependencies, etc.
-# TODO: add option on checker to "ignore" the result (fail in yellow)
+# TODO: DSM class should have more methods (see wiki DSM, adjacency matrix)
 # FIXME: use if not sys.stdin.isatty() to detect stdin input or not
+# TODO: update docs with new ignore param on all checkers
+# TODO: update docs with new identifier class attributes on every plugin
+# TODO: update docs with usage of self.logger in plugins
+# TODO: update docs with new YAML format: identifier, name and description
+# FIXME: stronger verification method for configuration
+

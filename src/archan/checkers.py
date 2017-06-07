@@ -2,15 +2,16 @@
 
 """Checker module."""
 
-from colorama import Fore, Style
+from colorama import Back, Fore, Style
 
 from .errors import DSMError
-from .utils import Argument, pretty_description
+from .utils import Argument, pretty_description, Logger
 
 
 # TODO: also add some "expect" attribute to describe the expected data format
 class Checker(object):
-    name = 'archan.AbstractChecker'
+    identifier = 'archan.AbstractChecker'
+    name = 'Generic checker'
     description = ''
     hint = ''
     arguments = ()
@@ -20,22 +21,28 @@ class Checker(object):
     IGNORED = -1
     NOT_IMPLEMENTED = -2
 
+    STATUS = (PASSED, FAILED, IGNORED, NOT_IMPLEMENTED)
+
     @classmethod
     def get_help(cls):
         return (
-            '{bold}Name:{none} {blue}{name}{none}\n'
+            '{bold}Identifier:{none} {blue}{identifier}{none}\n'
+            '{bold}Name:{none} {name}\n'
             '{bold}Description:{none}\n{description}\n' +
             ('{bold}Arguments:{none}\n{arguments}\n' if cls.arguments else '')
         ).format(
             bold=Style.BRIGHT,
-            blue=Fore.BLUE + Style.BRIGHT,
+            blue=Back.BLUE + Fore.WHITE,
             none=Style.RESET_ALL,
+            identifier=cls.identifier,
             name=cls.name,
             description=pretty_description(cls.description, indent='  '),
             arguments='\n'.join([a.help for a in cls.arguments])
         )
 
-    def __init__(self, **run_kwargs):
+    def __init__(self, ignore=False, **run_kwargs):
+        self.logger = Logger.get_logger(__name__)
+        self.ignore = ignore
         self.run_kwargs = run_kwargs
         self.result = None
 
@@ -52,15 +59,21 @@ class Checker(object):
             messages = ''
             if isinstance(result, tuple):
                 result, messages = result
-            return {True: Checker.PASSED, Checker.PASSED: Checker.PASSED,
-                    False: Checker.FAILED, Checker.FAILED: Checker.FAILED,
-                    Checker.IGNORED: Checker.IGNORED}.get(result), messages
+
+            if result not in Checker.STATUS:
+                result = Checker.PASSED if bool(result) else Checker.FAILED
+
+            if result == Checker.FAILED and self.ignore:
+                result = Checker.IGNORED
+
+            return result, messages
         except NotImplementedError:
             return Checker.NOT_IMPLEMENTED, ''
 
 
 class CompleteMediation(Checker):
-    name = 'archan.CompleteMediation'
+    identifier = 'archan.CompleteMediation'
+    name = 'Complete Mediation'
     description = """
     Every access to every object must be checked for authority.
     This principle, when systematically applied, is the primary underpinning
@@ -192,7 +205,7 @@ class CompleteMediation(Checker):
         cols_med_matrix = len(complete_mediation_matrix[0])
 
         if (rows_dep_matrix != rows_med_matrix or
-                    cols_dep_matrix != cols_med_matrix):
+                cols_dep_matrix != cols_med_matrix):
             raise DSMError('Matrices are NOT compliant '
                            '(number of rows/columns not equal)')
 
@@ -201,9 +214,9 @@ class CompleteMediation(Checker):
         for i in range(0, rows_dep_matrix):
             for j in range(0, cols_dep_matrix):
                 if ((complete_mediation_matrix[i][j] == 0 and
-                             matrix[i][j] > 0) or
+                        matrix[i][j] > 0) or
                         (complete_mediation_matrix[i][j] == 1 and
-                                 matrix[i][j] < 1)):
+                         matrix[i][j] < 1)):
                     discrepancy_found = True
                     message.append(
                         'Untolerated dependency at %s:%s (%s:%s): '
@@ -237,7 +250,8 @@ class CompleteMediation(Checker):
 
 
 class EconomyOfMechanism(Checker):
-    name = 'archan.EconomyOfMechanism'
+    identifier = 'archan.EconomyOfMechanism'
+    name = 'Economy of Mechanism'
     hint = 'Reduce the number of dependencies in your own code ' \
            'or increase the simplicity factor.'
     description = """
@@ -304,7 +318,8 @@ class EconomyOfMechanism(Checker):
 
 
 class SeparationOfPrivileges(Checker):
-    name = 'archan.SeparationOfPrivileges'
+    identifier = 'archan.SeparationOfPrivileges'
+    name = 'Separation of Privileges'
     description = """
     Where feasible, a protection mechanism that requires two keys to unlock it
     is more robust and flexible than one that allows access to the presenter of
@@ -328,7 +343,8 @@ class SeparationOfPrivileges(Checker):
 
 
 class LeastPrivileges(Checker):
-    name = 'archan.LeastPrivileges'
+    identifier = 'archan.LeastPrivileges'
+    name = 'Least Privileges'
     description = """
     Every program and every user of the system should operate using the least
     set of privileges necessary to complete the job. Primarily, this principle
@@ -349,7 +365,8 @@ class LeastPrivileges(Checker):
 
 
 class LeastCommonMechanism(Checker):
-    name = 'archan.LeastCommonMechanism'
+    identifier = 'archan.LeastCommonMechanism'
+    name = 'Least Common Mechanism'
     hint = 'Reduce number of modules having dependencies to the listed module.'
     description = """
     Minimize the amount of mechanism common to more than one user and depended
@@ -427,7 +444,8 @@ class LeastCommonMechanism(Checker):
 
 
 class LayeredArchitecture(Checker):
-    name = 'archan.LayeredArchitecture'
+    identifier = 'archan.LayeredArchitecture'
+    name = 'Layered Architecture'
     description = """
     The modules that are part of the project should be organized in a layered
     way by means of groups. Modules like frameworks and librairies should be
@@ -471,7 +489,8 @@ class LayeredArchitecture(Checker):
 
 
 class OpenDesign(Checker):
-    name = 'archan.OpenDesign'
+    identifier = 'archan.OpenDesign'
+    name = 'Open Design'
     description = """
     The design should not be secret. The mechanisms should not depend on the
     ignorance of potential attackers, but rather on the possession of specific,
@@ -495,7 +514,8 @@ class OpenDesign(Checker):
 
 
 class CodeClean(Checker):
-    name = 'archan.CodeClean'
+    identifier = 'archan.CodeClean'
+    name = 'Code Clean'
     description = """
     The code base should be kept coherent and consistent. Complexity of
     functions must not be too important. Conventions and standards must be used

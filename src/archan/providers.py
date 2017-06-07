@@ -2,37 +2,41 @@
 
 """Provider module."""
 
-from colorama import Fore, Style
+from colorama import Back, Fore, Style
 
 import os
 import fnmatch
 import sys
 
 from .dsm import DSM
-from .utils import Argument, pretty_description
+from .utils import Argument, pretty_description, Logger
 
 
 class Provider(object):
-    name = 'archan.AbstractProvider'
+    identifier = 'archan.AbstractProvider'
+    name = 'Generic provider'
     description = ''
     arguments = ()
 
     @classmethod
     def get_help(cls):
         return (
-            '{bold}Name:{none} {blue}{name}{none}\n'
+            '{bold}Identifier:{none} {blue}{identifier}{none}\n'
+            '{bold}Name:{none} {name}\n'
             '{bold}Description:{none}\n{description}\n' +
             ('{bold}Arguments:{none}\n{arguments}\n' if cls.arguments else '')
         ).format(
             bold=Style.BRIGHT,
-            blue=Fore.BLUE + Style.BRIGHT,
+            blue=Back.BLUE + Fore.WHITE,
             none=Style.RESET_ALL,
+            identifier=cls.identifier,
             name=cls.name,
             description=pretty_description(cls.description, indent='  '),
             arguments='\n'.join([a.help for a in cls.arguments])
         )
 
     def __init__(self, **run_kwargs):
+        self.logger = Logger.get_logger(__name__)
         self.run_kwargs = run_kwargs
         self.dsm = None
 
@@ -48,7 +52,8 @@ class Provider(object):
 
 
 class CSVInput(Provider):
-    name = 'archan.CSVInput'
+    identifier = 'archan.CSVInput'
+    name = 'CSV Input'
     description = 'Parse a CSV file to provide a matrix.'
     arguments = (
         Argument('file_path', str,
@@ -61,8 +66,10 @@ class CSVInput(Provider):
     def get_dsm(self, file_path=sys.stdin, delimiter=',',
                 categories_delimiter=None):
         if file_path == sys.stdin:
+            self.logger.info('Read data from standard input')
             lines = [line.replace('\n', '') for line in file_path]
         else:
+            self.logger.info('Read data from file ' + file_path)
             with open(file_path) as f:
                 lines = list(f)
         columns = lines[0].split(delimiter)[1:]
@@ -78,8 +85,11 @@ class CSVInput(Provider):
 
 # FIXME: move this provider in its own repo? it's not ready
 class CodeIssuesAndSimilarities(Provider):
-    name = 'archan.CodeIssuesAndSimilarities'
-    description = 'Parse a CSV file to provide a matrix.'
+    identifier = 'archan.CodeIssuesAndSimilarities'
+    name = 'Code Issues and Similarities'
+    description = 'Provide a matrix with number of issues in code in the ' \
+                  'diagonal cells, and similarites between modules ' \
+                  'in other cells.'
 
     def issues_per_file(self, path):
         try:
