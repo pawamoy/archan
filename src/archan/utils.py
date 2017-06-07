@@ -11,7 +11,7 @@ from colorama import Back, Fore, Style
 
 def console_width(default=80):
     try:
-        _, width = subprocess.check_output(['stty', 'size']).split()
+        _, width = subprocess.check_output(['/bin/stty', 'size']).split()
         width = int(width)
     except subprocess.CalledProcessError:
         width = default

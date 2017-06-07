@@ -1,6 +1,5 @@
 analyzers:
-- identifier: archan.InternalDependencies
-  name: Internal software dependencies
+- name: Internal software dependencies
   description: Analyze the internal software dependency matrix.
   providers:
   - dependenpy.InternalDependencies:

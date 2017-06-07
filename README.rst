@@ -173,7 +173,10 @@ Format of the configuration file is as follow:
 .. code:: yaml
 
     analyzers: [list of strings and/or dict]
-    - providers: [string or list]
+    - identifier: [string]
+      name: [string]
+      description: [string]
+      providers: [string or list]
       - provider.Name: [as string or dict]
           provider_arguments: as key value pairs
       checkers: [string or list]
@@ -186,14 +189,17 @@ It means you can write:
 
     analyzers:
     # a first analyzer with one provider and several checker
-    - providers: just.UseThisProvider
+    - name: My first analyzer
+      description: Optional description
+      providers: just.UseThisProvider
       checkers:
       - and.ThisChecker
       - and.ThisOtherChecker:
           which: has
           some: arguments
     # a second analyzer with several providers and one checker
-    - providers:
+    - name: My second analyzer
+      providers:
       - use.ThisProvider
       checkers: and.ThisChecker
     # a third analyzer, using its name directly
