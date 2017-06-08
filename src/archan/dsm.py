@@ -9,50 +9,32 @@ Contains the DesignStructureMatrix class.
 from .errors import DSMError
 
 
-class DesignStructureMatrix(object):
+class DSM(object):
     """Design Structure Matrix class."""
 
-    def __init__(self, categories, entities, dependency_matrix,
-                 framework='framework',
-                 core_lib='core_lib',
-                 app_lib='app_lib',
-                 app_module='app_module',
-                 broker='broker',
-                 data='data'):
+    def __init__(self, data, entities, categories=None):
         """
         Initialization method.
 
         Args:
-            categories (list): list of the names of the group of entities.
+            data (list of list of int): 2-dim array.
             entities (list): list of entities.
-            dependency_matrix (list of list of int): 2-dim array.
-            framework (str): name of framework group.
-            core_lib (str): name of core_lib group.
-            app_lib (str): name of app_lib group.
-            app_module (str): name of app_module group.
-            broker (str): name of broker group.
-            data (str): name of data group.
+            categories (list): list of the names of the group of entities.
         """
         # TODO - DSM: check compliance with DSM definitions and uses
-        self.categories = categories
+        if categories is None:
+            self.categories = []
+        else:
+            self.categories = categories
         self.entities = entities
-        self.dependency_matrix = dependency_matrix
-        self.size = len(dependency_matrix)
-
-        self.framework = framework
-        self.core_lib = core_lib
-        self.app_lib = app_lib
-        self.app_module = app_module
-        self.broker = broker
         self.data = data
+        self.size = len(data)
 
-        cat_nb = len(categories)
+        cat_nb = len(self.categories)
         ent_nb = len(entities)
         rows = self.size
-        columns = len(dependency_matrix[0])
-        categories_names = (framework, core_lib, app_lib,
-                            app_module, broker, data)
-        if cat_nb != ent_nb:
+        columns = len(data[0])
+        if categories is not None and cat_nb != ent_nb:
             raise DSMError(
                 'Beware: nb of categories: %s != nb of entities: %s' % (
                     cat_nb, ent_nb))
@@ -64,9 +46,3 @@ class DesignStructureMatrix(object):
             raise DSMError(
                 'Beware: nb of entities: %s != nb of rows: %s' % (
                     ent_nb, rows))
-        for i, category in enumerate(categories):
-            if category not in categories_names:
-                raise DSMError(
-                    'Beware: category %s (in position %d) does not match '
-                    'any valid category name (%s)' % (
-                        category, i, ', '.join(categories_names)))

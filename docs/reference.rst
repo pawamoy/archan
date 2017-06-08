@@ -5,27 +5,44 @@ Reference
 ----------
 
 .. automodule:: archan
+    :no-members:
 
-``archan.checker``
-------------------
-
-.. automodule:: archan.checker
-    :members:
-
-``archan.criterion``
+``archan.analyzers``
 --------------------
 
-.. automodule:: archan.criterion
-    :members:
+.. automodule:: archan.analyzers
+
+``archan.checkers``
+-------------------
+
+.. automodule:: archan.checkers
+
+``archan.cli``
+--------------
+
+.. automodule:: archan.cli
+
+``archan.config``
+-----------------
+
+.. automodule:: archan.config
 
 ``archan.dsm``
 --------------
 
 .. automodule:: archan.dsm
-    :members:
 
 ``archan.errors``
 -----------------
 
 .. automodule:: archan.errors
-    :members:
+
+``archan.providers``
+--------------------
+
+.. automodule:: archan.providers
+
+``archan.utils``
+----------------
+
+.. automodule:: archan.utils

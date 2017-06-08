@@ -4,6 +4,7 @@ graft docs
 
 include .cookiecutterrc
 include .editorconfig
+include .configconfig
 
 include AUTHORS.rst
 include CHANGELOG.rst
@@ -11,11 +12,11 @@ include CONTRIBUTING.rst
 include LICENSE
 include README.rst
 
-
 include tox.ini
 
 include *.yml
 
+recursive-include config *.yml
 recursive-include requirements *.txt
 recursive-include scripts *.sh
 

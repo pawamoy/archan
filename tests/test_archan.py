@@ -4,13 +4,11 @@
 
 import unittest
 
-
-from archan.checker import Archan
-from archan.criterion import (
-    CODE_CLEAN, COMPLETE_MEDIATION, ECONOMY_OF_MECHANISM, LAYERED_ARCHITECTURE,
-    LEAST_COMMON_MECHANISM, LEAST_PRIVILEGES, OPEN_DESIGN,
-    SEPARATION_OF_PRIVILEGES, Criterion)
-from archan.dsm import DesignStructureMatrix
+from archan.checkers import (
+    Checker, CodeClean, CompleteMediation, EconomyOfMechanism,
+    LayeredArchitecture, LeastCommonMechanism, LeastPrivileges, OpenDesign,
+    SeparationOfPrivileges)
+from archan.dsm import DSM
 
 
 class TestArchan(unittest.TestCase):
@@ -22,37 +20,37 @@ class TestArchan(unittest.TestCase):
 
     def setUp(self):
         """Setup function."""
-        web_app_categories = ['app_module', 'app_module', 'app_module',
-                              'app_module', 'broker',
-                              'app_lib', 'data', 'data',
+        web_app_categories = ['appmodule', 'appmodule', 'appmodule',
+                              'appmodule', 'broker',
+                              'applib', 'data', 'data',
                               'data', 'framework', 'framework']
         web_app_entities = ['store', 'personal_information', 'order',
                             'payment', 'available_services',
                             'store_lib', 'store_data', 'client_data',
                             'order_data', 'framework', 'login']
-        web_app_dsm = [[1, 0, 0, 0, 1, 1, 1, 0, 0, 1, 0],
-                       [0, 1, 0, 0, 1, 0, 0, 1, 0, 1, 0],
-                       [0, 0, 1, 0, 1, 0, 0, 0, 1, 1, 0],
-                       [0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 0],
-                       [1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 0],  # broker
-                       [0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0],
-                       [0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0],
-                       [0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0],
-                       [0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0],
-                       [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
-                       [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1]]
-        self.web_app_dependency_matrix = DesignStructureMatrix(
-            web_app_categories, web_app_entities, web_app_dsm)
+        web_app_dependency_matrix = [[1, 0, 0, 0, 1, 1, 1, 0, 0, 1, 0],
+                                     [0, 1, 0, 0, 1, 0, 0, 1, 0, 1, 0],
+                                     [0, 0, 1, 0, 1, 0, 0, 0, 1, 1, 0],
+                                     [0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 0],
+                                     [1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 0],  # broker
+                                     [0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0],
+                                     [0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0],
+                                     [0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0],
+                                     [0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0],
+                                     [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+                                     [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1]]
+        self.web_app_dsm = DSM(
+            web_app_dependency_matrix, web_app_entities, web_app_categories)
         genida_categories = ['framework',
-                             'core_lib', 'core_lib', 'core_lib',
-                             'core_lib', 'core_lib', 'core_lib',
-                             'core_lib', 'core_lib', 'core_lib',
-                             'core_lib', 'core_lib', 'core_lib',
-                             'core_lib', 'core_lib', 'app_lib',
-                             'app_lib', 'app_module', 'app_lib',
-                             'app_lib', 'app_lib', 'app_module',
-                             'app_module', 'app_module', 'app_module',
-                             'app_module', 'broker']
+                             'corelib', 'corelib', 'corelib',
+                             'corelib', 'corelib', 'corelib',
+                             'corelib', 'corelib', 'corelib',
+                             'corelib', 'corelib', 'corelib',
+                             'corelib', 'corelib', 'applib',
+                             'applib', 'appmodule', 'applib',
+                             'applib', 'applib', 'appmodule',
+                             'appmodule', 'appmodule', 'appmodule',
+                             'appmodule', 'broker']
 
         genida_entities = ['django',
                            'axes', 'modeltranslation', 'suit',
@@ -66,7 +64,7 @@ class TestArchan(unittest.TestCase):
                            'security', 'services']
 
         # NOQA
-        genida_dsm = [
+        genida_dependency_matrix = [
             [4438, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             [30, 14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             [50, 0, 41, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -94,158 +92,106 @@ class TestArchan(unittest.TestCase):
             [26, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 1],
             [4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1]]
-        self.genida_dependency_matrix = DesignStructureMatrix(
-            genida_categories, genida_entities, genida_dsm)
-
-        archan = Archan()
-        self.result_webapp = archan.check(self.web_app_dependency_matrix)
-        self.result_genida = archan.check(
-            self.genida_dependency_matrix,
-                COMPLETE_MEDIATION, ECONOMY_OF_MECHANISM,
-                LEAST_COMMON_MECHANISM)
-
-        self.message = {
-            Criterion.PASSED: 'PASSED',
-            Criterion.FAILED: 'FAILED',
-            Criterion.NOT_IMPLEMENTED: 'NOT IMPLEMENTED',
-            Criterion.IGNORED: 'IGNORED'
-        }
+        self.genida_dsm = DSM(
+            genida_dependency_matrix, genida_entities, genida_categories)
 
     # Webapp tests
     def test_webapp_complete_mediation(self):
         """Test complete mediation for webapp."""
-        result = self.result_webapp[COMPLETE_MEDIATION.codename]
-        self.assertEqual(result[0], Criterion.PASSED,
-                         'Complete mediation %s: %s' % (
-                             self.message[result[0]], result[1]))
+        result = CompleteMediation().run(self.web_app_dsm)
+        self.assertEqual(result[0], Checker.PASSED,
+                         'Complete mediation: %s' % result[1])
 
     def test_webapp_economy_of_mechanism(self):
         """Test economoy of mechanism for webapp."""
-        result = self.result_webapp[ECONOMY_OF_MECHANISM.codename]
-        self.assertEqual(result[0], Criterion.PASSED,
-                         'Economy of mechanism %s: %s' % (
-                             self.message[result[0]], result[1]))
+        result = EconomyOfMechanism().run(self.web_app_dsm)
+        self.assertEqual(result[0], Checker.PASSED,
+                         'Economy of mechanism %s' % result[1])
 
     def test_webapp_least_common_mechanism(self):
         """Test least common mechanism for webapp."""
-        result = self.result_webapp[LEAST_COMMON_MECHANISM.codename]
-        self.assertEqual(result[0], Criterion.PASSED,
-                         'Least common mechanism %s: %s' % (
-                             self.message[result[0]], result[1]))
+        result = LeastCommonMechanism().run(self.web_app_dsm)
+        self.assertEqual(result[0], Checker.PASSED,
+                         'Least common mechanism %s' % result[1])
 
     def test_webapp_code_clean(self):
         """Test code clean for webapp."""
-        result = self.result_webapp[CODE_CLEAN.codename]
-        self.assertEqual(result[0], Criterion.NOT_IMPLEMENTED,
-                         'Code clean %s: %s' % (
-                             self.message[result[0]], result[1]))
+        result = CodeClean().run(self.web_app_dsm)
+        self.assertEqual(result[0], Checker.NOT_IMPLEMENTED,
+                         'Code clean %s' % result[1])
 
     def test_webapp_layered_architecture(self):
         """Test layered architecture for webapp."""
-        result = self.result_webapp[LAYERED_ARCHITECTURE.codename]
-        self.assertEqual(result[0], Criterion.FAILED,
-                         'Layered architecture %s: %s' % (
-                             self.message[result[0]], result[1]))
+        result = LayeredArchitecture().run(self.web_app_dsm)
+        self.assertEqual(result[0], Checker.FAILED,
+                         'Layered architecture %s' % result[1])
 
     def test_webapp_least_privileges(self):
         """Test least privileges for webapp."""
-        result = self.result_webapp[LEAST_PRIVILEGES.codename]
-        self.assertEqual(result[0], Criterion.NOT_IMPLEMENTED,
-                         'Least privileges %s: %s' % (
-                             self.message[result[0]],
-                             result[1]))
+        result = LeastPrivileges().run(self.web_app_dsm)
+        self.assertEqual(result[0], Checker.NOT_IMPLEMENTED,
+                         'Least privileges %s' % result[1])
 
     def test_webapp_open_design(self):
         """Test open design for webapp."""
-        result = self.result_webapp[OPEN_DESIGN.codename]
-        self.assertEqual(result[0], Criterion.NOT_IMPLEMENTED,
-                         'Open design %s: %s' % (
-                             self.message[result[0]], result[1]))
+        result = OpenDesign(ok=False, ignore=True).run(self.web_app_dsm)
+        self.assertEqual(result[0], Checker.IGNORED,
+                         'Open design %s' % result[1])
 
     def test_webapp_separation_of_privileges(self):
         """Test separation of privileges for webapp."""
-        result = self.result_webapp[SEPARATION_OF_PRIVILEGES.codename]
-        self.assertEqual(result[0], Criterion.NOT_IMPLEMENTED,
-                         'Separation of privileges %s: %s' % (
-                             self.message[result[0]], result[1]))
+        result = SeparationOfPrivileges().run(self.web_app_dsm)
+        self.assertEqual(result[0], Checker.NOT_IMPLEMENTED,
+                         'Separation of privileges %s' % result[1])
 
     # Genida tests
     def test_genida_complete_mediation(self):
         """Test complete mediation for webapp."""
-        result = self.result_genida[COMPLETE_MEDIATION.codename]
-        self.assertEqual(result[0], Criterion.PASSED,
-                         'Complete mediation %s: %s' % (
-                             self.message[result[0]], result[1]))
+        result = CompleteMediation().run(self.genida_dsm)
+        self.assertEqual(result[0], Checker.PASSED,
+                         'Complete mediation %s' % result[1])
 
     def test_genida_economy_of_mechanism(self):
         """Test economoy of mechanism for webapp."""
-        result = self.result_genida[ECONOMY_OF_MECHANISM.codename]
-        self.assertEqual(result[0], Criterion.PASSED,
-                         'Economy of mechanism %s: %s' % (
-                             self.message[result[0]], result[1]))
+        result = EconomyOfMechanism().run(self.genida_dsm)
+        self.assertEqual(result[0], Checker.PASSED,
+                         'Economy of mechanism %s' % result[1])
 
     def test_genida_least_common_mechanism(self):
         """Test least common mechanism for webapp."""
-        result = self.result_genida[LEAST_COMMON_MECHANISM.codename]
-        self.assertEqual(result[0], Criterion.PASSED,
-                         'Least common mechanism %s: %s' % (
-                             self.message[result[0]], result[1]))
+        result = LeastCommonMechanism().run(self.genida_dsm)
+        self.assertEqual(result[0], Checker.PASSED,
+                         'Least common mechanism %s' % result[1])
 
     def test_genida_code_clean(self):
         """Test code clean for webapp."""
-        result = self.result_genida[CODE_CLEAN.codename]
-        self.assertEqual(result[0], Criterion.IGNORED,
-                         'Code clean %s: %s' % (
-                             self.message[result[0]], result[1]))
+        result = CodeClean().run(self.genida_dsm)
+        self.assertEqual(result[0], Checker.NOT_IMPLEMENTED,
+                         'Code clean %s' % result[1])
 
     def test_genida_layered_architecture(self):
         """Test layered architecture for webapp."""
-        result = self.result_genida[LAYERED_ARCHITECTURE.codename]
-        self.assertEqual(result[0], Criterion.IGNORED,
-                         'Layered architecture %s: %s' % (
-                             self.message[result[0]], result[1]))
+        result = LayeredArchitecture(ignore=True).run(self.genida_dsm)
+        self.assertEqual(result[0], Checker.IGNORED,
+                         'Layered architecture %s' % result[1])
 
     def test_genida_least_privileges(self):
         """Test least privileges for webapp."""
-        result = self.result_genida[LEAST_PRIVILEGES.codename]
-        self.assertEqual(result[0], Criterion.IGNORED,
-                         'Least privileges %s: %s' % (
-                             self.message[result[0]], result[1]))
+        result = LeastPrivileges(ignore=True).run(self.genida_dsm)
+        self.assertEqual(result[0], Checker.NOT_IMPLEMENTED,
+                         'Least privileges %s' % result[1])
 
     def test_genida_open_design(self):
         """Test open design for webapp."""
-        result = self.result_genida[OPEN_DESIGN.codename]
-        self.assertEqual(result[0], Criterion.IGNORED,
-                         'Open design %s: %s' % (
-                             self.message[result[0]], result[1]))
+        result = OpenDesign(ok=True).run(self.genida_dsm)
+        self.assertEqual(result[0], Checker.PASSED,
+                         'Open design %s' % result[1])
 
     def test_genida_separation_of_privileges(self):
         """Test separation of privileges for webapp."""
-        result = self.result_genida[SEPARATION_OF_PRIVILEGES.codename]
-        self.assertEqual(result[0], Criterion.IGNORED,
-                         'Separation of privileges %s: %s' % (
-                             self.message[result[0]], result[1]))
-
-    # General tests
-    def test_ignored(self):
-        """Test that an ignored criterion returns IGNORED."""
-        archan = Archan()
-        result = archan.check(self.web_app_dependency_matrix,
-                              CODE_CLEAN)
-        self.assertEqual(result[OPEN_DESIGN.codename][0],
-                         Criterion.IGNORED,
-                         'Ignored criteria do not return IGNORED.')
-
-    def test_not_implemented(self):
-        """Test that a not implemented criterion returns NOT_IMPLEMENTED."""
-        archan = Archan(criteria=[CODE_CLEAN])
-        result = archan.check(self.web_app_dependency_matrix)
-        self.assertEqual(result[CODE_CLEAN.codename][0],
-                         Criterion.NOT_IMPLEMENTED,
-                         'Not implemented criteria '
-                         'do not return NOT IMPLEMENTED.')
-        self.assertNotIn(OPEN_DESIGN.codename, result,
-                         'Open design should NOT be in the criteria list.')
+        result = SeparationOfPrivileges().run(self.genida_dsm)
+        self.assertEqual(result[0], Checker.NOT_IMPLEMENTED,
+                         'Separation of privileges %s' % result[1])
 
 
 if __name__ == '__main__':

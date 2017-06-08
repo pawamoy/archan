@@ -25,6 +25,18 @@ def read(*names, **kwargs):
         encoding=kwargs.get('encoding', 'utf8')
     ).read()
 
+ARCHAN_EP = [
+    'archan.LayeredArchitecture = archan.checkers:LayeredArchitecture',
+    'archan.SeparationOfPrivileges = archan.checkers:SeparationOfPrivileges',
+    'archan.LeastPrivileges = archan.checkers:LeastPrivileges',
+    'archan.EconomyOfMechanism = archan.checkers:EconomyOfMechanism',
+    'archan.CodeClean = archan.checkers:CodeClean',
+    'archan.OpenDesign = archan.checkers:OpenDesign',
+    'archan.LeastCommonMechanism = archan.checkers:LeastCommonMechanism',
+    'archan.CompleteMediation = archan.checkers:CompleteMediation',
+    'archan.CSVInput = archan.providers:CSVInput'
+]
+
 
 setup(
     name='archan',
@@ -61,19 +73,16 @@ setup(
         'Topic :: Utilities',
     ],
     keywords=[
-        'archan',
+        'archan', 'architecture', 'analysis', 'security', 'dsm', 'audit'
     ],
     install_requires=[
-        # eg: 'aspectlib==1.1.1', 'six>=1.7',
+        'colorama', 'pyyaml'
     ],
     extras_require={
-        # eg:
-        #   'rst': ['docutils>=0.11'],
-        #   ':python_version=="2.6"': ['argparse'],
+        'with_dependenpy': ['dependenpy'],
     },
     entry_points={
-        'console_scripts': [
-            'archan = archan.cli:main',
-        ]
+        'console_scripts': ['archan = archan.cli:main'],
+        'archan': ARCHAN_EP
     },
 )
