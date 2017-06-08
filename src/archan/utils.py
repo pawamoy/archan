@@ -3,8 +3,8 @@
 """Utils module."""
 
 import logging
-import textwrap
 import subprocess
+import textwrap
 
 from colorama import Back, Fore, Style
 
@@ -45,34 +45,33 @@ def pretty_description(description, wrap_at=None, indent=''):
             start = end + 1
             end = separators[i + 1]
             paragraphs.append(new_desc[start:end])
-        paragraphs.append(new_desc[end+1:])
+        paragraphs.append(new_desc[end + 1:])
         return '\n\n'.join(text_wrapper.fill(' '.join(p)) for p in paragraphs)
-    else:
-        return text_wrapper.fill(' '.join(new_desc))
+    return text_wrapper.fill(' '.join(new_desc))
 
 
 class Argument(object):
-    def __init__(self, name, type, description=None, default=None):
+    def __init__(self, name, cls, description=None, default=None):
         self.name = name
-        self.type = type
+        self.cls = cls
         self.description = description
         self.default = default
 
     def __str__(self):
         return '  %s (%s, default %s): %s' % (
-            self.name, self.type, self.default, self.description)
+            self.name, self.cls, self.default, self.description)
 
     @property
     def help(self):
         text = (
-            '  {yellow}{name}{none} ({bold}{type}{none}, '
+            '  {yellow}{name}{none} ({bold}{cls}{none}, '
             'default {bold}{default}{none})'
         ).format(
             bold=Style.BRIGHT,
             yellow=Back.YELLOW + Fore.BLACK,
             none=Style.RESET_ALL,
             name=self.name,
-            type=self.type,
+            cls=self.cls,
             default=self.default
         )
 
@@ -93,7 +92,7 @@ class Logger(object):
             logger.setLevel(level)
 
     @staticmethod
-    def get_logger(name, level=None, format='%(message)s'):
+    def get_logger(name, level=None, fmt='%(message)s'):
         if name not in Logger.loggers:
             if Logger.level is None and level is None:
                 Logger.level = level = logging.ERROR
@@ -103,7 +102,7 @@ class Logger(object):
                 level = Logger.level
             logger = logging.getLogger(name)
             logger_handler = logging.StreamHandler()
-            format_string = '%s: ' % name + format
+            format_string = '%s: ' % name + fmt
             logger_handler.setFormatter(LoggingFormatter(fmt=format_string))
             logger.addHandler(logger_handler)
             logger.setLevel(level)
@@ -126,5 +125,3 @@ class LoggingFormatter(logging.Formatter):
         else:
             string = ''
         return string + Style.RESET_ALL + ' ' + super().format(record)
-
-

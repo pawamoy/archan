@@ -22,3 +22,8 @@ meerkat
 dependenpy
 Roadmap
 Parrend
+Programmatically
+installable
+tuple
+utils
+discoverable

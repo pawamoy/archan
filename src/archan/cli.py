@@ -45,11 +45,11 @@ def valid_file(value):
     if not value:
         raise argparse.ArgumentTypeError("'' is not a valid file path")
     elif not os.path.exists(value):
-        raise argparse.ArgumentTypeError("%s is not a valid file path" %
-                                         value)
+        raise argparse.ArgumentTypeError(
+            "%s is not a valid file path" % value)
     elif os.path.isdir(value):
-        raise argparse.ArgumentTypeError("%s is a directory, "
-                                         "not a regular file" % value)
+        raise argparse.ArgumentTypeError(
+            "%s is a directory, not a regular file" % value)
     return value
 
 
@@ -60,36 +60,41 @@ def valid_level(value):
     return value
 
 
-parser = argparse.ArgumentParser(
-    add_help=False,
-    description='Analysis of your architecture strength based on DSM data')
-parser.add_argument('-c', '--config', action='store', type=valid_file,
-                    dest='config_file', metavar='FILE',
-                    help='Configuration file to use.')
-parser.add_argument('-h', '--help', action='help', default=argparse.SUPPRESS,
-                    help='Show this help message and exit.')
-parser.add_argument('-i', '--input', action='store', type=valid_file,
-                    dest='input_file', metavar='FILE',
-                    help='Input file containing CSV data.')
-parser.add_argument('-l', '--list-plugins', action='store_true',
-                    dest='list_plugins', default=False,
-                    help='Show the available plugins. Default: false.')
-parser.add_argument('--no-color', action='store_true', dest='no_color',
-                    default=False, help='Do not use colors. Default: false.')
-parser.add_argument('--no-config', action='store_true', dest='no_config',
-                    default=False, help='Do not load configuration from file. '
-                                        'Default: false.')
-parser.add_argument('-v', '--verbose-level', action='store', dest='level',
-                    type=valid_level, default='ERROR',
-                    help='Level of verbosity.')
-parser.add_argument('-V', '--version', action='version',
-                    version='archan %s' % __version__,
-                    help='Show the current version of the program and exit.')
+def get_parser():
+    parser = argparse.ArgumentParser(
+        add_help=False,
+        description='Analysis of your architecture strength based on DSM data')
+    parser.add_argument(
+        '-c', '--config', action='store', type=valid_file, dest='config_file',
+        metavar='FILE', help='Configuration file to use.')
+    parser.add_argument(
+        '-h', '--help', action='help', default=argparse.SUPPRESS,
+        help='Show this help message and exit.')
+    parser.add_argument(
+        '-i', '--input', action='store', type=valid_file, dest='input_file',
+        metavar='FILE', help='Input file containing CSV data.')
+    parser.add_argument(
+        '-l', '--list-plugins', action='store_true', dest='list_plugins',
+        default=False, help='Show the available plugins. Default: false.')
+    parser.add_argument(
+        '--no-color', action='store_true', dest='no_color', default=False,
+        help='Do not use colors. Default: false.')
+    parser.add_argument(
+        '--no-config', action='store_true', dest='no_config', default=False,
+        help='Do not load configuration from file. Default: false.')
+    parser.add_argument(
+        '-v', '--verbose-level', action='store', dest='level',
+        type=valid_level, default='ERROR', help='Level of verbosity.')
+    parser.add_argument(
+        '-V', '--version', action='version', version='archan %s' % __version__,
+        help='Show the current version of the program and exit.')
+    return parser
 
 
 def main(args=None):
     """Main function."""
 
+    parser = get_parser()
     args = parser.parse_args(args=args)
     Logger.set_level(args.level)
     logger = Logger.get_logger(__name__)

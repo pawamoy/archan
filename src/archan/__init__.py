@@ -8,10 +8,10 @@ using a DSM (Design Structure Matrix) on which certain criteria will be
 verified.
 """
 
-from .dsm import DSM
 from .analyzers import Analyzer
-from .providers import Provider
 from .checkers import Checker
+from .dsm import DSM
+from .providers import Provider
 from .utils import Argument
 
 __all__ = ('DSM', 'Analyzer', 'Provider', 'Checker', 'Argument')
@@ -25,4 +25,3 @@ __version__ = '1.0.0'
 # TODO: update docs with usage of self.logger in plugins
 # TODO: update docs with new YAML format: identifier, name and description
 # FIXME: stronger verification method for configuration
-

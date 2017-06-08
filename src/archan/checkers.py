@@ -5,7 +5,7 @@
 from colorama import Back, Fore, Style
 
 from .errors import DSMError
-from .utils import Argument, pretty_description, Logger
+from .utils import Argument, Logger, pretty_description
 
 
 # TODO: also add some "expect" attribute to describe the expected data format
@@ -140,14 +140,14 @@ class CompleteMediation(Checker):
                 elif cat[i] == 'corelib':
                     if (cat[j] in ('framework', 'corelib') or
                             ent[i].startswith(packages[j] + '.') or
-                                i == j):
+                            i == j):
                         mediation_matrix[i][j] = -1
                     else:
                         mediation_matrix[i][j] = 0
                 elif cat[i] == 'applib':
                     if (cat[j] in ('framework', 'corelib', 'applib') or
                             ent[i].startswith(packages[j] + '.') or
-                                i == j):
+                            i == j):
                         mediation_matrix[i][j] = -1
                     else:
                         mediation_matrix[i][j] = 0
@@ -157,7 +157,7 @@ class CompleteMediation(Checker):
                     if (cat[j] in ('framework', 'corelib',
                                    'applib', 'broker', 'data') or
                             ent[i].startswith(packages[j] + '.') or
-                                i == j):
+                            i == j):
                         mediation_matrix[i][j] = -1
                     else:
                         mediation_matrix[i][j] = 0
@@ -232,9 +232,9 @@ class CompleteMediation(Checker):
         """
         Check if matrix and its mediation matrix are compliant.
 
-        It means that number of dependencies for each (line, column) is either 0 if
-        the mediation matrix (line, column) is 0, or >0 if the mediation matrix
-        (line, column) is 1.
+        It means that number of dependencies for each (line, column) is either
+        0 if the mediation matrix (line, column) is 0, or >0 if the mediation
+        matrix (line, column) is 1.
 
         Args:
             dsm (:class:`DesignStructureMatrix`): the DSM to check.
@@ -244,9 +244,7 @@ class CompleteMediation(Checker):
         """
         # generate complete_mediation_matrix according to each category
         med_matrix = CompleteMediation.generate_mediation_matrix(dsm)
-        matrices_compliant = CompleteMediation.matrices_compliance(dsm, med_matrix)
-        # check comparison result
-        return matrices_compliant
+        return CompleteMediation.matrices_compliance(dsm, med_matrix)
 
 
 class EconomyOfMechanism(Checker):
@@ -354,7 +352,7 @@ class LeastPrivileges(Checker):
     improper uses of privilege are less likely to occur. Thus, if a question
     arises related to misuse of a privilege, the number of programs that must
     be audited is minimized. Put another way, if a mechanism can provide
-    "firewalls," the principle of least privilege provides a rationale for 
+    "firewalls," the principle of least privilege provides a rationale for
     where to install the firewalls. The military security rule of
     "need-to-know" is an example of this principle."""
     # FIXME: add hint
@@ -434,11 +432,12 @@ class LeastCommonMechanism(Checker):
             least_common_mechanism = True
         else:
             maximum = max(dependent_module_number)
-            message = ('Dependencies to %s (%s) '
-                       '> matrix size (%s) / independence factor (%s) = %s' % (
-                           dsm.entities[dependent_module_number.index(maximum)],
-                           maximum, dsm.size, independence_factor,
-                           dsm.size / independence_factor))
+            message = (
+                'Dependencies to %s (%s) > matrix size (%s) / '
+                'independence factor (%s) = %s' % (
+                    dsm.entities[dependent_module_number.index(maximum)],
+                    maximum, dsm.size, independence_factor,
+                    dsm.size / independence_factor))
 
         return least_common_mechanism, message
 

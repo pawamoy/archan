@@ -5,17 +5,17 @@
 import collections
 import importlib
 import os
-import pkg_resources
 import sys
-import yaml
 
+import pkg_resources
+import yaml
 from colorama import Style
 
 from .analyzers import Analyzer, DefaultAnalyzer
 from .checkers import Checker
 from .errors import ConfigError
-from .providers import Provider, CSVInput
-from .utils import console_width, Logger
+from .providers import CSVInput, Provider
+from .utils import Logger, console_width
 
 
 class Config(object):
@@ -57,14 +57,14 @@ class Config(object):
         analyzers = {}
         providers = {}
         checkers = {}
-        for ep in pkg_resources.iter_entry_points(group='archan'):
-            obj = ep.load()
+        for entry_point in pkg_resources.iter_entry_points(group='archan'):
+            obj = entry_point.load()
             if issubclass(obj, Analyzer):
-                analyzers[ep.name] = obj
+                analyzers[entry_point.name] = obj
             elif issubclass(obj, Provider):
-                providers[ep.name] = obj
+                providers[entry_point.name] = obj
             elif issubclass(obj, Checker):
-                checkers[ep.name] = obj
+                checkers[entry_point.name] = obj
         return collections.namedtuple(
             'Plugins', 'analyzers providers checkers')(
                 analyzers=analyzers,
@@ -80,8 +80,8 @@ class Config(object):
 
     @staticmethod
     def from_file(path):
-        with open(path) as f:
-            obj = yaml.safe_load(f)
+        with open(path) as stream:
+            obj = yaml.safe_load(stream)
         Config.verify(obj)
         return Config(config_dict=obj)
 
@@ -92,8 +92,8 @@ class Config(object):
         configconfig_file = os.path.join(current_dir, '.configconfig')
         default_config_dir = os.path.join(current_dir, 'config')
         if os.path.isfile(configconfig_file):
-            with open(configconfig_file) as f:
-                config_dir = os.path.join(current_dir, f.read()).strip()
+            with open(configconfig_file) as stream:
+                config_dir = os.path.join(current_dir, stream.read()).strip()
         elif os.path.isdir(default_config_dir):
             config_dir = default_config_dir
         else:
@@ -154,9 +154,9 @@ class Config(object):
     def get_checker(self, identifier):
         return self.get_plugin(identifier, cls='checker')
 
-    def analyzer_from_dict(self, d):
-        providers = d['providers']
-        checkers = d['checkers']
+    def analyzer_from_dict(self, dct):
+        providers = dct['providers']
+        checkers = dct['checkers']
         real_providers = []
         real_checkers = []
 
@@ -195,22 +195,23 @@ class Config(object):
                     real_checkers.append(checker)
 
         return Analyzer(
-            identifier=d.get('identifier', None),
-            name=d.get('name', None), description=d.get('description', None),
+            identifier=dct.get('identifier', None),
+            name=dct.get('name', None),
+            description=dct.get('description', None),
             providers=real_providers, checkers=real_checkers)
 
-    def provider_from_dict(self, d):
-        provider_identifier = list(d.keys())[0]
+    def provider_from_dict(self, dct):
+        provider_identifier = list(dct.keys())[0]
         provider_class = self.get_provider(provider_identifier)
         if provider_class:
-            return provider_class(**d[provider_identifier])
+            return provider_class(**dct[provider_identifier])
         return None
 
-    def checker_from_dict(self, d):
-        checker_identifier = list(d.keys())[0]
+    def checker_from_dict(self, dct):
+        checker_identifier = list(dct.keys())[0]
         checker_class = self.get_checker(checker_identifier)
         if checker_class:
-            return checker_class(**d[checker_identifier])
+            return checker_class(**dct[checker_identifier])
         return None
 
     def run(self):

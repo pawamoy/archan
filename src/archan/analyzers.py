@@ -5,10 +5,10 @@
 from colorama import Back, Fore, Style
 
 from .checkers import (
-    CompleteMediation, EconomyOfMechanism, LayeredArchitecture,
-    LeastCommonMechanism, OpenDesign, Checker)
+    Checker, CompleteMediation, EconomyOfMechanism, LayeredArchitecture,
+    LeastCommonMechanism, OpenDesign)
 from .providers import CSVInput
-from .utils import pretty_description, Logger
+from .utils import Logger, pretty_description
 
 
 class Analyzer(object):

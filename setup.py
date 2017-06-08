@@ -25,6 +25,18 @@ def read(*names, **kwargs):
         encoding=kwargs.get('encoding', 'utf8')
     ).read()
 
+ARCHAN_EP = [
+    'archan.LayeredArchitecture = archan.checkers:LayeredArchitecture',
+    'archan.SeparationOfPrivileges = archan.checkers:SeparationOfPrivileges',
+    'archan.LeastPrivileges = archan.checkers:LeastPrivileges',
+    'archan.EconomyOfMechanism = archan.checkers:EconomyOfMechanism',
+    'archan.CodeClean = archan.checkers:CodeClean',
+    'archan.OpenDesign = archan.checkers:OpenDesign',
+    'archan.LeastCommonMechanism = archan.checkers:LeastCommonMechanism',
+    'archan.CompleteMediation = archan.checkers:CompleteMediation',
+    'archan.CSVInput = archan.providers:CSVInput'
+]
+
 
 setup(
     name='archan',
@@ -70,19 +82,7 @@ setup(
         'with_dependenpy': ['dependenpy'],
     },
     entry_points={
-        'console_scripts': [
-            'archan = archan.cli:main',
-        ],
-        'archan': [
-            'archan.LayeredArchitecture = archan.checkers:LayeredArchitecture',
-            'archan.SeparationOfPrivileges = archan.checkers:SeparationOfPrivileges',
-            'archan.LeastPrivileges = archan.checkers:LeastPrivileges',
-            'archan.EconomyOfMechanism = archan.checkers:EconomyOfMechanism',
-            'archan.CodeClean = archan.checkers:CodeClean',
-            'archan.OpenDesign = archan.checkers:OpenDesign',
-            'archan.LeastCommonMechanism = archan.checkers:LeastCommonMechanism',
-            'archan.CompleteMediation = archan.checkers:CompleteMediation',
-            'archan.CSVInput = archan.providers:CSVInput'
-        ]
+        'console_scripts': ['archan = archan.cli:main'],
+        'archan': ARCHAN_EP
     },
 )

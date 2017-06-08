@@ -51,8 +51,7 @@ based on `Design Structure Matrix (DSM)`_ data.
 Archan is a Python module that analyzes the strength of your
 project architecture according to some criteria described in
 "`The Protection of Information in Computer Systems`_", written by
-Jerome H. Saltzer and Michael D. Schroe
-der.
+Jerome H. Saltzer and Michael D. Schroeder.
 
 .. _`Design Structure Matrix (DSM)`: https://en.wikipedia.org/wiki/Design_structure_matrix
 .. _The Protection of Information in Computer Systems : https://www.cs.virginia.edu/~evans/cs551/saltzer/

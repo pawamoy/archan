@@ -18,7 +18,7 @@ ignore-patterns:
 dodgy:
   run: true
 frosted:
-  disable: [E401]
+  disable: [E101, E401]
   run: true
 mccabe:
   options: {max-complexity: 10}
