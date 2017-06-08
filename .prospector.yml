@@ -35,7 +35,7 @@ profile-validator:
 pyflakes:
   run: true
 pylint:
-  disable: [bad-continuation, missing-docstring, no-name-in-module, no-member, fixme, empty-docstring, django-not-available]
+  disable: [bad-continuation, no-name-in-module, no-member, fixme, django-not-available]
   options: {max-attributes: 7, max-branches: 12, max-line-length: 79, max-locals: 15,
     max-module-lines: 1000, max-parents: 7, max-public-methods: 20, max-returns: 6,
     max-statements: 50, min-public-methods: 2}
