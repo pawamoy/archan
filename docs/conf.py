@@ -58,6 +58,16 @@ html_sidebars = {
 }
 html_short_title = '%s-%s' % (project, version)
 
+html_context = {
+    'extra_css_files': [
+        '_static/extra.css',
+    ],
+}
+
+html_static_path = [
+    "extra.css",
+]
+
 napoleon_use_ivar = True
 napoleon_use_rtype = False
 napoleon_use_param = False
