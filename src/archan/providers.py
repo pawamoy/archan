@@ -11,6 +11,13 @@ from .utils import Argument, Logger, pretty_description
 
 
 class Provider(object):
+    """
+    Provider class.
+
+    An instance of provider implements a get_dsm method that returns an
+    instance of DSM to be checked by an instance of Checker.
+    """
+
     identifier = 'archan.AbstractProvider'
     name = 'Generic provider'
     description = ''
@@ -18,6 +25,7 @@ class Provider(object):
 
     @classmethod
     def get_help(cls):
+        """Return a help text for the current subclass of Provider."""
         return (
             '{bold}Identifier:{none} {blue}{identifier}{none}\n'
             '{bold}Name:{none} {name}\n'
@@ -29,27 +37,38 @@ class Provider(object):
             none=Style.RESET_ALL,
             identifier=cls.identifier,
             name=cls.name,
-            description=pretty_description(cls.description, indent='  '),
+            description=pretty_description(cls.description, indent=2),
             arguments='\n'.join([a.help for a in cls.arguments])
         )
 
     def __init__(self, **run_kwargs):
+        """
+        Initialization method.
+
+        Args:
+            **run_kwargs: arguments that will be used for get_dsm method.
+        """
         self.logger = Logger.get_logger(__name__)
         self.run_kwargs = run_kwargs
         self.dsm = None
 
     @property
     def help(self):
+        """Property to return the help text for a provider."""
         return self.__class__.get_help()
 
     def get_dsm(self, **kwargs):
+        """Abstract method. Return instance of DSM."""
         raise NotImplementedError
 
     def run(self):
+        """Run the get_dsm method with run arguments, store the result."""
         self.dsm = self.get_dsm(**self.run_kwargs)
 
 
 class CSVInput(Provider):
+    """Provider to read DSM from CSV data."""
+
     identifier = 'archan.CSVInput'
     name = 'CSV Input'
     description = 'Parse a CSV file to provide a matrix.'
@@ -61,8 +80,25 @@ class CSVInput(Provider):
                  'If set, used as delimiter for categories.')
     )
 
-    def get_dsm(self, file_path=sys.stdin, delimiter=',',
+    def get_dsm(self,
+                file_path=sys.stdin,
+                delimiter=',',
                 categories_delimiter=None):
+        """
+        Implement get_dsm method from Provider class.
+
+        Parse CSV to return an instance of DSM.
+
+        Args:
+            file_path (str/fd): path or file descriptor.
+            delimiter (str): character(s) used as delimiter for columns.
+            categories_delimiter (str):
+                character(s) used as delimiter for categories and keys
+                (first column).
+
+        Returns:
+            DSM: instance of DSM.
+        """
         if file_path == sys.stdin:
             self.logger.info('Read data from standard input')
             lines = [line.replace('\n', '') for line in file_path]

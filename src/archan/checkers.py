@@ -10,6 +10,13 @@ from .utils import Argument, Logger, pretty_description
 
 # TODO: also add some "expect" attribute to describe the expected data format
 class Checker(object):
+    """
+    Checker class.
+
+    An instance of Checker implements a check method that analyzes an instance
+    of DSM and return a true or false value, with optional message.
+    """
+
     identifier = 'archan.AbstractChecker'
     name = 'Generic checker'
     description = ''
@@ -25,6 +32,7 @@ class Checker(object):
 
     @classmethod
     def get_help(cls):
+        """Return a help text for the current subclass of Checker."""
         return (
             '{bold}Identifier:{none} {blue}{identifier}{none}\n'
             '{bold}Name:{none} {name}\n'
@@ -36,11 +44,18 @@ class Checker(object):
             none=Style.RESET_ALL,
             identifier=cls.identifier,
             name=cls.name,
-            description=pretty_description(cls.description, indent='  '),
+            description=pretty_description(cls.description, indent=2),
             arguments='\n'.join([a.help for a in cls.arguments])
         )
 
     def __init__(self, ignore=False, **run_kwargs):
+        """
+        Initialization method.
+
+        Args:
+            ignore (bool): still pass if failed or not.
+            **run_kwargs: arguments passed to the check method when run.
+        """
         self.logger = Logger.get_logger(__name__)
         self.ignore = ignore
         self.run_kwargs = run_kwargs
@@ -48,12 +63,32 @@ class Checker(object):
 
     @property
     def help(self):
+        """Property to return the help text for a checker."""
         return self.__class__.get_help()
 
     def check(self, dsm, **kwargs):
+        """
+        Check the DSM and return a result.
+
+        Args:
+            dsm (DSM): DSM instance to check.
+            **kwargs: additional arguments.
+
+        Returns:
+            obj: Checker constant or object with a __bool__ method.
+        """
         raise NotImplementedError
 
     def run(self, dsm):
+        """
+        Run the check method and format the result for analyzers.
+
+        Args:
+            dsm (DSM): DSM instance to check.
+
+        Returns:
+            int, str: status constant from Checker class and messages.
+        """
         try:
             result = self.check(dsm, **self.run_kwargs)
             messages = ''
@@ -72,6 +107,8 @@ class Checker(object):
 
 
 class CompleteMediation(Checker):
+    """Complete mediation check."""
+
     identifier = 'archan.CompleteMediation'
     name = 'Complete Mediation'
     description = """
@@ -248,6 +285,8 @@ class CompleteMediation(Checker):
 
 
 class EconomyOfMechanism(Checker):
+    """Economy of mechanism check."""
+
     identifier = 'archan.EconomyOfMechanism'
     name = 'Economy of Mechanism'
     hint = 'Reduce the number of dependencies in your own code ' \
@@ -316,6 +355,8 @@ class EconomyOfMechanism(Checker):
 
 
 class SeparationOfPrivileges(Checker):
+    """Separation of privileges check."""
+
     identifier = 'archan.SeparationOfPrivileges'
     name = 'Separation of Privileges'
     description = """
@@ -333,14 +374,16 @@ class SeparationOfPrivileges(Checker):
     more conditions must be met before access should be permitted. For example,
     systems providing user-extendible protected data types usually depend on
     separation of privilege for their implementation."""
-    # FIXME: add hint
+    # TODO: add hint
 
-    # FIXME: to implement
     def check(self, dsm, **kwargs):
+        """TODO: To implement."""
         raise NotImplementedError
 
 
 class LeastPrivileges(Checker):
+    """Least privileges check."""
+
     identifier = 'archan.LeastPrivileges'
     name = 'Least Privileges'
     description = """
@@ -355,14 +398,16 @@ class LeastPrivileges(Checker):
     "firewalls," the principle of least privilege provides a rationale for
     where to install the firewalls. The military security rule of
     "need-to-know" is an example of this principle."""
-    # FIXME: add hint
+    # TODO: add hint
 
-    # FIXME: to implement
     def check(self, dsm, **kwargs):
+        """TODO: To implement."""
         raise NotImplementedError
 
 
 class LeastCommonMechanism(Checker):
+    """Least common mechanism check."""
+
     identifier = 'archan.LeastCommonMechanism'
     name = 'Least Common Mechanism'
     hint = 'Reduce number of modules having dependencies to the listed module.'
@@ -443,6 +488,13 @@ class LeastCommonMechanism(Checker):
 
 
 class LayeredArchitecture(Checker):
+    """
+    Layered architecture check.
+
+    Check that the DSM can be diagonalized (no marks in upper right or
+    lower left corner).
+    """
+
     identifier = 'archan.LayeredArchitecture'
     name = 'Layered Architecture'
     description = """
@@ -488,6 +540,12 @@ class LayeredArchitecture(Checker):
 
 
 class OpenDesign(Checker):
+    """
+    Open design check.
+
+    Simply take an argument to say if it should pass or not.
+    """
+
     identifier = 'archan.OpenDesign'
     name = 'Open Design'
     description = """
@@ -500,7 +558,7 @@ class OpenDesign(Checker):
     himself that the system he is about to use is adequate for his purpose.
     Finally, it is simply not realistic to attempt to maintain secrecy for any
     system which receives wide distribution."""
-    # FIXME: add hint
+    # TODO: add hint
 
     arguments = (
         Argument('ok', bool,
@@ -509,18 +567,26 @@ class OpenDesign(Checker):
     )
 
     def check(self, dsm, ok=False, **kwargs):
+        """Return False by default, argument 'ok' otherwise."""
         return ok
 
 
 class CodeClean(Checker):
+    """
+    Code clean checker.
+
+    Check that the number of issues per file and per line of code is below
+    a certain value. Also check for number of similarities between files.
+    """
+
     identifier = 'archan.CodeClean'
     name = 'Code Clean'
     description = """
     The code base should be kept coherent and consistent. Complexity of
     functions must not be too important. Conventions and standards must be used
     in order to maintain a very human readable and maintainable code."""
-    # FIXME: add hint
+    # TODO: add hint
 
-    # FIXME: implement this
     def check(self, dsm, **kwargs):
+        """TODO: To implement."""
         raise NotImplementedError

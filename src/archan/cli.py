@@ -54,6 +54,7 @@ def valid_file(value):
 
 
 def valid_level(value):
+    """Validation function for parser, logging level argument."""
     value = value.upper()
     if getattr(logging, value, None) is None:
         raise argparse.ArgumentTypeError("%s is not a valid level" % value)
@@ -61,6 +62,7 @@ def valid_level(value):
 
 
 def get_parser():
+    """Return a parser for the command-line arguments."""
     parser = argparse.ArgumentParser(
         add_help=False,
         description='Analysis of your architecture strength based on DSM data')
@@ -93,7 +95,6 @@ def get_parser():
 
 def main(args=None):
     """Main function."""
-
     parser = get_parser()
     args = parser.parse_args(args=args)
     Logger.set_level(args.level)

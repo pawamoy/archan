@@ -19,7 +19,15 @@ from .utils import Logger, console_width
 
 
 class Config(object):
+    """Configuration class."""
+
     def __init__(self, config_dict=None):
+        """
+        Initialization method.
+
+        Args:
+            config_dict (dict): the configuration as a dictionary.
+        """
         self.logger = Logger.get_logger(__name__)
         self.plugins = Config.load_installed_plugins()
         self.analyzers = []
@@ -47,6 +55,7 @@ class Config(object):
 
     @staticmethod
     def load_local_plugin(name):
+        """Import a local plugin accessible through Python path."""
         module_name = '.'.join(name.split('.')[:-1])
         module_obj = importlib.import_module(name=module_name)
         obj = getattr(module_obj, name.split('.')[-1])
@@ -54,6 +63,7 @@ class Config(object):
 
     @staticmethod
     def load_installed_plugins():
+        """Search and load every installed plugin through entry points."""
         analyzers = {}
         providers = {}
         checkers = {}
@@ -73,6 +83,7 @@ class Config(object):
 
     @staticmethod
     def verify(config):
+        """Verify the contents of the configuration dictionary."""
         if not isinstance(config, dict):
             raise ConfigError('config must be a dict')
         if 'analyzers' not in config:
@@ -80,6 +91,7 @@ class Config(object):
 
     @staticmethod
     def from_file(path):
+        """Return a Config instance by reading a configuration file."""
         with open(path) as stream:
             obj = yaml.safe_load(stream)
         Config.verify(obj)
@@ -87,6 +99,7 @@ class Config(object):
 
     @staticmethod
     def find():
+        """Find the configuration file if any."""
         names = ('archan.yml', 'archan.yaml', '.archan.yml', '.archan.yaml')
         current_dir = os.getcwd()
         configconfig_file = os.path.join(current_dir, '.configconfig')
@@ -106,29 +119,44 @@ class Config(object):
 
     @staticmethod
     def default_config(file_path=sys.stdin):
+        """Return a default configuration instance."""
         return Config(dict(analyzers=[DefaultAnalyzer(
             providers=[CSVInput(file_path=file_path)])]))
 
     @property
     def available_analyzers(self):
+        """Return the available analyzers."""
         return self.plugins.analyzers
 
     @property
     def available_providers(self):
+        """Return the available providers."""
         return self.plugins.providers
 
     @property
     def available_checkers(self):
+        """Return the available checkers."""
         return self.plugins.checkers
 
     @property
     def successful(self):
+        """Property to tell if the run was successful: no failures."""
         for result in self.results:
             if result.code == Checker.FAILED:
                 return False
         return True
 
     def get_plugin(self, identifier, cls=None):
+        """
+        Return the plugin corresponding to the given identifier and type.
+
+        Args:
+            identifier (str): identifier of the plugin.
+            cls (str): one of checker / provider / analyzer.
+
+        Returns:
+            Checker/Provider/Analyzer: plugin class.
+        """
         if cls:
             search_in = {}
             if cls == 'analyzer':
@@ -146,15 +174,19 @@ class Config(object):
             return None
 
     def get_analyzer(self, identifier):
+        """Return the analyzer class corresponding to the given identifier."""
         return self.get_plugin(identifier, cls='analyzer')
 
     def get_provider(self, identifier):
+        """Return the provider class corresponding to the given identifier."""
         return self.get_plugin(identifier, cls='provider')
 
     def get_checker(self, identifier):
+        """Return the checker class corresponding to the given identifier."""
         return self.get_plugin(identifier, cls='checker')
 
     def analyzer_from_dict(self, dct):
+        """Return an analyzer instance from a dict object."""
         providers = dct['providers']
         checkers = dct['checkers']
         real_providers = []
@@ -201,6 +233,7 @@ class Config(object):
             providers=real_providers, checkers=real_checkers)
 
     def provider_from_dict(self, dct):
+        """Return a provider instance from a dict object."""
         provider_identifier = list(dct.keys())[0]
         provider_class = self.get_provider(provider_identifier)
         if provider_class:
@@ -208,6 +241,7 @@ class Config(object):
         return None
 
     def checker_from_dict(self, dct):
+        """Return a checker instance from a dict object."""
         checker_identifier = list(dct.keys())[0]
         checker_class = self.get_checker(checker_identifier)
         if checker_class:
@@ -215,18 +249,21 @@ class Config(object):
         return None
 
     def run(self):
+        """Run analyzers and store their results."""
         results = []
         for analyzer in self.analyzers:
             results.extend(analyzer.collect_results())
         self.results = results
 
     def print_results(self):
+        """Print the collected results."""
         one_analyzer = len(self.analyzers) == 1
         for result in self.results:
             one_provider = len(result.analyzer.providers) == 1
             result.print(analyzer=not one_analyzer, provider=not one_provider)
 
     def print_plugins(self):
+        """Print the available plugins."""
         width = console_width()
         line = Style.BRIGHT + '=' * width + '\n'
         middle = int(width / 2)
