@@ -46,3 +46,12 @@ class DSM(object):
             raise DSMError(
                 'Beware: nb of entities: %s != nb of rows: %s' % (
                     ent_nb, rows))
+
+    def transitive_closure(self):
+        data = [[1 if j else 0 for j in i] for i in self.data]
+        for k in range(self.size):
+            for i in range(self.size):
+                for j in range(self.size):
+                    if data[i][k] and data[k][j]:
+                        data[i][j] = 1
+        return data
