@@ -186,7 +186,7 @@ class AnalysisResult(object):
         print(status)
         if self.messages:
             for message in self.messages.split('\n'):
-                print(pretty_description(message, indent='  '))
+                print(pretty_description(message, indent=2))
             if self.checker.hint:
                 print(pretty_description(
-                    'Hint: ' + self.checker.hint, indent='  '))
+                    'Hint: ' + self.checker.hint, indent=2))

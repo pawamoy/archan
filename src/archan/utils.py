@@ -27,7 +27,7 @@ def console_width(default=80):
     return width
 
 
-def pretty_description(description, wrap_at=None, indent=''):
+def pretty_description(description, wrap_at=None, indent=0):
     """
     Return a pretty formatted string given some text.
 
@@ -46,6 +46,7 @@ def pretty_description(description, wrap_at=None, indent=''):
         else:
             wrap_at += width
 
+    indent = ' ' * indent
     text_wrapper = textwrap.TextWrapper(
         width=wrap_at, replace_whitespace=False,
         initial_indent=indent, subsequent_indent=indent)
