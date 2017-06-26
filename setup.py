@@ -40,7 +40,7 @@ ARCHAN_EP = [
 
 setup(
     name='archan',
-    version='1.0.0',
+    version='2.0.0',
     license='ISC',
     description='Analysis of your architecture strength based on DSM data.',
     long_description='%s\n%s' % (
