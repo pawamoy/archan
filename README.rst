@@ -357,6 +357,18 @@ Each plugin instance has a ``logger`` attribute available. Use it to log
 messages with ``self.logger.debug``, ``info``, ``warning``, ``error`` or
 ``critical``.
 
+Available plugins
+=================
+
+Here is the list of plugins available in other packages.
+
+Providers
+---------
+
+- ``dependenpy.InternalDependencies``: Provide matrix data about internal
+  dependencies in a set of packages. Install it with ``pip install dependenpy``.
+
+
 License
 =======
 

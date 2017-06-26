@@ -10,13 +10,17 @@ verified.
 
 from .analyzers import Analyzer
 from .checkers import Checker
-from .dsm import DSM
+from .dsm import (
+    DesignStructureMatrix, DomainMappingMatrix, MultipleDomainMatrix)
 from .providers import Provider
 from .utils import Argument
 
-__all__ = ('DSM', 'Analyzer', 'Provider', 'Checker', 'Argument')
+__all__ = ('DSM', 'DMM', 'MDM', 'Analyzer', 'Provider', 'Checker', 'Argument')
 __version__ = '1.0.0'
 
+DSM = DesignStructureMatrix
+DMM = DomainMappingMatrix
+MDM = MultipleDomainMatrix
 
 # TODO: DSM class should have more methods (see wiki DSM, adjacency matrix)
 # FIXME: use if not sys.stdin.isatty() to detect stdin input or not

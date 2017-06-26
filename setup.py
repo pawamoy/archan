@@ -79,7 +79,7 @@ setup(
         'colorama', 'pyyaml'
     ],
     extras_require={
-        'with_dependenpy': ['dependenpy'],
+        # 'with_dependenpy': ['dependenpy'],
     },
     entry_points={
         'console_scripts': ['archan = archan.cli:main'],

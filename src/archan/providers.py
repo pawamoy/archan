@@ -6,7 +6,7 @@ import sys
 
 from colorama import Back, Fore, Style
 
-from .dsm import DSM
+from .dsm import DesignStructureMatrix
 from .utils import Argument, Logger, pretty_description
 
 
@@ -114,7 +114,7 @@ class CSVInput(Provider):
         size = len(columns)
         data = [list(map(int, l.split(delimiter)[1:]))
                 for l in lines[1:size + 1]]
-        return DSM(data, columns, categories)
+        return DesignStructureMatrix(data, columns, categories)
 
 
 # FIXME: move this provider in its own repo? it's not ready
