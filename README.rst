@@ -172,7 +172,7 @@ Format of the configuration file is as follow:
 .. code:: yaml
 
     analyzers: [list of strings and/or dict]
-    - identifier: [string]
+    - identifier: [optional string]
       name: [string]
       description: [string]
       providers: [string or list]
@@ -203,6 +203,9 @@ It means you can write:
       checkers: and.ThisChecker
     # a third analyzer, using its name directly
     - some.Analyzer
+
+Every checker support an ``ignore`` argument, set to True or False (default).
+If set to True, the check will not make the test suit fail.
 
 You can reuse the same providers and checkers in different analyzers, they
 will be instantiated as different objects and won't interfere between each other.
@@ -274,8 +277,9 @@ For each of them, you have to inherit from its corresponding class:
 
 A provider or checker plugin must have the following class attributes:
 
-- name: the name of the plugin. It should be the same name as in your entry
-  points, so that displaying its help tells how to summon it.
+- identifier: the identifier of the plugin. It must be the same name as in
+  your entry points, so that displaying its help tells how to summon it.
+- name: the verbose name of the plugin.
 - description: a description to explain what it does.
 - (optional) arguments: a tuple/list of Argument instances. This one is only
   used to display some help for the plugin. An argument is composed of a name,
@@ -286,7 +290,8 @@ A provider or checker plugin must have the following class attributes:
     from archan import Provider, Argument
 
     class MyProvider(Provider):
-        name = 'mypackage.MyProvider'
+        identifier = 'mypackage.MyProvider'
+        name = 'This is my Provider'
         description = """
         Don't hesitate to use multi-line strings as the lines will be de-indented,
         concatenated again and wrapped to match the console width.
@@ -344,6 +349,13 @@ A checker must implement the ``check(self, dsm, **kwargs)`` method.
             # and return True, False, or a constant from Checker: PASSED or FAILED
             # with an optional message
             return Checker.FAILED, 'too much issues in module XXX'
+
+Logging messages
+----------------
+
+Each plugin instance has a ``logger`` attribute available. Use it to log
+messages with ``self.logger.debug``, ``info``, ``warning``, ``error`` or
+``critical``.
 
 License
 =======

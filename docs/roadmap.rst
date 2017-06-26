@@ -32,12 +32,3 @@ imagination: what data to present, how to generate them, how to check them.
 The risk column is a perfect example: we could define risks for pretty much
 each kind of entity: code source, access control, network architecture..., but
 against which criteria can we check them? This has yet to be specified.
-
--------------
-
-For our Archan module, this matrix will serve as a model. Classes should be
-implemented to represent the criteria and the types of DSM. We would need
-data providers, being other Python modules or core functions of Archan. Maybe
-a plugin-capable architecture, and a generic TreeMap structure to simulate
-a more in-depth analysis, starting from the above matrix and going deeper
-into software stack and code source checks.
