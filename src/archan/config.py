@@ -91,7 +91,7 @@ class Config(object):
 
     @staticmethod
     def from_file(path):
-        """Return a Config instance by reading a configuration file."""
+        """Return a ``Config`` instance by reading a configuration file."""
         with open(path) as stream:
             obj = yaml.safe_load(stream)
         Config.verify(obj)

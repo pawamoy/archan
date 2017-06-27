@@ -143,7 +143,7 @@ class Logger(object):
             fmt (str): format string.
 
         Returns:
-            Logger: logger from logging.getLogger.
+            Logger: logger from ``logging.getLogger``.
         """
         if name not in Logger.loggers:
             if Logger.level is None and level is None:

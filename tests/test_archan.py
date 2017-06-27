@@ -8,7 +8,7 @@ from archan.checkers import (
     Checker, CodeClean, CompleteMediation, EconomyOfMechanism,
     LayeredArchitecture, LeastCommonMechanism, LeastPrivileges, OpenDesign,
     SeparationOfPrivileges)
-from archan.dsm import DSM
+from archan.dsm import DesignStructureMatrix as DSM
 
 
 class TestArchan(unittest.TestCase):

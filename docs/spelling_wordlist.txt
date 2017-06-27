@@ -27,3 +27,7 @@ installable
 tuple
 utils
 discoverable
+Florent
+Mandel
+diagonalized
+dsm

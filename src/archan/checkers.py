@@ -75,7 +75,7 @@ class Checker(object):
             **kwargs: additional arguments.
 
         Returns:
-            obj: Checker constant or object with a __bool__ method.
+            obj: Checker constant or object with a ``__bool__`` method.
         """
         raise NotImplementedError
 
@@ -138,17 +138,17 @@ class CompleteMediation(Checker):
 
         - Framework has optional dependency to all framework items (-1),
           and to nothing else.
-        - Core libs have dependencies to framework.
-          Dependencies to other core libs are tolerated.
-        - Application libs have dependencies to framework.
-          Dependencies to other core or application libs are tolerated.
+        - Core libraries have dependencies to framework.
+          Dependencies to other core libraries are tolerated.
+        - Application libraries have dependencies to framework.
+          Dependencies to other core or application libraries are tolerated.
           No dependencies to application modules.
-        - Application modules have dependencies to framework and libs.
+        - Application modules have dependencies to framework and libraries.
           Dependencies to other application modules
           should be mediated over a broker.
           Dependencies to data are tolerated.
         - Data have no dependencies at all
-          (but framework/libs would be tolerated).
+          (but framework/libraries would be tolerated).
 
         Args:
             dsm (:class:`DesignStructureMatrix`): the DSM to generate
@@ -156,7 +156,7 @@ class CompleteMediation(Checker):
         """
         cat = dsm.categories
         ent = dsm.entities
-        size = dsm.size
+        size = dsm.size[0]
 
         if not cat:
             cat = ['appmodule'] * size
@@ -329,7 +329,7 @@ class EconomyOfMechanism(Checker):
         message = ''
         data = dsm.data
         categories = dsm.categories
-        dsm_size = dsm.size
+        dsm_size = dsm.size[0]
 
         if not categories:
             categories = ['appmodule'] * dsm_size
@@ -452,7 +452,7 @@ class LeastCommonMechanism(Checker):
         # get the list of dependent modules for each module
         data = dsm.data
         categories = dsm.categories
-        dsm_size = dsm.size
+        dsm_size = dsm.size[0]
 
         if not categories:
             categories = ['appmodule'] * dsm_size
@@ -473,7 +473,7 @@ class LeastCommonMechanism(Checker):
         for index, item in enumerate(dsm.categories):
             if item == 'broker' or item == 'applib':
                 dependent_module_number[index] = 0
-        if max(dependent_module_number) <= dsm.size / independence_factor:
+        if max(dependent_module_number) <= dsm_size / independence_factor:
             least_common_mechanism = True
         else:
             maximum = max(dependent_module_number)
@@ -481,8 +481,8 @@ class LeastCommonMechanism(Checker):
                 'Dependencies to %s (%s) > matrix size (%s) / '
                 'independence factor (%s) = %s' % (
                     dsm.entities[dependent_module_number.index(maximum)],
-                    maximum, dsm.size, independence_factor,
-                    dsm.size / independence_factor))
+                    maximum, dsm_size, independence_factor,
+                    dsm_size / independence_factor))
 
         return least_common_mechanism, message
 
@@ -520,12 +520,13 @@ class LayeredArchitecture(Checker):
         layered_architecture = True
         messages = []
         categories = dsm.categories
+        dsm_size = dsm.size[0]
 
         if not categories:
-            categories = ['appmodule'] * dsm.size
+            categories = ['appmodule'] * dsm_size
 
-        for i in range(0, dsm.size - 1):
-            for j in range(i + 1, dsm.size):
+        for i in range(0, dsm_size - 1):
+            for j in range(i + 1, dsm_size):
                 if (categories[i] != 'broker' and
                         categories[j] != 'broker' and
                         dsm.entities[i].split('.')[0] != dsm.entities[j].split('.')[0]):  # noqa
@@ -567,7 +568,7 @@ class OpenDesign(Checker):
     )
 
     def check(self, dsm, ok=False, **kwargs):
-        """Return False by default, argument 'ok' otherwise."""
+        """Return False by default, argument ``ok`` otherwise."""
         return ok
 
 
