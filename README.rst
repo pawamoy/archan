@@ -344,7 +344,7 @@ A checker must implement the ``check(self, dsm, **kwargs)`` method.
 
         def check(self, dsm, **kwargs):
             # this is where you check your stuff
-            # with dsm.data, dsm.entities, dsm.categories, dsm.size
+            # with dsm.data, dsm.entities, dsm.categories, dsm.size (rows, columns)
             ...
             # and return True, False, or a constant from Checker: PASSED or FAILED
             # with an optional message
