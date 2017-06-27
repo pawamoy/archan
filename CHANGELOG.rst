@@ -2,6 +2,12 @@
 Changelog
 =========
 
+2.0.1 (2017-06-27)
+==================
+
+* Fix usage of DSM size.
+* Start implementing other concepts (MDM and DMM).
+
 2.0.0 (2017-06-26)
 ==================
 
