@@ -56,11 +56,6 @@ Jerome H. Saltzer and Michael D. Schroeder.
 .. _`Design Structure Matrix (DSM)`: https://en.wikipedia.org/wiki/Design_structure_matrix
 .. _The Protection of Information in Computer Systems : https://www.cs.virginia.edu/~evans/cs551/saltzer/
 
-.. note::
-
-    The following contents apply for the next version of Archan (2.0.0) which
-    has not been released yet.
-
 Features
 ========
 
