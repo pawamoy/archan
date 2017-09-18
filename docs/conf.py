@@ -40,8 +40,8 @@ version = release = u'2.0.1'
 pygments_style = 'trac'
 templates_path = ['.']
 extlinks = {
-    'issue': ('https://github.com/Pawamoy/archan/issues/%s', '#'),
-    'pr': ('https://github.com/Pawamoy/archan/pull/%s', 'PR #'),
+    'issue': ('https://github.com/Genida/archan/issues/%s', '#'),
+    'pr': ('https://github.com/Genida/archan/pull/%s', 'PR #'),
 }
 
 # on_rtd is whether we are on readthedocs.org

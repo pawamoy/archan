@@ -14,20 +14,20 @@ Archan
 |gitter|
 
 
-.. |travis| image:: https://travis-ci.org/Pawamoy/archan.svg?branch=master
-    :target: https://travis-ci.org/Pawamoy/archan/
+.. |travis| image:: https://travis-ci.org/Genida/archan.svg?branch=master
+    :target: https://travis-ci.org/Genida/archan/
     :alt: Travis-CI Build Status
 
 .. |codacygrade| image:: https://api.codacy.com/project/badge/Grade/338f6c7d06664cae86d66eb289a5e424
-    :target: https://www.codacy.com/app/Pawamoy/archan/dashboard
+    :target: https://www.codacy.com/app/Genida/archan/dashboard
     :alt: Codacy Code Quality Status
 
 .. |codacycoverage| image:: https://api.codacy.com/project/badge/Coverage/338f6c7d06664cae86d66eb289a5e424
-    :target: https://www.codacy.com/app/Pawamoy/archan/dashboard
+    :target: https://www.codacy.com/app/Genida/archan/dashboard
     :alt: Codacy Code Coverage
 
-.. |pyup| image:: https://pyup.io/repos/github/Pawamoy/archan/shield.svg
-    :target: https://pyup.io/repos/github/Pawamoy/archan/
+.. |pyup| image:: https://pyup.io/repos/github/Genida/archan/shield.svg
+    :target: https://pyup.io/repos/github/Genida/archan/
     :alt: Updates
 
 .. |version| image:: https://img.shields.io/pypi/v/archan.svg?style=flat
@@ -38,9 +38,9 @@ Archan
     :target: https://pypi.python.org/pypi/archan/
     :alt: PyPI Wheel
 
-.. |gitter| image:: https://badges.gitter.im/Pawamoy/archan.svg
-    :target: https://gitter.im/Pawamoy/archan
-    :alt: Join the chat at https://gitter.im/Pawamoy/archan
+.. |gitter| image:: https://badges.gitter.im/Genida/archan.svg
+    :target: https://gitter.im/Genida/archan
+    :alt: Join the chat at https://gitter.im/Genida/archan
 
 
 .. end-badges
@@ -65,9 +65,9 @@ Features
 - Configurable through command-line or configuration file (YAML format).
 - Read DSM data on standard input.
 
-.. _dependenpy: https://github.com/Pawamoy/dependenpy
-.. _django-meerkat: https://github.com/Pawamoy/django-meerkat
-.. _`Provider plugin`: https://github.com/Pawamoy/dependenpy/blob/master/src/dependenpy/plugins.py
+.. _dependenpy: https://github.com/Genida/dependenpy
+.. _django-meerkat: https://github.com/Genida/django-meerkat
+.. _`Provider plugin`: https://github.com/Genida/dependenpy/blob/master/src/dependenpy/plugins.py
 
 
 Installation
@@ -207,7 +207,7 @@ will be instantiated as different objects and won't interfere between each other
 
 As an example, see `Archan's own configuration file`_.
 
-.. _`Archan's own configuration file`: https://github.com/Pawamoy/archan/blob/master/config/archan.yml
+.. _`Archan's own configuration file`: https://github.com/Genida/archan/blob/master/config/archan.yml
 
 To get the list of available plugins in your current environment,
 run ``archan --list-plugins`` or ``archan -l``.
