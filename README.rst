@@ -31,11 +31,11 @@ Archan
     :alt: Updates
 
 .. |version| image:: https://img.shields.io/pypi/v/archan.svg?style=flat
-    :target: https://pypi.python.org/pypi/archan/
+    :target: https://pypi.org/project/archan/
     :alt: PyPI Package latest release
 
 .. |wheel| image:: https://img.shields.io/pypi/wheel/archan.svg?style=flat
-    :target: https://pypi.python.org/pypi/archan/
+    :target: https://pypi.org/project/archan/
     :alt: PyPI Wheel
 
 .. |gitter| image:: https://badges.gitter.im/Genida/archan.svg

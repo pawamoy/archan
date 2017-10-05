@@ -70,3 +70,4 @@ html_static_path = [
 napoleon_use_ivar = True
 napoleon_use_rtype = False
 napoleon_use_param = False
+suppress_warnings = ["image.nonlocal_uri"]
