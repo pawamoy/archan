@@ -3,6 +3,7 @@
 """Utils module."""
 
 import logging
+import shutil
 import subprocess
 import textwrap
 
@@ -19,12 +20,19 @@ def console_width(default=80):
     Returns:
         int: console width.
     """
-    try:
-        _, width = subprocess.check_output(['/bin/stty', 'size']).split()
-        width = int(width)
-    except subprocess.CalledProcessError:
-        width = default
-    return width
+    # only solution that works with stdin redirected from file
+    # https://stackoverflow.com/questions/566746
+    return shutil.get_terminal_size((default, 20)).columns
+
+    # try:
+    #     width = subprocess.check_output(['tput', 'cols'], stderr=subprocess.DEVNULL)
+    #     # _, width = subprocess.check_output(['stty', 'size'], stderr=subprocess.DEVNULL).split()
+    #     width = int(width)
+    #     logger.debug('Getting terminal width with "tput cols" succeeded: %d' % width)
+    # except subprocess.CalledProcessError:
+    #     width = default
+    #     logger.debug('Getting terminal width with "tput cols" failed')
+    # return width
 
 
 def pretty_description(description, wrap_at=None, indent=0):
@@ -180,3 +188,6 @@ class LoggingFormatter(logging.Formatter):
         else:
             string = ''
         return string + Style.RESET_ALL + ' ' + super().format(record)
+
+
+logger = Logger.get_logger(__name__)

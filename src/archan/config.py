@@ -29,6 +29,7 @@ class Config(object):
             config_dict (dict): the configuration as a dictionary.
         """
         self.logger = Logger.get_logger(__name__)
+        self.config_dict = config_dict
         self.plugins = Config.load_installed_plugins()
         self.analyzers = []
 
@@ -52,6 +53,9 @@ class Config(object):
                 self.analyzers.append(analyzer)
 
         self.results = []
+
+    def __str__(self):
+        return str(self.config_dict)
 
     @staticmethod
     def load_local_plugin(name):

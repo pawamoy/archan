@@ -29,6 +29,9 @@ from .config import Config
 from .utils import Logger
 
 
+logger = Logger.get_logger(__name__)
+
+
 def valid_file(value):
     """
     Check if given file exists and is a regular file.
@@ -98,7 +101,6 @@ def main(args=None):
     parser = get_parser()
     args = parser.parse_args(args=args)
     Logger.set_level(args.level)
-    logger = Logger.get_logger(__name__)
 
     colorama_args = {'autoreset': True}
     if args.no_color:
@@ -107,10 +109,12 @@ def main(args=None):
 
     config = None
     if args.no_config:
-        logger.info('No configuration flag used, use default configuration')
+        logger.info('--no-config flag used, use default configuration')
         if args.input_file:
+            logger.info('Input file specified: %s' % args.input_file)
             file_path = args.input_file
         else:
+            logger.info('No input file specified, will read standard input')
             file_path = sys.stdin
         config = Config.default_config(file_path)
     else:
@@ -124,16 +128,24 @@ def main(args=None):
             logger.info('Load configuration from %s' % config_file)
             config = Config.from_file(config_file)
         if config is None:
-            logger.info('Use default configuration')
+            logger.info('No configuration file found, use default one')
             config = Config.default_config()
+
+    logger.debug('Configuration = {}'.format(config))
+    logger.debug('Plugins loaded = {}'.format(config.plugins))
 
     if args.list_plugins:
         logger.info('Print list of plugins')
-        logger.debug('Plugins = {}'.format(config.plugins))
         config.print_plugins()
         return
 
-    logger.info('Run analysis with configuration = %s' % config)
-    config.run()
-    config.print_results()
-    return 0 if config.successful else 1
+    logger.info('Run analysis')
+    try:
+        config.run()
+        logger.info('Print results')
+        config.print_results()
+        logger.info('Analysis successful: %s' % config.successful)
+        return 0 if config.successful else 1
+    except KeyboardInterrupt:
+        logger.info('Keyboard interruption, aborting')
+        return 130
