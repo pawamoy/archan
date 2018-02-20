@@ -586,8 +586,22 @@ class CodeClean(Checker):
     The code base should be kept coherent and consistent. Complexity of
     functions must not be too important. Conventions and standards must be used
     in order to maintain a very human readable and maintainable code."""
+
+    arguments = (
+        Argument('threshold', int, 'Message number threshold (per module).'),
+    )
     # TODO: add hint
 
     def check(self, dsm, **kwargs):
-        """TODO: To implement."""
-        raise NotImplementedError
+
+        self.logger.debug('Entities = %s' % dsm.entities)
+        messages = []
+        code_clean = True
+        threshold = kwargs.pop('threshold', 1)
+        rows, columns = dsm.size
+        for i in range(0, rows):
+            if dsm.data[i][0] > threshold:
+                messages.append('Too much Pylint messages in module %s' % dsm.entities[i])
+                code_clean = False
+
+        return code_clean, '\n'.join(messages)
