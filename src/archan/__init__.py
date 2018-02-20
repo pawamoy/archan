@@ -13,9 +13,9 @@ from .checkers import Checker
 from .dsm import (
     DesignStructureMatrix, DomainMappingMatrix, MultipleDomainMatrix)
 from .providers import Provider
-from .utils import Argument
+from .utils import Argument, Logger
 
-__all__ = ('DSM', 'DMM', 'MDM', 'Analyzer', 'Provider', 'Checker', 'Argument')
+__all__ = ('DSM', 'DMM', 'MDM', 'Analyzer', 'Provider', 'Checker', 'Argument', 'Logger')
 __version__ = '1.0.0'
 
 DSM = DesignStructureMatrix

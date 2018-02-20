@@ -141,7 +141,7 @@ class Logger(object):
             logger.setLevel(level)
 
     @staticmethod
-    def get_logger(name, level=None, fmt='%(message)s'):
+    def get_logger(name, level=None, fmt=':%(lineno)d: %(message)s'):
         """
         Return a logger.
 
@@ -162,8 +162,7 @@ class Logger(object):
                 level = Logger.level
             logger = logging.getLogger(name)
             logger_handler = logging.StreamHandler()
-            format_string = '%s: ' % name + fmt
-            logger_handler.setFormatter(LoggingFormatter(fmt=format_string))
+            logger_handler.setFormatter(LoggingFormatter(fmt=name + fmt))
             logger.addHandler(logger_handler)
             logger.setLevel(level)
             Logger.loggers[name] = logger

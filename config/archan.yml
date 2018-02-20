@@ -1,18 +1,28 @@
 analyzers:
-- name: Internal software dependencies
-  description: Analyze the internal software dependency matrix.
-  providers:
-  - dependenpy.InternalDependencies:
-      packages:
-      - archan
-  checkers:
-  - archan.CompleteMediation
-  - archan.EconomyOfMechanism:
-      simplicity_factor: 2
-      ignore: true
-  - archan.LayeredArchitecture
-  - archan.LeastCommonMechanism:
-      independence_factor: 5
-      ignore: true
-  - archan.OpenDesign:
-      ok: true
+  - name: Internal software dependencies
+    description: Analyze the internal software dependency matrix.
+    providers:
+      - dependenpy.InternalDependencies:
+          packages:
+          - archan
+    checkers:
+      - archan.CompleteMediation
+      - archan.EconomyOfMechanism:
+          simplicity_factor: 2
+          ignore: true
+      - archan.LayeredArchitecture
+      - archan.LeastCommonMechanism:
+          independence_factor: 5
+          ignore: true
+      - archan.OpenDesign:
+          ok: true
+  - name: Quality
+    description: Check if the code is clean
+    providers:
+      - archan_pylint.MessagesPerModule:
+          pylint_args:
+            - archan
+    checkers:
+      - archan.CodeClean:
+          threshold: 10
+          ignore: true

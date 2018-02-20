@@ -256,6 +256,7 @@ class Config(object):
         """Run analyzers and store their results."""
         results = []
         for analyzer in self.analyzers:
+            self.logger.info('Run analyzer %s', analyzer.identifier)
             results.extend(analyzer.collect_results())
         self.results = results
 

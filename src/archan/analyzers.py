@@ -96,9 +96,11 @@ class Analyzer(object):
         """
         self.results.clear()
         for provider in self.providers:
+            self.logger.info('Run provider %s', provider.identifier)
             provider.run()
         for provider in self.providers:
             for checker in self.checkers:
+                self.logger.info('Run checker %s', checker.identifier)
                 result = AnalysisResult(
                     self, provider, checker, checker.run(provider.dsm))
                 self.results.append(result)
@@ -179,9 +181,9 @@ class AnalysisResult(object):
                 Fore.GREEN, Style.RESET_ALL),
         }.get(self.code)
         if analyzer:
-            print(Style.BRIGHT + 'Analyzer: ' + self.analyzer.name)
+            print(Style.BRIGHT + self.analyzer.name, end=' – ')
         if provider:
-            print(Style.BRIGHT + 'Provider: ' + self.provider.name)
+            print(Style.BRIGHT + self.provider.name, end=' – ')
         print('%s: ' % (Style.BRIGHT + self.checker.name), end='')
         print(status)
         if self.messages:
