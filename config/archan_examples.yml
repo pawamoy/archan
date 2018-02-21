@@ -1,0 +1,72 @@
+analysis:
+
+  # example with one provider and one checker
+  archan_pylint.PyLintProvider:
+    arguments:
+      pylint_args:
+        - src/archan
+    checkers:
+      archan.CodeClean:
+        allow_failure: true
+        arguments:
+          threshold: 10
+
+  # example with one checker and multiple providers
+  archan.CodeClean:
+    arguments:
+      threshold: 10
+    providers:
+      archan_pylint.PyLintProvider:
+        arguments:
+          pylint_args:
+            - src/archan
+      archan_prospector.ProspectorProvider:
+        arguments:
+          prospector_args:
+            - src/archan
+
+  # example with one provider and multiple checkers
+  dependenpy.InternalDependencies:
+    arguments:
+      packages:
+        - src/archan
+    checkers:
+      - archan.CompleteMediation
+      - archan.EconomyOfMechanism:
+          allow_failure: true
+          arguments:
+            simplicity_factor: 2
+      - archan.LayeredArchitecture
+      - archan.LeastCommonMechanism:
+          allow_failure: true
+          arguments:
+            independence_factor: 5
+
+  # example with multiple checkers and providers
+  Network/Software Architecture:
+    providers:
+      dependenpy.InternalDependencies:
+        arguments:
+          packages:
+            - src/archan
+      archan.CSVInput:
+        arguments:
+          file_path: network.csv
+    checkers:
+      - archan.CompleteMediation
+      - archan.EconomyOfMechanism:
+          allow_failure: true
+          arguments:
+            simplicity_factor: 2
+      - archan.LayeredArchitecture
+      - archan.LeastCommonMechanism:
+          allow_failure: true
+          arguments:
+            independence_factor: 5
+
+  # example with no data to compute
+  Open Design:
+    Source code: true
+    Infrastructure:
+      passes: false
+      allow_failure: true

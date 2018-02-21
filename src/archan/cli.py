@@ -143,7 +143,7 @@ def main(args=None):
     try:
         config.run()
         logger.info('Print results')
-        config.print_results()
+        # config.print_results()
         logger.info('Analysis successful: %s' % config.successful)
         return 0 if config.successful else 1
     except KeyboardInterrupt:

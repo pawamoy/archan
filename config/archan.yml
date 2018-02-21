@@ -1,10 +1,20 @@
 analyzers:
+  - name: General
+    providers:
+      - archan_pylint.MessagesPerModule:
+          pylint_args:
+            - src/archan
+    checkers:
+      - archan.OpenDesign:
+          ok: true
+      - archan.CodeClean:
+          threshold: 10
+          ignore: true
   - name: Internal software dependencies
-    description: Analyze the internal software dependency matrix.
     providers:
       - dependenpy.InternalDependencies:
           packages:
-          - archan
+            - src/archan
     checkers:
       - archan.CompleteMediation
       - archan.EconomyOfMechanism:
@@ -13,16 +23,4 @@ analyzers:
       - archan.LayeredArchitecture
       - archan.LeastCommonMechanism:
           independence_factor: 5
-          ignore: true
-      - archan.OpenDesign:
-          ok: true
-  - name: Quality
-    description: Check if the code is clean
-    providers:
-      - archan_pylint.MessagesPerModule:
-          pylint_args:
-            - archan
-    checkers:
-      - archan.CodeClean:
-          threshold: 10
           ignore: true

@@ -25,6 +25,7 @@ def read(*names, **kwargs):
         encoding=kwargs.get('encoding', 'utf8')
     ).read()
 
+
 ARCHAN_EP = [
     'archan.LayeredArchitecture = archan.checkers:LayeredArchitecture',
     'archan.SeparationOfPrivileges = archan.checkers:SeparationOfPrivileges',

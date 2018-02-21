@@ -2,108 +2,12 @@
 
 """Checker module."""
 
-from colorama import Back, Fore, Style
+from ..errors import DesignStructureMatrixError as DSMError
+from ..logging import Logger
+from . import Argument, Checker
 
-from .errors import DSMError
-from .utils import Argument, Logger, pretty_description
 
-
-# TODO: also add some "expect" attribute to describe the expected data format
-class Checker(object):
-    """
-    Checker class.
-
-    An instance of Checker implements a check method that analyzes an instance
-    of DSM and return a true or false value, with optional message.
-    """
-
-    identifier = 'archan.AbstractChecker'
-    name = 'Generic checker'
-    description = ''
-    hint = ''
-    arguments = ()
-
-    PASSED = 1
-    FAILED = 0
-    IGNORED = -1
-    NOT_IMPLEMENTED = -2
-
-    STATUS = (PASSED, FAILED, IGNORED, NOT_IMPLEMENTED)
-
-    @classmethod
-    def get_help(cls):
-        """Return a help text for the current subclass of Checker."""
-        return (
-            '{bold}Identifier:{none} {blue}{identifier}{none}\n'
-            '{bold}Name:{none} {name}\n'
-            '{bold}Description:{none}\n{description}\n' +
-            ('{bold}Arguments:{none}\n{arguments}\n' if cls.arguments else '')
-        ).format(
-            bold=Style.BRIGHT,
-            blue=Back.BLUE + Fore.WHITE,
-            none=Style.RESET_ALL,
-            identifier=cls.identifier,
-            name=cls.name,
-            description=pretty_description(cls.description, indent=2),
-            arguments='\n'.join([a.help for a in cls.arguments])
-        )
-
-    def __init__(self, ignore=False, **run_kwargs):
-        """
-        Initialization method.
-
-        Args:
-            ignore (bool): still pass if failed or not.
-            **run_kwargs: arguments passed to the check method when run.
-        """
-        self.logger = Logger.get_logger(__name__)
-        self.ignore = ignore
-        self.run_kwargs = run_kwargs
-        self.result = None
-
-    @property
-    def help(self):
-        """Property to return the help text for a checker."""
-        return self.__class__.get_help()
-
-    def check(self, dsm, **kwargs):
-        """
-        Check the DSM and return a result.
-
-        Args:
-            dsm (DSM): DSM instance to check.
-            **kwargs: additional arguments.
-
-        Returns:
-            obj: Checker constant or object with a ``__bool__`` method.
-        """
-        raise NotImplementedError
-
-    def run(self, dsm):
-        """
-        Run the check method and format the result for analyzers.
-
-        Args:
-            dsm (DSM): DSM instance to check.
-
-        Returns:
-            int, str: status constant from Checker class and messages.
-        """
-        try:
-            result = self.check(dsm, **self.run_kwargs)
-            messages = ''
-            if isinstance(result, tuple):
-                result, messages = result
-
-            if result not in Checker.STATUS:
-                result = Checker.PASSED if bool(result) else Checker.FAILED
-
-            if result == Checker.FAILED and self.ignore:
-                result = Checker.IGNORED
-
-            return result, messages
-        except NotImplementedError:
-            return Checker.NOT_IMPLEMENTED, ''
+logger = Logger.get_logger(__name__)
 
 
 class CompleteMediation(Checker):
@@ -538,38 +442,6 @@ class LayeredArchitecture(Checker):
                                 dsm.entities[i], dsm.entities[j]))
 
         return layered_architecture, '\n'.join(messages)
-
-
-class OpenDesign(Checker):
-    """
-    Open design check.
-
-    Simply take an argument to say if it should pass or not.
-    """
-
-    identifier = 'archan.OpenDesign'
-    name = 'Open Design'
-    description = """
-    The design should not be secret. The mechanisms should not depend on the
-    ignorance of potential attackers, but rather on the possession of specific,
-    more easily protected, keys or passwords. This decoupling of protection
-    mechanisms from protection keys permits the mechanisms to be examined by
-    many reviewers without concern that the review may itself compromise the
-    safeguards. In addition, any skeptical user may be allowed to convince
-    himself that the system he is about to use is adequate for his purpose.
-    Finally, it is simply not realistic to attempt to maintain secrecy for any
-    system which receives wide distribution."""
-    # TODO: add hint
-
-    arguments = (
-        Argument('ok', bool,
-                 'Since Open Design computes nothing, you need to tell '
-                 'it if the check should succeed or not.', False),
-    )
-
-    def check(self, dsm, ok=False, **kwargs):
-        """Return False by default, argument ``ok`` otherwise."""
-        return ok
 
 
 class CodeClean(Checker):

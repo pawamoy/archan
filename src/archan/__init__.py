@@ -8,19 +8,13 @@ using a DSM (Design Structure Matrix) on which certain criteria will be
 verified.
 """
 
-from .analyzers import Analyzer
-from .checkers import Checker
+from .plugins import Argument, Checker, Provider
 from .dsm import (
     DesignStructureMatrix, DomainMappingMatrix, MultipleDomainMatrix)
-from .providers import Provider
-from .utils import Argument, Logger
+from .logging import Logger
 
-__all__ = ('DSM', 'DMM', 'MDM', 'Analyzer', 'Provider', 'Checker', 'Argument', 'Logger')
-__version__ = '1.0.0'
+__all__ = ('DesignStructureMatrix', 'DomainMappingMatrix', 'MultipleDomainMatrix', 'Provider', 'Checker', 'Argument', 'Logger')
 
-DSM = DesignStructureMatrix
-DMM = DomainMappingMatrix
-MDM = MultipleDomainMatrix
 
 # TODO: DSM class should have more methods (see wiki DSM, adjacency matrix)
 # FIXME: use if not sys.stdin.isatty() to detect stdin input or not
