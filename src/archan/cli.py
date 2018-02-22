@@ -29,7 +29,6 @@ from .analysis import Analysis
 from .config import Config
 from .logging import Logger
 
-
 logger = Logger.get_logger(__name__)
 
 
@@ -138,15 +137,15 @@ def main(args=None):
     if args.list_plugins:
         logger.info('Print list of plugins')
         config.print_plugins()
-        return
+        return 0
 
     logger.info('Run analysis')
     analysis = Analysis(config)
     try:
-        analysis.run()
-        logger.info('Print results')
-        analysis.print_results()
+        analysis.run(verbose=False)
         logger.info('Analysis successful: %s' % analysis.successful)
+        logger.info('Output results as TAP')
+        analysis.output_tap()
         return 0 if analysis.successful else 1
     except KeyboardInterrupt:
         logger.info('Keyboard interruption, aborting')

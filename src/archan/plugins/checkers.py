@@ -2,10 +2,9 @@
 
 """Checker module."""
 
+from . import Argument, Checker
 from ..errors import DesignStructureMatrixError
 from ..logging import Logger
-from . import Argument, Checker
-
 
 logger = Logger.get_logger(__name__)
 
@@ -147,8 +146,9 @@ class CompleteMediation(Checker):
 
         if (rows_dep_matrix != rows_med_matrix or
                 cols_dep_matrix != cols_med_matrix):
-            raise DesignStructureMatrixError('Matrices are NOT compliant '
-                           '(number of rows/columns not equal)')
+            raise DesignStructureMatrixError(
+                'Matrices are NOT compliant '
+                '(number of rows/columns not equal)')
 
         discrepancy_found = False
         message = []
@@ -206,7 +206,7 @@ class EconomyOfMechanism(Checker):
     necessary. For such techniques to be successful, a small and simple design
     is essential."""
 
-    arguments = (
+    argument_list = (
         Argument('simplicity_factor', int,
                  'If the number of cells with dependencies in the DSM '
                  'is lower than the DSM size multiplied by the simplicity '
@@ -330,7 +330,7 @@ class LeastCommonMechanism(Checker):
     a substitute or not use it at all. Either way, they can avoid being harmed
     by a mistake in it."""
 
-    arguments = (
+    argument_list = (
         Argument('independence_factor', int,
                  'If the maximum dependencies for one module is inferior or '
                  'equal to the DSM size divided by the independence factor, '
@@ -419,7 +419,7 @@ class LayeredArchitecture(Checker):
             dsm (:class:`DesignStructureMatrix`): the DSM to check.
 
         Returns:
-            bool: True if layered architecture, else False
+            bool, str: True if layered architecture else False, messages
         """
         layered_architecture = True
         messages = []
@@ -448,8 +448,7 @@ class CodeClean(Checker):
     """
     Code clean checker.
 
-    Check that the number of issues per file and per line of code is below
-    a certain value. Also check for number of similarities between files.
+    Check that the number of issues per module is below a certain value.
     """
 
     identifier = 'archan.CodeClean'
@@ -458,24 +457,35 @@ class CodeClean(Checker):
     The code base should be kept coherent and consistent. Complexity of
     functions must not be too important. Conventions and standards must be used
     in order to maintain a very human readable and maintainable code."""
-    hint = 'Reduce the number of issues in your code or increase the threshold.'
+    hint = """
+    Reduce the number of issues in your code or increase the threshold."""
 
-    arguments = (
-        Argument('threshold', int, 'Message number threshold (per module).'),
+    argument_list = (
+        Argument('threshold', int, 'Message number threshold (per module).',
+                 default=10),
     )
 
     def check(self, dsm, **kwargs):
+        """
+        Check code clean.
+
+        Args:
+            dsm (:class:`DesignStructureMatrix`): the DSM to check.
+
+        Returns:
+            bool, str: True if code clean else False, messages
+        """
         logger.debug('Entities = %s' % dsm.entities)
         messages = []
         code_clean = True
         threshold = kwargs.pop('threshold', 1)
-        rows, columns = dsm.size
+        rows, _ = dsm.size
         for i in range(0, rows):
             if dsm.data[i][0] > threshold:
                 messages.append(
                     'Number of issues (%d) in module %s '
                     '> threshold (%d)' % (
-                    dsm.data[i][0], dsm.entities[i], threshold))
+                        dsm.data[i][0], dsm.entities[i], threshold))
                 code_clean = False
 
         return code_clean, '\n'.join(messages)

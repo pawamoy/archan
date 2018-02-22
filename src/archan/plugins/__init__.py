@@ -1,13 +1,20 @@
+# -*- coding: utf-8 -*-
+
+"""Plugins submodule."""
+
 from collections import namedtuple
 
+from ..enums import ResultCode
 from ..logging import Logger
-from .printing import PluginPrintMixin, PluginArgumentPrintMixin
-
+from ..printing import (
+    PrintableArgumentMixin, PrintableNameMixin, PrintablePluginMixin)
 
 logger = Logger.get_logger(__name__)
 
 
-class Argument(PluginArgumentPrintMixin):
+class Argument(PrintableArgumentMixin):
+    """Placeholder for name, class, description and default value."""
+
     def __init__(self, name, cls, description, default=None):
         """
         Initialization method.
@@ -29,7 +36,7 @@ class Argument(PluginArgumentPrintMixin):
 
 
 # TODO: also add some "expect" attribute to describe the expected data format
-class Checker(PluginPrintMixin):
+class Checker(PrintableNameMixin, PrintablePluginMixin):
     """
     Checker class.
 
@@ -43,14 +50,10 @@ class Checker(PluginPrintMixin):
     hint = ''
     argument_list = ()
 
-    PASSED = 1
-    FAILED = 0
-    IGNORED = -1
-    NOT_IMPLEMENTED = -2
+    Code = ResultCode
 
-    STATUS = (PASSED, FAILED, IGNORED, NOT_IMPLEMENTED)
-
-    def __init__(self, name=None, description=None, hint=None, allow_failure=False, passes=None, arguments=None):
+    def __init__(self, name=None, description=None, hint=None,
+                 allow_failure=False, passes=None, arguments=None):
         """
         Initialization method.
 
@@ -96,31 +99,33 @@ class Checker(PluginPrintMixin):
         """
         result_type = namedtuple('Result', 'result messages')
 
-        if self.passes:
-            return result_type(Checker.PASSED, '')
+        if self.passes is True:
+            result = result_type(Checker.Code.PASSED, '')
         elif self.passes is False:
             if self.allow_failure:
-                return result_type(Checker.IGNORED, '')
-            return result_type(Checker.FAILED, '')
+                result = result_type(Checker.Code.IGNORED, '')
+            else:
+                result = result_type(Checker.Code.FAILED, '')
+        else:
+            try:
+                result = self.check(data, **self.arguments)
+                messages = ''
+                if isinstance(result, tuple):
+                    result, messages = result
 
-        try:
-            result = self.check(data, **self.arguments)
-            messages = ''
-            if isinstance(result, tuple):
-                result, messages = result
+                if result not in Checker.Code:
+                    result = Checker.Code.PASSED if bool(result) else Checker.Code.FAILED
 
-            if result not in Checker.STATUS:
-                result = Checker.PASSED if bool(result) else Checker.FAILED
+                if result == Checker.Code.FAILED and self.allow_failure:
+                    result = Checker.Code.IGNORED
 
-            if result == Checker.FAILED and self.allow_failure:
-                result = Checker.IGNORED
-
-            return result_type(result, messages)
-        except NotImplementedError:
-            return result_type(Checker.NOT_IMPLEMENTED, '')
+                result = result_type(result, messages)
+            except NotImplementedError:
+                result = result_type(Checker.Code.NOT_IMPLEMENTED, '')
+        self.result = result
 
 
-class Provider(PluginPrintMixin):
+class Provider(PrintableNameMixin, PrintablePluginMixin):
     """
     Provider class.
 

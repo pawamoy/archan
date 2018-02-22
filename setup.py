@@ -26,13 +26,13 @@ def read(*names, **kwargs):
     ).read()
 
 
-ARCHAN_EP = [
+ARCHAN_ENTRY_POINTS = [
     'archan.LayeredArchitecture = archan.plugins.checkers:LayeredArchitecture',
-    'archan.SeparationOfPrivileges = archan.plugins.checkers:SeparationOfPrivileges',
+    'archan.SeparationOfPrivileges = archan.plugins.checkers:SeparationOfPrivileges',  # noqa
     'archan.LeastPrivileges = archan.plugins.checkers:LeastPrivileges',
     'archan.EconomyOfMechanism = archan.plugins.checkers:EconomyOfMechanism',
     'archan.CodeClean = archan.plugins.checkers:CodeClean',
-    'archan.LeastCommonMechanism = archan.plugins.checkers:LeastCommonMechanism',
+    'archan.LeastCommonMechanism = archan.plugins.checkers:LeastCommonMechanism',  # noqa
     'archan.CompleteMediation = archan.plugins.checkers:CompleteMediation',
     'archan.CSVInput = archan.plugins.providers:CSVInput'
 ]
@@ -83,6 +83,6 @@ setup(
     },
     entry_points={
         'console_scripts': ['archan = archan.cli:main'],
-        'archan': ARCHAN_EP
+        'archan': ARCHAN_ENTRY_POINTS
     },
 )

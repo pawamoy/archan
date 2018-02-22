@@ -1,3 +1,7 @@
+# -*- coding: utf-8 -*-
+
+"""Logging module."""
+
 import logging
 
 from colorama import Back, Fore, Style
@@ -67,4 +71,5 @@ class LoggingFormatter(logging.Formatter):
             string = Back.BLACK + Fore.WHITE + ' critical '
         else:
             string = ''
-        return string + Style.RESET_ALL + ' ' + super().format(record)
+        return '{none}{string}{none} {super}'.format(
+            none=Style.RESET_ALL, string=string, super=super().format(record))

@@ -8,12 +8,13 @@ using a DSM (Design Structure Matrix) on which certain criteria will be
 verified.
 """
 
-from .plugins import Argument, Checker, Provider
 from .dsm import (
     DesignStructureMatrix, DomainMappingMatrix, MultipleDomainMatrix)
 from .logging import Logger
+from .plugins import Argument, Checker, Provider
 
-__all__ = ('DesignStructureMatrix', 'DomainMappingMatrix', 'MultipleDomainMatrix', 'Provider', 'Checker', 'Argument', 'Logger')
+__all__ = ('DesignStructureMatrix', 'DomainMappingMatrix',
+           'MultipleDomainMatrix', 'Provider', 'Checker', 'Argument', 'Logger')
 __version__ = '3.0.0'
 
 # TODO: DSM class should have more methods (see wiki DSM, adjacency matrix)

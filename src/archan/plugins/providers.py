@@ -4,10 +4,9 @@
 
 import sys
 
+from . import Argument, Provider
 from ..dsm import DesignStructureMatrix
 from ..logging import Logger
-from . import Argument, Provider
-
 
 logger = Logger.get_logger(__name__)
 

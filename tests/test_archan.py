@@ -4,11 +4,11 @@
 
 import unittest
 
+from archan.dsm import DesignStructureMatrix as DSM
 from archan.plugins.checkers import (
     Checker, CodeClean, CompleteMediation, EconomyOfMechanism,
     LayeredArchitecture, LeastCommonMechanism, LeastPrivileges,
     SeparationOfPrivileges)
-from archan.dsm import DesignStructureMatrix as DSM
 
 
 class TestArchan(unittest.TestCase):

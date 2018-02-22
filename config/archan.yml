@@ -1,5 +1,5 @@
 analysis:
-  archan_pylint.PyLintProvider:
+  archan_pylint.PylintProvider:
     name: Pylint
     arguments:
       pylint_args:
@@ -25,3 +25,5 @@ analysis:
           allow_failure: true
           arguments:
             independence_factor: 5
+  Open Design:
+    Source Code: true

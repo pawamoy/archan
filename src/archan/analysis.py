@@ -2,12 +2,13 @@
 
 """Analysis module."""
 
-from colorama import Fore, Style
+import sys
 
-from .plugins import Checker
-from .plugins.printing import pretty_description
+from tap.tracker import Tracker
+
+from .enums import ResultCode
 from .logging import Logger
-
+from .printing import PrintableNameMixin, PrintableResultMixin
 
 logger = Logger.get_logger(__name__)
 
@@ -31,6 +32,12 @@ class Analysis:
         self.config = config
         self.results = []
 
+    @staticmethod
+    def _get_checker_result(group, checker, provider=None, nd=''):
+        logger.info('Run %schecker %s', nd, checker.identifier or checker.name)
+        checker.run(provider.data if provider else None)
+        return Result(group, provider, checker, *checker.result)
+
     def run(self, verbose=True):
         """
         Run the analysis.
@@ -44,50 +51,102 @@ class Analysis:
         self.results.clear()
 
         for analysis_group in self.config.analysis_groups:
-            if verbose:
-                analysis_group.print_name()
-            for provider in analysis_group.providers:
-                logger.info('Run provider %s', provider.identifier)
-                provider.run()
-            for provider in analysis_group.providers:
-                if verbose:
-                    provider.print_name(indent=2)
+            if analysis_group.providers:
+                for provider in analysis_group.providers:
+                    logger.info('Run provider %s', provider.identifier)
+                    provider.run()
+                    for checker in analysis_group.checkers:
+                        result = self._get_checker_result(
+                            analysis_group, checker, provider)
+                        self.results.append(result)
+                        analysis_group.results.append(result)
+                        if verbose:
+                            result.print()
+            else:
                 for checker in analysis_group.checkers:
-                    if verbose:
-                        checker.print_name(indent=4, end=': ')
-                    logger.info('Run checker %s', checker.identifier)
-                    result = Result(
-                        analysis_group, provider, checker, *checker.run(provider.data))
+                    result = self._get_checker_result(
+                        analysis_group, checker, nd='no-data-')
                     self.results.append(result)
+                    analysis_group.results.append(result)
                     if verbose:
-                        result.print(False, False, 6)
-        return self.results
+                        result.print()
 
     def print_results(self):
-        """Print the collected results."""
-        # TODO
+        """Print analysis results as text on standard output."""
+        for result in self.results:
+            result.print()
+
+    def output_tap(self):
+        """Output analysis results in TAP format."""
+        tracker = Tracker(streaming=True, stream=sys.stdout)
+        for group in self.config.analysis_groups:
+            n_providers = len(group.providers)
+            n_checkers = len(group.checkers)
+            if not group.providers and group.checkers:
+                test_suite = group.name
+                description_lambda = lambda r: r.checker.name
+            elif not group.checkers:
+                logger.warning(
+                    'Invalid analysis group (no checkers), skipping')
+                continue
+            elif n_providers > n_checkers:
+                test_suite = group.checkers[0].name
+                description_lambda = lambda r: r.provider.name
+            else:
+                test_suite = group.providers[0].name
+                description_lambda = lambda r: r.checker.name
+
+            for result in group.results:
+                description = description_lambda(result)
+                if result.code == ResultCode.PASSED:
+                    tracker.add_ok(test_suite, description)
+                elif result.code == ResultCode.IGNORED:
+                    tracker.add_ok(
+                        test_suite, description + ' (ALLOWED FAILURE)')
+                elif result.code == ResultCode.NOT_IMPLEMENTED:
+                    tracker.add_not_ok(
+                        test_suite, description, 'TODO implement the test')
+                elif result.code == ResultCode.FAILED:
+                    tracker.add_not_ok(
+                        test_suite, description,
+                        diagnostics='  ---\n  message: %s\n  hint: %s\n  ...' % (
+                            '\n  message: '.join(result.messages.split('\n')),
+                            result.checker.hint))
+
+    def output_json(self):
+        """Output analysis results in JSON format."""
 
     @property
     def successful(self):
         """Property to tell if the run was successful: no failures."""
         for result in self.results:
-            if result.code == Checker.FAILED:
+            if result.code == ResultCode.FAILED:
                 return False
         return True
 
 
-class AnalysisGroup:
-    def __init__(self, name=None, description=None, providers=None, checkers=None):
+class AnalysisGroup(PrintableNameMixin):
+    """Placeholder for groups of providers and checkers."""
+
+    def __init__(self, name=None, description=None, providers=None,
+                 checkers=None):
+        """
+        Initialization method.
+
+        Args:
+            name (str): the group name.
+            description (str): the group description.
+            providers (list): the list of providers.
+            checkers (list): the list of checkers.
+        """
         self.name = name
         self.description = description
         self.providers = providers or []
         self.checkers = checkers or []
-
-    def print_name(self, indent=0, end='\n'):
-        print(Style.BRIGHT + ' ' * indent + self.name, end=end)
+        self.results = []
 
 
-class Result(object):
+class Result(PrintableResultMixin):
     """Placeholder for analysis results."""
 
     def __init__(self, group, provider, checker, code, messages):
@@ -106,34 +165,3 @@ class Result(object):
         self.checker = checker
         self.code = code
         self.messages = messages
-
-    def print(self, provider=True, checker=True, indent=2):
-        """
-        Print an analysis result.
-
-        Args:
-            provider (bool): whether to print the provider or not.
-            checker (bool): whether to print the checker or not.
-            indent (int): indent for messages and hints.
-        """
-        status = {
-            Checker.NOT_IMPLEMENTED: '{}not implemented{}'.format(
-                Fore.YELLOW, Style.RESET_ALL),
-            Checker.IGNORED: '{}failed (ignored){}'.format(
-                Fore.YELLOW, Style.RESET_ALL),
-            Checker.FAILED: '{}failed{}'.format(
-                Fore.RED, Style.RESET_ALL),
-            Checker.PASSED: '{}passed{}'.format(
-                Fore.GREEN, Style.RESET_ALL),
-        }.get(self.code)
-        if provider:
-            print(Style.BRIGHT + self.provider.name, end=' – ')
-        if checker:
-            print('%s: ' % (Style.BRIGHT + self.checker.name), end='')
-        print(Style.RESET_ALL + status)
-        if self.messages:
-            for message in self.messages.split('\n'):
-                print(pretty_description(message, indent=indent))
-            if self.checker.hint:
-                print(pretty_description(
-                    'Hint: ' + self.checker.hint, indent=indent))
