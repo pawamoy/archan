@@ -8,6 +8,21 @@ logger = Logger.get_logger(__name__)
 
 
 class Argument(PluginArgumentPrintMixin):
+    def __init__(self, name, cls, description, default=None):
+        """
+        Initialization method.
+
+        Args:
+            name (str): name of the argument.
+            cls (type): type of the argument.
+            description (str): description of the argument.
+            default (obj): default value for the argument.
+        """
+        self.name = name
+        self.cls = cls
+        self.description = description
+        self.default = default
+
     def __str__(self):
         return '  %s (%s, default %s): %s' % (
             self.name, self.cls, self.default, self.description)
@@ -26,7 +41,7 @@ class Checker(PluginPrintMixin):
     name = ''
     description = ''
     hint = ''
-    arguments = ()
+    argument_list = ()
 
     PASSED = 1
     FAILED = 0
@@ -35,18 +50,24 @@ class Checker(PluginPrintMixin):
 
     STATUS = (PASSED, FAILED, IGNORED, NOT_IMPLEMENTED)
 
-    def __init__(self, allow_failure=False, passes=None, run_args=None):
+    def __init__(self, name=None, description=None, hint=None, allow_failure=False, passes=None, arguments=None):
         """
         Initialization method.
 
         Args:
             allow_failure (bool): still pass if failed or not.
-            run_args (dict): arguments passed to the check method when run.
+            arguments (dict): arguments passed to the check method when run.
         """
-        super().__init__()
+        if name:
+            self.name = name
+        if description:
+            self.description = description
+        if hint:
+            self.hint = hint
+
         self.allow_failure = allow_failure
         self.passes = passes
-        self.run_args = run_args or {}
+        self.arguments = arguments or {}
         self.result = None
 
     def check(self, data, **kwargs):
@@ -83,7 +104,7 @@ class Checker(PluginPrintMixin):
             return result_type(Checker.FAILED, '')
 
         try:
-            result = self.check(data, **self.run_args)
+            result = self.check(data, **self.arguments)
             messages = ''
             if isinstance(result, tuple):
                 result, messages = result
@@ -110,17 +131,21 @@ class Provider(PluginPrintMixin):
     identifier = ''
     name = ''
     description = ''
-    arguments = ()
+    argument_list = ()
 
-    def __init__(self, run_args=None):
+    def __init__(self, name=None, description=None, arguments=None):
         """
         Initialization method.
 
         Args:
-            run_args (dict): arguments that will be used for get_data method.
+            arguments (dict): arguments that will be used for get_data method.
         """
-        super().__init__()
-        self.run_args = run_args or {}
+        if name:
+            self.name = name
+        if description:
+            self.description = description
+
+        self.arguments = arguments or {}
         self.data = None
 
     def get_data(self, **kwargs):
@@ -129,4 +154,4 @@ class Provider(PluginPrintMixin):
 
     def run(self):
         """Run the get_data method with run arguments, store the result."""
-        self.data = self.get_data(**self.run_args)
+        self.data = self.get_data(**self.arguments)

@@ -46,10 +46,12 @@ analysis:
   Network/Software Architecture:
     providers:
       dependenpy.InternalDependencies:
+        name: Software Architecture
         arguments:
           packages:
             - src/archan
       archan.CSVInput:
+        name: Network Architecture
         arguments:
           file_path: network.csv
     checkers:
@@ -65,8 +67,8 @@ analysis:
             independence_factor: 5
 
   # example with no data to compute
-  Open Design:
-    Source code: true
-    Infrastructure:
-      passes: false
-      allow_failure: true
+#  Open Design:
+#    Source code: true
+#    Infrastructure:
+#      passes: false
+#      allow_failure: true

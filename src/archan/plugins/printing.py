@@ -71,25 +71,6 @@ def pretty_description(description, wrap_at=None, indent=0):
 class PluginArgumentPrintMixin:
     """Placeholder to store descriptive values of arguments."""
 
-    def __init__(self, name=None, cls=None, description=None, default=None):
-        """
-        Initialization method.
-
-        Args:
-            name (str): name of the argument.
-            cls (type): type of the argument.
-            description (str): description of the argument.
-            default (obj): default value for the argument.
-        """
-        if name:
-            self.name = name
-        if cls:
-            self.cls = cls
-        if description:
-            self.description = description
-        if default:
-            self.default = default
-
     def get_help(self):
         """Property to return the help text for an argument."""
         text = (
@@ -115,22 +96,14 @@ class PluginArgumentPrintMixin:
 
 
 class PluginPrintMixin:
-    def __init__(self, identifier=None, name=None, description=None):
-        if identifier:
-            self.identifier = identifier
-        if name:
-            self.name = name
-        if description:
-            self.description = description
-
     def print_name(self, indent=0, end='\n'):
         print(Style.BRIGHT + ' ' * indent + self.name, end=end)
 
     def get_help(self):
         """Return a help text for the current subclass of Provider."""
-        if hasattr(self, 'arguments') and self.arguments:
-            complement = '{bold}Arguments:{none}\n{arguments}\n'.format(
-                arguments='\n'.join([a.help for a in self.arguments]))
+        if hasattr(self, 'argument_list') and self.argument_list:
+            complement = '{bold}Arguments:{none}\n{arguments}{none}\n'.format(
+                arguments='\n'.join([a.help for a in self.argument_list]))
         else:
             complement = ''
         return (

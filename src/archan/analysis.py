@@ -42,21 +42,25 @@ class Analysis:
             verbose (bool): whether to immediately print the results or not.
         """
         self.results.clear()
-        for provider in self.config.providers:
-            logger.info('Run provider %s', provider.identifier)
-            provider.run()
-        for provider in self.config.providers:
+
+        for analysis_group in self.config.analysis_groups:
             if verbose:
-                provider.print_name(indent=2)
-            for checker in self.config.checkers:
+                analysis_group.print_name()
+            for provider in analysis_group.providers:
+                logger.info('Run provider %s', provider.identifier)
+                provider.run()
+            for provider in analysis_group.providers:
                 if verbose:
-                    checker.print_name(indent=4, end=': ')
-                logger.info('Run checker %s', checker.identifier)
-                result = Result(
-                    self, provider, checker, *checker.run(provider.dsm))
-                self.results.append(result)
-                if verbose:
-                    result.print(False, False, 6)
+                    provider.print_name(indent=2)
+                for checker in analysis_group.checkers:
+                    if verbose:
+                        checker.print_name(indent=4, end=': ')
+                    logger.info('Run checker %s', checker.identifier)
+                    result = Result(
+                        analysis_group, provider, checker, *checker.run(provider.data))
+                    self.results.append(result)
+                    if verbose:
+                        result.print(False, False, 6)
         return self.results
 
     def print_results(self):
@@ -73,24 +77,31 @@ class Analysis:
 
 
 class AnalysisGroup:
-    def __init__(self, providers=None, checkers=None):
+    def __init__(self, name=None, description=None, providers=None, checkers=None):
+        self.name = name
+        self.description = description
         self.providers = providers or []
         self.checkers = checkers or []
+
+    def print_name(self, indent=0, end='\n'):
+        print(Style.BRIGHT + ' ' * indent + self.name, end=end)
 
 
 class Result(object):
     """Placeholder for analysis results."""
 
-    def __init__(self, provider, checker, code, messages):
+    def __init__(self, group, provider, checker, code, messages):
         """
         Initialization method.
 
         Args:
+            group (AnalysisGroup): parent group.
             provider (Provider): parent Provider.
             checker (Checker): parent Checker.
             code (int): constant from Checker class.
             messages (str): messages string.
         """
+        self.group = group
         self.provider = provider
         self.checker = checker
         self.code = code
@@ -119,7 +130,7 @@ class Result(object):
             print(Style.BRIGHT + self.provider.name, end=' – ')
         if checker:
             print('%s: ' % (Style.BRIGHT + self.checker.name), end='')
-        print(status)
+        print(Style.RESET_ALL + status)
         if self.messages:
             for message in self.messages.split('\n'):
                 print(pretty_description(message, indent=indent))

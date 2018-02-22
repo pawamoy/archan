@@ -1,26 +1,27 @@
-analyzers:
-  - name: General
-    providers:
-      - archan_pylint.MessagesPerModule:
-          pylint_args:
-            - src/archan
+analysis:
+  archan_pylint.PyLintProvider:
+    name: Pylint
+    arguments:
+      pylint_args:
+        - src/archan
     checkers:
-      - archan.OpenDesign:
-          ok: true
-      - archan.CodeClean:
+      archan.CodeClean:
+        allow_failure: true
+        arguments:
           threshold: 10
-          ignore: true
-  - name: Internal software dependencies
-    providers:
-      - dependenpy.InternalDependencies:
-          packages:
-            - src/archan
+  dependenpy.InternalDependencies:
+    name: Software Architecture
+    arguments:
+      packages:
+        - src/archan
     checkers:
       - archan.CompleteMediation
       - archan.EconomyOfMechanism:
-          simplicity_factor: 2
-          ignore: true
+          allow_failure: true
+          arguments:
+            simplicity_factor: 2
       - archan.LayeredArchitecture
       - archan.LeastCommonMechanism:
-          independence_factor: 5
-          ignore: true
+          allow_failure: true
+          arguments:
+            independence_factor: 5

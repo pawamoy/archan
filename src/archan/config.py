@@ -10,6 +10,7 @@ import sys
 import pkg_resources
 import yaml
 from colorama import Style
+from copy import deepcopy
 
 from .analysis import AnalysisGroup
 from .plugins import Checker, Provider
@@ -17,6 +18,11 @@ from .plugins.printing import console_width
 from .errors import ConfigError
 from .logging import Logger
 
+
+try:
+    ModuleNotFoundError = ModuleNotFoundError
+except NameError:
+    ModuleNotFoundError = ImportError
 
 logger = Logger.get_logger(__name__)
 
@@ -31,80 +37,20 @@ class Config(object):
         Args:
             config_dict (dict): the configuration as a dictionary.
         """
-        self.config_dict = config_dict
+        self.config_dict = deepcopy(config_dict)
         self.plugins = Config.load_installed_plugins()
         self.analysis_groups = []
 
         if not config_dict:
             return
 
-        analysis = config_dict['analysis']
+        analysis = config_dict.get('analysis', {})
 
         if isinstance(analysis, dict):
-
             for group_key, group_def in analysis.items():
-
-                current_group = AnalysisGroup()
-
-                if isinstance(group_key, str):
-
-                    if isinstance(group_def, dict):
-                        try:
-                            plugin = self.get_plugin(group_key)
-                            plugin = plugin(run_kwargs=group_def.get('arguments'))
-                            if isinstance(plugin, Checker):
-                                plugin.allow_failure = group_def.get('allow_failure', False)
-                                if 'providers' not in group_def:
-                                    raise ValueError
-
-                            elif isinstance(plugin, Provider):
-                                if 'checkers' not in group_def:
-                                    raise ValueError
-
-                        except ImportError:
-                            logger.warning(
-                                'Could not find any plugin identified by %s, '
-                                'considering entry as group name.', group_key)
-                            for value_key, value_value in group_def.items():
-                                checker = Checker()
-                                if isinstance(value_value, bool):
-                                    checker.pass_ = value_value
-                                elif isinstance(value_value, dict):
-                                    checker.pass_ = value_value.get('pass', False)
-                                    checker.pass_ = value_value.get('allow_failure', False)
-                                else:
-                                    raise NotImplementedError
-                                current_group.checkers.append(checker)
-                    else:
-                        raise ValueError
-
-                else:
-                    raise NotImplementedError(
-                        'Other types than str are not yet supported')
-
-                self.analysis_groups.append(current_group)
-
-        elif isinstance(analysis, (list, tuple, set)):
-
-            for item in analysis:
-
-                if isinstance(item, str):
-
-                elif isinstance(item, dict):
-
-                else:
-                    raise NotImplementedError(
-                        'Other types than str and dict are not yet supported')
-
+                self.analysis_groups.append(self.inflate_analysis_group(group_key, group_def))
         else:
-
             raise ValueError
-
-        # 1P 1C
-        # 1C 1P
-        # 1P NC
-        # 1C NP
-        # no data
 
     def __str__(self):
         return str(self.config_dict)
@@ -112,10 +58,13 @@ class Config(object):
     @staticmethod
     def load_local_plugin(name):
         """Import a local plugin accessible through Python path."""
-        module_name = '.'.join(name.split('.')[:-1])
-        module_obj = importlib.import_module(name=module_name)
-        obj = getattr(module_obj, name.split('.')[-1])
-        return obj
+        try:
+            module_name = '.'.join(name.split('.')[:-1])
+            module_obj = importlib.import_module(name=module_name)
+            obj = getattr(module_obj, name.split('.')[-1])
+            return obj
+        except (ImportError, AttributeError, ModuleNotFoundError, ValueError):
+            raise ModuleNotFoundError
 
     @staticmethod
     def load_installed_plugins():
@@ -193,6 +142,54 @@ class Config(object):
             }
         })
 
+    @staticmethod
+    def inflate_plugin_list(plugin_list, inflate_plugin):
+        plugins = []
+        for plugin_def in plugin_list:
+            if isinstance(plugin_def, str):
+                try:
+                    plugins.append(inflate_plugin(plugin_def))
+                except ModuleNotFoundError:
+                    logger.error('Could not import plugin identified by %s.', plugin_def)
+            elif isinstance(plugin_def, dict):
+                if len(plugin_def) > 1:
+                    raise ValueError(
+                        'When using a plugin list, each dictionary item '
+                        'must contain only one key.')
+                identifier = list(plugin_def.keys())[0]
+                definition = plugin_def[identifier]
+                try:
+                    plugins.append(inflate_plugin(identifier, definition))
+                except ModuleNotFoundError:
+                    logger.error('Could not import plugin identified by %s. '
+                                 'Inflate method: %s', identifier, inflate_plugin)
+        return plugins
+
+    @staticmethod
+    def inflate_plugin_dict(plugin_dict, inflate_plugin):
+        plugins = []
+        for identifier, definition in plugin_dict.items():
+            try:
+                plugins.append(inflate_plugin(identifier, definition))
+            except ModuleNotFoundError:
+                logger.error('Could not import plugin identified by %s.', identifier)
+        return plugins
+
+    @staticmethod
+    def inflate_nd_checker(identifier, definition):
+        if isinstance(definition, bool):
+            return Checker(name=identifier, passes=definition)
+        elif isinstance(definition, dict):
+            return Checker(definition.pop('name', identifier), **definition)
+        else:
+            raise ValueError
+
+    @staticmethod
+    def cleanup_definition(definition):
+        definition.pop('name', '')
+        definition.pop('description', '')
+        definition.pop('arguments', '')
+
     @property
     def available_providers(self):
         """Return the available providers."""
@@ -219,7 +216,6 @@ class Config(object):
         elif (cls is None or cls == 'checker') and identifier in self.available_checkers:
             return self.available_checkers[identifier]
         return Config.load_local_plugin(identifier)
-
 
     def get_provider(self, identifier):
         """Return the provider class corresponding to the given identifier."""
@@ -261,47 +257,42 @@ class Config(object):
                                   key=lambda x: x.identifier):
                 print(checker.get_help())
 
-
-
-    def inflate_provider(self, identifier, definition=None):
-        return self.inflate_plugin(identifier, definition, 'provider')
-
-    def inflate_providers(self, provider_list):
-        return self.inflate_plugins(provider_list, self.inflate_provider)
-
-    def inflate_checker(self, identifier, definition=None):
-        return self.inflate_plugin(identifier, definition, 'checker')
-
-    def inflate_checkers(self, checker_list):
-        return self.inflate_plugins(checker_list, self.inflate_checker)
-
     def inflate_plugin(self, identifier, definition=None, cls=None):
         cls = self.get_plugin(identifier, cls)
         return cls(**definition or {})
 
-    @staticmethod
-    def inflate_plugins(plugin_list, inflate_plugin):
-        plugins = []
-        for plugin_def in plugin_list:
-            if isinstance(plugin_def, str):
-                plugins.append(inflate_plugin(plugin_def))
-            elif isinstance(plugin_def, dict):
-                if len(plugin_def) > 1:
-                    raise ValueError(
-                        'When using a plugin list, each dictionary item '
-                        'must contain only one key.')
-                identifier = list(plugin_def.keys())[0]
-                definition = plugin_def[identifier]
-                plugins.append(inflate_plugin(identifier, definition))
-        return plugins
+    def inflate_plugins(self, plugins_definition, inflate_method):
+        if isinstance(plugins_definition, list):
+            return self.inflate_plugin_list(plugins_definition, inflate_method)
+        elif isinstance(plugins_definition, dict):
+            return self.inflate_plugin_dict(plugins_definition, inflate_method)
+        else:
+            raise ValueError
+
+    def inflate_provider(self, identifier, definition=None):
+        return self.inflate_plugin(identifier, definition, 'provider')
+
+    def inflate_checker(self, identifier, definition=None):
+        return self.inflate_plugin(identifier, definition, 'checker')
+
+    def inflate_providers(self, providers_definition):
+        return self.inflate_plugins(providers_definition, self.inflate_provider)
+
+    def inflate_checkers(self, checkers_definition):
+        return self.inflate_plugins(checkers_definition, self.inflate_checker)
 
     def inflate_analysis_group(self, identifier, definition):
+        providers_definition = definition.pop('providers', None)
+        checkers_definition = definition.pop('checkers', None)
+
         analysis_group = AnalysisGroup()
-        providers_definition = definition.pop('providers')
-        checkers_definition = definition.pop('checkers')
 
         try:
+
             first_plugin = self.inflate_plugin(identifier, definition)
+
+            analysis_group.name = first_plugin.name
+            analysis_group.description = first_plugin.description
 
             if isinstance(first_plugin, Checker):
                 analysis_group.checkers.append(first_plugin)
@@ -309,12 +300,7 @@ class Config(object):
                 if providers_definition is None:
                     raise ValueError
 
-                if isinstance(providers_definition, list):
-                    analysis_group.providers.extend(self.inflate_providers(providers_definition))
-                elif isinstance(providers_definition, dict):
-                    analysis_group.providers.extend(self.inflate_providers(providers_definition))
-                else:
-                    raise ValueError
+                analysis_group.providers.extend(self.inflate_providers(providers_definition))
 
             elif isinstance(first_plugin, Provider):
                 analysis_group.providers.append(first_plugin)
@@ -322,24 +308,26 @@ class Config(object):
                 if checkers_definition is None:
                     raise ValueError
 
-                if isinstance(checkers_definition, list):
-                    analysis_group.checkers.extend(self.inflate_providers(checkers_definition))
-                elif isinstance(checkers_definition, dict):
-                    analysis_group.checkers.extend(self.inflate_providers(checkers_definition))
-                else:
-                    raise ValueError
+                analysis_group.checkers.extend(self.inflate_checkers(checkers_definition))
 
-        except ImportError:
+        except ModuleNotFoundError:
+
             logger.warning(
                 'Could not find any plugin identified by %s, '
                 'considering entry as group name.', identifier)
-            for value_key, value_value in definition.items():
-                checker = Checker()
-                if isinstance(value_value, bool):
-                    checker.pass_ = value_value
-                elif isinstance(value_value, dict):
-                    checker.pass_ = value_value.get('pass', False)
-                    checker.pass_ = value_value.get('allow_failure', False)
-                else:
-                    raise NotImplementedError
-                current_group.checkers.append(checker)
+
+            analysis_group.name = definition.pop('name', identifier)
+            analysis_group.description = definition.pop('description', None)
+
+            if providers_definition:
+                analysis_group.providers.extend(self.inflate_providers(providers_definition))
+
+            if checkers_definition:
+                analysis_group.checkers.extend(self.inflate_checkers(checkers_definition))
+
+        self.cleanup_definition(definition)
+
+        for nd_identifier, nd_definition in definition.items():
+            analysis_group.checkers.append(self.inflate_nd_checker(nd_identifier, nd_definition))
+
+        return analysis_group

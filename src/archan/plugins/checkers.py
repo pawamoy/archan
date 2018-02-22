@@ -2,7 +2,7 @@
 
 """Checker module."""
 
-from ..errors import DesignStructureMatrixError as DSMError
+from ..errors import DesignStructureMatrixError
 from ..logging import Logger
 from . import Argument, Checker
 
@@ -121,7 +121,7 @@ class CompleteMediation(Checker):
                         mediation_matrix[i][j] = 0
                 else:
                     # mediation_matrix[i][j] = -2  # errors in the generation
-                    raise DSMError(
+                    raise DesignStructureMatrixError(
                         'Mediation matrix value NOT generated for %s:%s' % (
                             i, j))
 
@@ -147,7 +147,7 @@ class CompleteMediation(Checker):
 
         if (rows_dep_matrix != rows_med_matrix or
                 cols_dep_matrix != cols_med_matrix):
-            raise DSMError('Matrices are NOT compliant '
+            raise DesignStructureMatrixError('Matrices are NOT compliant '
                            '(number of rows/columns not equal)')
 
         discrepancy_found = False
@@ -465,7 +465,7 @@ class CodeClean(Checker):
     )
 
     def check(self, dsm, **kwargs):
-        self.logger.debug('Entities = %s' % dsm.entities)
+        logger.debug('Entities = %s' % dsm.entities)
         messages = []
         code_clean = True
         threshold = kwargs.pop('threshold', 1)

@@ -26,10 +26,10 @@ class CSVInput(Provider):
                  'If set, used as delimiter for categories.')
     )
 
-    def get_dsm(self,
-                file_path=sys.stdin,
-                delimiter=',',
-                categories_delimiter=None):
+    def get_data(self,
+                 file_path=sys.stdin,
+                 delimiter=',',
+                 categories_delimiter=None):
         """
         Implement get_dsm method from Provider class.
 
@@ -46,13 +46,13 @@ class CSVInput(Provider):
             DSM: instance of DSM.
         """
         if file_path == sys.stdin:
-            self.logger.info('Read data from standard input')
+            logger.info('Read data from standard input')
             lines = [line.replace('\n', '') for line in file_path]
         else:
-            self.logger.info('Read data from file ' + file_path)
+            logger.info('Read data from file ' + file_path)
             with open(file_path) as file:
                 lines = list(file)
-        columns = lines[0].split(delimiter)[1:]
+        columns = lines[0].rstrip('\n').split(delimiter)[1:]
         categories = None
         if categories_delimiter:
             columns, categories = zip(*[c.split(categories_delimiter, 1)

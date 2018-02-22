@@ -25,8 +25,9 @@ import sys
 import colorama
 
 from . import __version__
+from .analysis import Analysis
 from .config import Config
-from .utils import Logger
+from .logging import Logger
 
 
 logger = Logger.get_logger(__name__)
@@ -119,7 +120,7 @@ def main(args=None):
         config = Config.default_config(file_path)
     else:
         if args.config_file:
-            logger.ingo('Configuration file specified: %s' % args.config_file)
+            logger.info('Configuration file specified: %s' % args.config_file)
             config_file = args.config_file
         else:
             logger.info('No configuration file specified, searching')
@@ -140,12 +141,13 @@ def main(args=None):
         return
 
     logger.info('Run analysis')
+    analysis = Analysis(config)
     try:
-        config.run()
+        analysis.run()
         logger.info('Print results')
-        # config.print_results()
-        logger.info('Analysis successful: %s' % config.successful)
-        return 0 if config.successful else 1
+        analysis.print_results()
+        logger.info('Analysis successful: %s' % analysis.successful)
+        return 0 if analysis.successful else 1
     except KeyboardInterrupt:
         logger.info('Keyboard interruption, aborting')
         return 130

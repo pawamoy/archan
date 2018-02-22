@@ -14,7 +14,7 @@ from .dsm import (
 from .logging import Logger
 
 __all__ = ('DesignStructureMatrix', 'DomainMappingMatrix', 'MultipleDomainMatrix', 'Provider', 'Checker', 'Argument', 'Logger')
-
+__version__ = '3.0.0'
 
 # TODO: DSM class should have more methods (see wiki DSM, adjacency matrix)
 # FIXME: use if not sys.stdin.isatty() to detect stdin input or not

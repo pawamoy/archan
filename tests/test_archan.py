@@ -4,9 +4,9 @@
 
 import unittest
 
-from archan.checkers import (
+from archan.plugins.checkers import (
     Checker, CodeClean, CompleteMediation, EconomyOfMechanism,
-    LayeredArchitecture, LeastCommonMechanism, LeastPrivileges, OpenDesign,
+    LayeredArchitecture, LeastCommonMechanism, LeastPrivileges,
     SeparationOfPrivileges)
 from archan.dsm import DesignStructureMatrix as DSM
 
@@ -132,12 +132,6 @@ class TestArchan(unittest.TestCase):
         self.assertEqual(result[0], Checker.NOT_IMPLEMENTED,
                          'Least privileges %s' % result[1])
 
-    def test_webapp_open_design(self):
-        """Test open design for webapp."""
-        result = OpenDesign(ok=False, ignore=True).run(self.web_app_dsm)
-        self.assertEqual(result[0], Checker.IGNORED,
-                         'Open design %s' % result[1])
-
     def test_webapp_separation_of_privileges(self):
         """Test separation of privileges for webapp."""
         result = SeparationOfPrivileges().run(self.web_app_dsm)
@@ -171,21 +165,15 @@ class TestArchan(unittest.TestCase):
 
     def test_genida_layered_architecture(self):
         """Test layered architecture for webapp."""
-        result = LayeredArchitecture(ignore=True).run(self.genida_dsm)
+        result = LayeredArchitecture(allow_failure=True).run(self.genida_dsm)
         self.assertEqual(result[0], Checker.IGNORED,
                          'Layered architecture %s' % result[1])
 
     def test_genida_least_privileges(self):
         """Test least privileges for webapp."""
-        result = LeastPrivileges(ignore=True).run(self.genida_dsm)
+        result = LeastPrivileges(allow_failure=True).run(self.genida_dsm)
         self.assertEqual(result[0], Checker.NOT_IMPLEMENTED,
                          'Least privileges %s' % result[1])
-
-    def test_genida_open_design(self):
-        """Test open design for webapp."""
-        result = OpenDesign(ok=True).run(self.genida_dsm)
-        self.assertEqual(result[0], Checker.PASSED,
-                         'Open design %s' % result[1])
 
     def test_genida_separation_of_privileges(self):
         """Test separation of privileges for webapp."""

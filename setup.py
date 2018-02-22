@@ -27,21 +27,20 @@ def read(*names, **kwargs):
 
 
 ARCHAN_EP = [
-    'archan.LayeredArchitecture = archan.checkers:LayeredArchitecture',
-    'archan.SeparationOfPrivileges = archan.checkers:SeparationOfPrivileges',
-    'archan.LeastPrivileges = archan.checkers:LeastPrivileges',
-    'archan.EconomyOfMechanism = archan.checkers:EconomyOfMechanism',
-    'archan.CodeClean = archan.checkers:CodeClean',
-    'archan.OpenDesign = archan.checkers:OpenDesign',
-    'archan.LeastCommonMechanism = archan.checkers:LeastCommonMechanism',
-    'archan.CompleteMediation = archan.checkers:CompleteMediation',
-    'archan.CSVInput = archan.providers:CSVInput'
+    'archan.LayeredArchitecture = archan.plugins.checkers:LayeredArchitecture',
+    'archan.SeparationOfPrivileges = archan.plugins.checkers:SeparationOfPrivileges',
+    'archan.LeastPrivileges = archan.plugins.checkers:LeastPrivileges',
+    'archan.EconomyOfMechanism = archan.plugins.checkers:EconomyOfMechanism',
+    'archan.CodeClean = archan.plugins.checkers:CodeClean',
+    'archan.LeastCommonMechanism = archan.plugins.checkers:LeastCommonMechanism',
+    'archan.CompleteMediation = archan.plugins.checkers:CompleteMediation',
+    'archan.CSVInput = archan.plugins.providers:CSVInput'
 ]
 
 
 setup(
     name='archan',
-    version='2.0.1',
+    version='3.0.0',
     license='ISC',
     description='Analysis of your architecture strength based on DSM data.',
     long_description='%s\n%s' % (
