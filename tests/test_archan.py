@@ -11,7 +11,7 @@ from archan.plugins.checkers import (
     SeparationOfPrivileges)
 
 
-class TestArchan(unittest.TestCase):
+class TestCheckers(unittest.TestCase):
     """
     Main test class.
 
@@ -98,88 +98,117 @@ class TestArchan(unittest.TestCase):
     # Webapp tests
     def test_webapp_complete_mediation(self):
         """Test complete mediation for webapp."""
-        result = CompleteMediation().run(self.web_app_dsm)
-        self.assertEqual(result[0], Checker.PASSED,
-                         'Complete mediation: %s' % result[1])
+        check = CompleteMediation()
+        check.run(self.web_app_dsm)
+        result = check.result
+        self.assertEqual(result.code, Checker.Code.PASSED,
+                         'Complete mediation: %s' % result.messages)
 
     def test_webapp_economy_of_mechanism(self):
         """Test economoy of mechanism for webapp."""
-        result = EconomyOfMechanism().run(self.web_app_dsm)
-        self.assertEqual(result[0], Checker.PASSED,
-                         'Economy of mechanism %s' % result[1])
+        check = EconomyOfMechanism()
+        check.run(self.web_app_dsm)
+        result = check.result
+        self.assertEqual(result.code, Checker.Code.PASSED,
+                         'Economy of mechanism %s' % result.messages)
 
     def test_webapp_least_common_mechanism(self):
         """Test least common mechanism for webapp."""
-        result = LeastCommonMechanism().run(self.web_app_dsm)
-        self.assertEqual(result[0], Checker.PASSED,
-                         'Least common mechanism %s' % result[1])
+        check = LeastCommonMechanism()
+        check.run(self.web_app_dsm)
+        result = check.result
+        self.assertEqual(result.code, Checker.Code.PASSED,
+                         'Least common mechanism %s' % result.messages)
 
-    def test_webapp_code_clean(self):
-        """Test code clean for webapp."""
-        result = CodeClean().run(self.web_app_dsm)
-        self.assertEqual(result[0], Checker.NOT_IMPLEMENTED,
-                         'Code clean %s' % result[1])
+    # def test_webapp_code_clean(self):
+    #     """Test code clean for webapp."""
+    #     result = CodeClean().run(self.web_app_dsm)
+    #     self.assertEqual(result.code, Checker.Code.NOT_IMPLEMENTED,
+    #                      'Code clean %s' % result.messages)
 
     def test_webapp_layered_architecture(self):
         """Test layered architecture for webapp."""
-        result = LayeredArchitecture().run(self.web_app_dsm)
-        self.assertEqual(result[0], Checker.FAILED,
-                         'Layered architecture %s' % result[1])
+        check = LayeredArchitecture()
+        check.run(self.web_app_dsm)
+        result = check.result
+        self.assertEqual(result.code, Checker.Code.FAILED,
+                         'Layered architecture %s' % result.messages)
 
     def test_webapp_least_privileges(self):
         """Test least privileges for webapp."""
-        result = LeastPrivileges().run(self.web_app_dsm)
-        self.assertEqual(result[0], Checker.NOT_IMPLEMENTED,
-                         'Least privileges %s' % result[1])
+        check = LeastPrivileges()
+        check.run(self.web_app_dsm)
+        result = check.result
+        self.assertEqual(result.code, Checker.Code.NOT_IMPLEMENTED,
+                         'Least privileges %s' % result.messages)
 
     def test_webapp_separation_of_privileges(self):
         """Test separation of privileges for webapp."""
-        result = SeparationOfPrivileges().run(self.web_app_dsm)
-        self.assertEqual(result[0], Checker.NOT_IMPLEMENTED,
-                         'Separation of privileges %s' % result[1])
+        check = SeparationOfPrivileges()
+        check.run(self.web_app_dsm)
+        result = check.result
+        self.assertEqual(result.code, Checker.Code.NOT_IMPLEMENTED,
+                         'Separation of privileges %s' % result.messages)
 
     # Genida tests
     def test_genida_complete_mediation(self):
         """Test complete mediation for webapp."""
-        result = CompleteMediation().run(self.genida_dsm)
-        self.assertEqual(result[0], Checker.PASSED,
-                         'Complete mediation %s' % result[1])
+        check = CompleteMediation()
+        check.run(self.genida_dsm)
+        result = check.result
+        self.assertEqual(result.code, Checker.Code.PASSED,
+                         'Complete mediation %s' % result.messages)
 
     def test_genida_economy_of_mechanism(self):
         """Test economoy of mechanism for webapp."""
-        result = EconomyOfMechanism().run(self.genida_dsm)
-        self.assertEqual(result[0], Checker.PASSED,
-                         'Economy of mechanism %s' % result[1])
+        check = EconomyOfMechanism()
+        check.run(self.genida_dsm)
+        result = check.result
+        self.assertEqual(result.code, Checker.Code.PASSED,
+                         'Economy of mechanism %s' % result.messages)
 
     def test_genida_least_common_mechanism(self):
         """Test least common mechanism for webapp."""
-        result = LeastCommonMechanism().run(self.genida_dsm)
-        self.assertEqual(result[0], Checker.PASSED,
-                         'Least common mechanism %s' % result[1])
+        check = LeastCommonMechanism()
+        check.run(self.genida_dsm)
+        result = check.result
+        self.assertEqual(result.code, Checker.Code.PASSED,
+                         'Least common mechanism %s' % result.messages)
 
-    def test_genida_code_clean(self):
-        """Test code clean for webapp."""
-        result = CodeClean().run(self.genida_dsm)
-        self.assertEqual(result[0], Checker.NOT_IMPLEMENTED,
-                         'Code clean %s' % result[1])
+    # def test_genida_code_clean(self):
+    #     """Test code clean for webapp."""
+    #     result = CodeClean().run(self.genida_dsm)
+    #     self.assertEqual(result.code, Checker.Code.NOT_IMPLEMENTED,
+    #                      'Code clean %s' % result.messages)
 
     def test_genida_layered_architecture(self):
         """Test layered architecture for webapp."""
-        result = LayeredArchitecture(allow_failure=True).run(self.genida_dsm)
-        self.assertEqual(result[0], Checker.IGNORED,
-                         'Layered architecture %s' % result[1])
+        check = LayeredArchitecture(allow_failure=True)
+        check.run(self.genida_dsm)
+        result = check.result
+        self.assertEqual(result.code, Checker.Code.IGNORED,
+                         'Layered architecture %s' % result.messages)
 
     def test_genida_least_privileges(self):
         """Test least privileges for webapp."""
-        result = LeastPrivileges(allow_failure=True).run(self.genida_dsm)
-        self.assertEqual(result[0], Checker.NOT_IMPLEMENTED,
-                         'Least privileges %s' % result[1])
+        check = LeastPrivileges(allow_failure=True)
+        check.run(self.genida_dsm)
+        result = check.result
+        self.assertEqual(result.code, Checker.Code.NOT_IMPLEMENTED,
+                         'Least privileges %s' % result.messages)
 
     def test_genida_separation_of_privileges(self):
         """Test separation of privileges for webapp."""
-        result = SeparationOfPrivileges().run(self.genida_dsm)
-        self.assertEqual(result[0], Checker.NOT_IMPLEMENTED,
-                         'Separation of privileges %s' % result[1])
+        check = SeparationOfPrivileges()
+        check.run(self.genida_dsm)
+        result = check.result
+        self.assertEqual(result.code, Checker.Code.NOT_IMPLEMENTED,
+                         'Separation of privileges %s' % result.messages)
+
+    # Main tests
+    def test_cli(self):
+        from archan.__main__ import main
+        self.assertEqual(main(['--no-color']), 0)
 
 
 if __name__ == '__main__':

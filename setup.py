@@ -76,7 +76,7 @@ setup(
         'archan', 'architecture', 'analysis', 'security', 'dsm', 'audit'
     ],
     install_requires=[
-        'colorama', 'pyyaml'
+        'colorama', 'pyyaml', 'tap.py'
     ],
     extras_require={
         # 'with_dependenpy': ['dependenpy'],

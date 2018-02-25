@@ -2,6 +2,8 @@
 
 """Logging module."""
 
+from __future__ import absolute_import
+
 import logging
 
 from colorama import Back, Fore, Style

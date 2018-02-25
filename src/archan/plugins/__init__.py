@@ -97,7 +97,7 @@ class Checker(PrintableNameMixin, PrintablePluginMixin):
         Returns:
             tuple (int, str): status constant from Checker class and messages.
         """
-        result_type = namedtuple('Result', 'result messages')
+        result_type = namedtuple('Result', 'code messages')
 
         if self.passes is True:
             result = result_type(Checker.Code.PASSED, '')
