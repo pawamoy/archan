@@ -1,0 +1,45 @@
+site_name: "Archan"
+site_description: "None"
+site_url: "https://None.github.io/archan"
+repo_url: "https://github.com/None/archan"
+repo_name: "None/archan"
+
+nav:
+  - Overview: index.md
+  - Reference:
+      - analysis.py: reference/analysis.md
+      - cli.py: reference/cli.md
+      - config.py: reference/config.md
+      - dsm.py: reference/dsm.md
+      - enums.py: reference/enums.md
+      - errors.py: reference/errors.md
+      - logging.py: reference/logging.md
+      - plugins:
+          - checkers.py: reference/plugins/checkers.md
+          - providers.py: reference/plugins/providers.md
+      - printing.py: reference/printing.md
+  - Contributing: contributing.md
+  - Code of Conduct: code_of_conduct.md
+  - Changelog: changelog.md
+  - Credits: credits.md
+
+theme:
+  name: material
+
+extra_css:
+  - css/mkdocstrings.css
+
+markdown_extensions:
+  - admonition
+  - codehilite:
+      guess_lang: false
+  - pymdownx.superfences
+  - pymdownx.emoji
+  - toc:
+      permalink: "¤"
+
+plugins:
+  - search
+  - mkdocstrings:
+      watch:
+        - src/archan

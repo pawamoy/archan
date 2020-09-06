@@ -1,26 +1,21 @@
-# -*- coding: utf-8 -*-
+# Why does this file exist, and why not put this in `__main__`?
+#
+# You might be tempted to import things from `__main__` later,
+# but that will cause problems: the code will get executed twice:
+#
+# - When you run `python -m archan` python will execute
+#   `__main__.py` as a script. That means there won't be any
+#   `archan.__main__` in `sys.modules`.
+# - When you import `__main__` it will get executed again (as a module) because
+#   there's no `archan.__main__` in `sys.modules`.
 
-"""
-Module that contains the command line app.
-
-Why does this file exist, and why not put this in __main__?
-
-  You might be tempted to import things from __main__ later,
-  but that will cause problems: the code will get executed twice:
-
-  - When you run `python -marchan` python will execute
-    ``__main__.py`` as a script. That means there won't be any
-    ``archan.__main__`` in ``sys.modules``.
-  - When you import __main__ it will get executed again (as a module) because
-    there's no ``archan.__main__`` in ``sys.modules``.
-
-  Also see (1) from http://click.pocoo.org/5/setuptools/#setuptools-integration
-"""
+"""Module that contains the command line application."""
 
 import argparse
 import logging
 import os
 import sys
+from typing import List, Optional
 
 import colorama
 
@@ -64,8 +59,13 @@ def valid_level(value):
     return value
 
 
-def get_parser():
-    """Return a parser for the command-line arguments."""
+def get_parser() -> argparse.ArgumentParser:
+    """
+    Return the CLI argument parser.
+
+    Returns:
+        An argparse parser.
+    """
     parser = argparse.ArgumentParser(
         add_help=False,
         description='Analysis of your architecture strength based on DSM data')
@@ -96,8 +96,18 @@ def get_parser():
     return parser
 
 
-def main(args=None):
-    """Main function."""
+def main(args: Optional[List[str]] = None) -> int:
+    """
+    Run the main program.
+
+    This function is executed when you type `archan` or `python -m archan`.
+
+    Arguments:
+        args: Arguments passed from the command line.
+
+    Returns:
+        An exit code.
+    """
     parser = get_parser()
     args = parser.parse_args(args=args)
     Logger.set_level(args.level)
