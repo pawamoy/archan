@@ -28,7 +28,7 @@ class Logger(object):
             logger.setLevel(level)
 
     @staticmethod
-    def get_logger(name, level=None, fmt=':%(lineno)d: %(message)s'):
+    def get_logger(name, level=None, fmt=":%(lineno)d: %(message)s"):
         """
         Return a logger.
 
@@ -62,16 +62,15 @@ class LoggingFormatter(logging.Formatter):
     def format(self, record):
         """Override default format method."""
         if record.levelno == logging.DEBUG:
-            string = Back.WHITE + Fore.BLACK + ' debug '
+            string = Back.WHITE + Fore.BLACK + " debug "
         elif record.levelno == logging.INFO:
-            string = Back.BLUE + Fore.WHITE + ' info '
+            string = Back.BLUE + Fore.WHITE + " info "
         elif record.levelno == logging.WARNING:
-            string = Back.YELLOW + Fore.BLACK + ' warning '
+            string = Back.YELLOW + Fore.BLACK + " warning "
         elif record.levelno == logging.ERROR:
-            string = Back.RED + Fore.WHITE + ' error '
+            string = Back.RED + Fore.WHITE + " error "
         elif record.levelno == logging.CRITICAL:
-            string = Back.BLACK + Fore.WHITE + ' critical '
+            string = Back.BLACK + Fore.WHITE + " critical "
         else:
-            string = ''
-        return '{none}{string}{none} {super}'.format(
-            none=Style.RESET_ALL, string=string, super=super().format(record))
+            string = ""
+        return "{none}{string}{none} {super}".format(none=Style.RESET_ALL, string=string, super=super().format(record))

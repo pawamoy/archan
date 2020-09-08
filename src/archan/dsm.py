@@ -7,15 +7,13 @@ Contains the DesignStructureMatrix, DomainMappingMatrix and
 MultipleDomainMatrix classes.
 """
 
-from .errors import (
-    DesignStructureMatrixError, DomainMappingMatrixError, MatrixError,
-    MultipleDomainMatrixError)
+from .errors import DesignStructureMatrixError, DomainMappingMatrixError, MatrixError, MultipleDomainMatrixError
 
 
 def validate_rows_length(data, length, message=None, exception=MatrixError):
     """Validate that all rows have the same length."""
     if message is None:
-        message = 'All rows must have the same length (same number of columns)'
+        message = "All rows must have the same length (same number of columns)"
     for row in data:
         if len(row) != length:
             raise exception(message)
@@ -25,20 +23,17 @@ def validate_square(data, message=None, exception=MatrixError):
     """Validate that the matrix has equal number of rows and columns."""
     rows, columns = len(data), len(data[0]) if data else 0
     if message is None:
-        message = 'Number of rows: %s != number of columns: %s in matrix' % (
-            rows, columns)
+        message = "Number of rows: %s != number of columns: %s in matrix" % (rows, columns)
     if rows != columns:
         raise exception(message)
 
 
-def validate_categories_equal_entities(categories, entities, message=None,
-                                       exception=MatrixError):
+def validate_categories_equal_entities(categories, entities, message=None, exception=MatrixError):
     """Validate that the matrix has equal number of entities and categories."""
     nb_categories = len(categories)
     nb_entities = len(entities)
     if message is None:
-        message = 'Number of categories: %s != number of entities: %s' % (
-            nb_categories, nb_entities)
+        message = "Number of categories: %s != number of entities: %s" % (nb_categories, nb_entities)
     if categories and nb_categories != nb_entities:
         raise exception(message)
 
@@ -90,8 +85,7 @@ class BaseMatrix(object):
     def validate(self):
         """Validate data (rows length, categories=entities, square)."""
         validate_rows_length(self.data, self.columns, exception=self.error)
-        validate_categories_equal_entities(self.categories, self.entities,
-                                           exception=self.error)
+        validate_categories_equal_entities(self.categories, self.entities, exception=self.error)
         if self.square:
             validate_square(self.data, exception=self.error)
 
@@ -111,9 +105,7 @@ class DesignStructureMatrix(BaseMatrix):
         super().validate()
         nb_entities = len(self.entities)
         if nb_entities != self.rows:
-            raise self.error(
-                'Number of entities: %s != number of rows: %s' % (
-                    nb_entities, self.rows))
+            raise self.error("Number of entities: %s != number of rows: %s" % (nb_entities, self.rows))
 
     def transitive_closure(self):
         """Compute the transitive closure of the matrix."""
@@ -137,10 +129,9 @@ class DomainMappingMatrix(BaseMatrix):
         nb_entities = len(self.entities)
         if nb_entities != self.rows + self.columns:
             raise self.error(
-                'Number of entities: %s != number of rows + '
-                'number of columns: %s+%s=%s' % (
-                    nb_entities, self.rows, self.columns,
-                    self.rows + self.columns))
+                "Number of entities: %s != number of rows + "
+                "number of columns: %s+%s=%s" % (nb_entities, self.rows, self.columns, self.rows + self.columns)
+            )
 
     def default_entities(self):
         """Return range from 0 to rows + columns."""
@@ -156,19 +147,15 @@ class MultipleDomainMatrix(BaseMatrix):
     def validate(self):
         """Base validation + each cell is instance of DSM or MDM."""
         super().validate()
-        message_dsm = 'Matrix at [%s:%s] is not an instance of '\
-                      'DesignStructureMatrix or MultipleDomainMatrix.'
-        message_ddm = 'Matrix at [%s:%s] is not an instance of '\
-                      'DomainMappingMatrix or MultipleDomainMatrix.'
+        message_dsm = "Matrix at [%s:%s] is not an instance of " "DesignStructureMatrix or MultipleDomainMatrix."
+        message_ddm = "Matrix at [%s:%s] is not an instance of " "DomainMappingMatrix or MultipleDomainMatrix."
         messages = []
         for i, row in enumerate(self.data):
             for j, cell in enumerate(row):
                 if i == j:
-                    if not isinstance(cell, (
-                            DesignStructureMatrix, MultipleDomainMatrix)):
+                    if not isinstance(cell, (DesignStructureMatrix, MultipleDomainMatrix)):
                         messages.append(message_dsm % (i, j))
-                elif not isinstance(cell, (
-                        DomainMappingMatrix, MultipleDomainMatrix)):
+                elif not isinstance(cell, (DomainMappingMatrix, MultipleDomainMatrix)):
                     messages.append(message_ddm % (i, j))
         if messages:
-            raise self.error('\n'.join(messages))
+            raise self.error("\n".join(messages))

@@ -2,9 +2,9 @@
 
 """Checker module."""
 
-from . import Argument, Checker
 from ..errors import DesignStructureMatrixError
 from ..logging import Logger
+from . import Argument, Checker
 
 logger = Logger.get_logger(__name__)
 
@@ -12,8 +12,8 @@ logger = Logger.get_logger(__name__)
 class CompleteMediation(Checker):
     """Complete mediation check."""
 
-    identifier = 'archan.CompleteMediation'
-    name = 'Complete Mediation'
+    identifier = "archan.CompleteMediation"
+    name = "Complete Mediation"
     description = """
     Every access to every object must be checked for authority.
     This principle, when systematically applied, is the primary underpinning
@@ -24,7 +24,7 @@ class CompleteMediation(Checker):
     that proposals to gain performance by remembering the result of an
     authority check be examined skeptically. If a change in authority occurs,
     such remembered results must be systematically updated."""
-    hint = 'Remove the dependencies or deviate them through a broker module.'
+    hint = "Remove the dependencies or deviate them through a broker module."
 
     @staticmethod
     def generate_mediation_matrix(dsm):
@@ -62,67 +62,61 @@ class CompleteMediation(Checker):
         size = dsm.size[0]
 
         if not cat:
-            cat = ['appmodule'] * size
+            cat = ["appmodule"] * size
 
-        packages = [e.split('.')[0] for e in ent]
+        packages = [e.split(".")[0] for e in ent]
 
         # define and initialize the mediation matrix
-        mediation_matrix = [[0 for _ in range(size)]
-                            for _ in range(size)]
+        mediation_matrix = [[0 for _ in range(size)] for _ in range(size)]
 
         for i in range(0, size):
             for j in range(0, size):
-                if cat[i] == 'framework':
-                    if cat[j] == 'framework':
+                if cat[i] == "framework":
+                    if cat[j] == "framework":
                         mediation_matrix[i][j] = -1
                     else:
                         mediation_matrix[i][j] = 0
-                elif cat[i] == 'corelib':
-                    if (cat[j] in ('framework', 'corelib') or
-                            ent[i].startswith(packages[j] + '.') or
-                            i == j):
+                elif cat[i] == "corelib":
+                    if cat[j] in ("framework", "corelib") or ent[i].startswith(packages[j] + ".") or i == j:
                         mediation_matrix[i][j] = -1
                     else:
                         mediation_matrix[i][j] = 0
-                elif cat[i] == 'applib':
-                    if (cat[j] in ('framework', 'corelib', 'applib') or
-                            ent[i].startswith(packages[j] + '.') or
-                            i == j):
+                elif cat[i] == "applib":
+                    if cat[j] in ("framework", "corelib", "applib") or ent[i].startswith(packages[j] + ".") or i == j:
                         mediation_matrix[i][j] = -1
                     else:
                         mediation_matrix[i][j] = 0
-                elif cat[i] == 'appmodule':
+                elif cat[i] == "appmodule":
                     # we cannot force an app module to import things from
                     # the broker if the broker itself did not import anything
-                    if (cat[j] in ('framework', 'corelib',
-                                   'applib', 'broker', 'data') or
-                            ent[i].startswith(packages[j] + '.') or
-                            i == j):
+                    if (
+                        cat[j] in ("framework", "corelib", "applib", "broker", "data")
+                        or ent[i].startswith(packages[j] + ".")
+                        or i == j
+                    ):
                         mediation_matrix[i][j] = -1
                     else:
                         mediation_matrix[i][j] = 0
-                elif cat[i] == 'broker':
+                elif cat[i] == "broker":
                     # we cannot force the broker to import things from
                     # app modules if there is nothing to be imported.
                     # also broker should be authorized to use third apps
-                    if (cat[j] in (
-                            'appmodule', 'corelib', 'framework') or
-                            ent[i].startswith(packages[j] + '.') or
-                            i == j):
+                    if (
+                        cat[j] in ("appmodule", "corelib", "framework")
+                        or ent[i].startswith(packages[j] + ".")
+                        or i == j
+                    ):
                         mediation_matrix[i][j] = -1
                     else:
                         mediation_matrix[i][j] = 0
-                elif cat[i] == 'data':
-                    if (cat[j] == 'framework' or
-                            i == j):
+                elif cat[i] == "data":
+                    if cat[j] == "framework" or i == j:
                         mediation_matrix[i][j] = -1
                     else:
                         mediation_matrix[i][j] = 0
                 else:
                     # mediation_matrix[i][j] = -2  # errors in the generation
-                    raise DesignStructureMatrixError(
-                        'Mediation matrix value NOT generated for %s:%s' % (
-                            i, j))
+                    raise DesignStructureMatrixError("Mediation matrix value NOT generated for %s:%s" % (i, j))
 
         return mediation_matrix
 
@@ -144,28 +138,24 @@ class CompleteMediation(Checker):
         rows_med_matrix = len(complete_mediation_matrix)
         cols_med_matrix = len(complete_mediation_matrix[0])
 
-        if (rows_dep_matrix != rows_med_matrix or
-                cols_dep_matrix != cols_med_matrix):
-            raise DesignStructureMatrixError(
-                'Matrices are NOT compliant '
-                '(number of rows/columns not equal)')
+        if rows_dep_matrix != rows_med_matrix or cols_dep_matrix != cols_med_matrix:
+            raise DesignStructureMatrixError("Matrices are NOT compliant " "(number of rows/columns not equal)")
 
         discrepancy_found = False
         message = []
         for i in range(0, rows_dep_matrix):
             for j in range(0, cols_dep_matrix):
-                if ((complete_mediation_matrix[i][j] == 0 and
-                        matrix[i][j] > 0) or
-                        (complete_mediation_matrix[i][j] == 1 and
-                         matrix[i][j] < 1)):
+                if (complete_mediation_matrix[i][j] == 0 and matrix[i][j] > 0) or (
+                    complete_mediation_matrix[i][j] == 1 and matrix[i][j] < 1
+                ):
                     discrepancy_found = True
                     message.append(
-                        'Untolerated dependency at %s:%s (%s:%s): '
-                        '%s instead of %s' % (
-                            i, j, dsm.entities[i], dsm.entities[j],
-                            matrix[i][j], complete_mediation_matrix[i][j]))
+                        "Untolerated dependency at %s:%s (%s:%s): "
+                        "%s instead of %s"
+                        % (i, j, dsm.entities[i], dsm.entities[j], matrix[i][j], complete_mediation_matrix[i][j])
+                    )
 
-        message = '\n'.join(message)
+        message = "\n".join(message)
 
         return not discrepancy_found, message
 
@@ -191,10 +181,9 @@ class CompleteMediation(Checker):
 class EconomyOfMechanism(Checker):
     """Economy of mechanism check."""
 
-    identifier = 'archan.EconomyOfMechanism'
-    name = 'Economy of Mechanism'
-    hint = 'Reduce the number of dependencies in your own code ' \
-           'or increase the simplicity factor.'
+    identifier = "archan.EconomyOfMechanism"
+    name = "Economy of Mechanism"
+    hint = "Reduce the number of dependencies in your own code " "or increase the simplicity factor."
     description = """
     Keep the design as simple and small as possible. This well-known principle
     applies to any aspect of a system, but it deserves emphasis for protection
@@ -207,10 +196,14 @@ class EconomyOfMechanism(Checker):
     is essential."""
 
     argument_list = (
-        Argument('simplicity_factor', int,
-                 'If the number of cells with dependencies in the DSM '
-                 'is lower than the DSM size multiplied by the simplicity '
-                 'factor, then this criterion is verified.', 2),
+        Argument(
+            "simplicity_factor",
+            int,
+            "If the number of cells with dependencies in the DSM "
+            "is lower than the DSM size multiplied by the simplicity "
+            "factor, then this criterion is verified.",
+            2,
+        ),
     )
 
     def check(self, dsm, simplicity_factor=2, **kwargs):
@@ -230,39 +223,43 @@ class EconomyOfMechanism(Checker):
         """
         # economy_of_mechanism
         economy_of_mechanism = False
-        message = ''
+        message = ""
         data = dsm.data
         categories = dsm.categories
         dsm_size = dsm.size[0]
 
         if not categories:
-            categories = ['appmodule'] * dsm_size
+            categories = ["appmodule"] * dsm_size
 
         dependency_number = 0
         # evaluate Matrix(data)
         for i in range(0, dsm_size):
             for j in range(0, dsm_size):
-                if (categories[i] not in ('framework', 'corelib') and
-                        categories[j] not in ('framework', 'corelib') and
-                        data[i][j] > 0):
+                if (
+                    categories[i] not in ("framework", "corelib")
+                    and categories[j] not in ("framework", "corelib")
+                    and data[i][j] > 0
+                ):
                     dependency_number += 1
                     # check comparison result
         if dependency_number < dsm_size * simplicity_factor:
             economy_of_mechanism = True
         else:
-            message = ' '.join([
-                'Number of dependencies (%s)' % dependency_number,
-                '> number of rows (%s)' % dsm_size,
-                '* simplicity factor (%s) = %s' % (
-                    simplicity_factor, dsm_size * simplicity_factor)])
+            message = " ".join(
+                [
+                    "Number of dependencies (%s)" % dependency_number,
+                    "> number of rows (%s)" % dsm_size,
+                    "* simplicity factor (%s) = %s" % (simplicity_factor, dsm_size * simplicity_factor),
+                ]
+            )
         return economy_of_mechanism, message
 
 
 class SeparationOfPrivileges(Checker):
     """Separation of privileges check."""
 
-    identifier = 'archan.SeparationOfPrivileges'
-    name = 'Separation of Privileges'
+    identifier = "archan.SeparationOfPrivileges"
+    name = "Separation of Privileges"
     description = """
     Where feasible, a protection mechanism that requires two keys to unlock it
     is more robust and flexible than one that allows access to the presenter of
@@ -288,8 +285,8 @@ class SeparationOfPrivileges(Checker):
 class LeastPrivileges(Checker):
     """Least privileges check."""
 
-    identifier = 'archan.LeastPrivileges'
-    name = 'Least Privileges'
+    identifier = "archan.LeastPrivileges"
+    name = "Least Privileges"
     description = """
     Every program and every user of the system should operate using the least
     set of privileges necessary to complete the job. Primarily, this principle
@@ -312,9 +309,9 @@ class LeastPrivileges(Checker):
 class LeastCommonMechanism(Checker):
     """Least common mechanism check."""
 
-    identifier = 'archan.LeastCommonMechanism'
-    name = 'Least Common Mechanism'
-    hint = 'Reduce number of modules having dependencies to the listed module.'
+    identifier = "archan.LeastCommonMechanism"
+    name = "Least Common Mechanism"
+    hint = "Reduce number of modules having dependencies to the listed module."
     description = """
     Minimize the amount of mechanism common to more than one user and depended
     on by all users. Every shared mechanism (especially one involving shared
@@ -331,10 +328,14 @@ class LeastCommonMechanism(Checker):
     by a mistake in it."""
 
     argument_list = (
-        Argument('independence_factor', int,
-                 'If the maximum dependencies for one module is inferior or '
-                 'equal to the DSM size divided by the independence factor, '
-                 'then this criterion is verified.', 5),
+        Argument(
+            "independence_factor",
+            int,
+            "If the maximum dependencies for one module is inferior or "
+            "equal to the DSM size divided by the independence factor, "
+            "then this criterion is verified.",
+            5,
+        ),
     )
 
     def check(self, dsm, independence_factor=5, **kwargs):
@@ -352,41 +353,40 @@ class LeastCommonMechanism(Checker):
         """
         # leastCommonMechanismMatrix
         least_common_mechanism = False
-        message = ''
+        message = ""
         # get the list of dependent modules for each module
         data = dsm.data
         categories = dsm.categories
         dsm_size = dsm.size[0]
 
         if not categories:
-            categories = ['appmodule'] * dsm_size
+            categories = ["appmodule"] * dsm_size
 
         dependent_module_number = []
         # evaluate Matrix(data)
         for j in range(0, dsm_size):
             dependent_module_number.append(0)
             for i in range(0, dsm_size):
-                if (categories[i] != 'framework' and
-                        categories[j] != 'framework' and
-                        data[i][j] > 0):
+                if categories[i] != "framework" and categories[j] != "framework" and data[i][j] > 0:
                     dependent_module_number[j] += 1
         # except for the broker if any  and libs, check that threshold is not
         # overlapped
         #  index of brokers
         #  and app_libs are set to 0
         for index, item in enumerate(dsm.categories):
-            if item == 'broker' or item == 'applib':
+            if item == "broker" or item == "applib":
                 dependent_module_number[index] = 0
         if max(dependent_module_number) <= dsm_size / independence_factor:
             least_common_mechanism = True
         else:
             maximum = max(dependent_module_number)
-            message = (
-                'Dependencies to %s (%s) > matrix size (%s) / '
-                'independence factor (%s) = %s' % (
-                    dsm.entities[dependent_module_number.index(maximum)],
-                    maximum, dsm_size, independence_factor,
-                    dsm_size / independence_factor))
+            message = "Dependencies to %s (%s) > matrix size (%s) / " "independence factor (%s) = %s" % (
+                dsm.entities[dependent_module_number.index(maximum)],
+                maximum,
+                dsm_size,
+                independence_factor,
+                dsm_size / independence_factor,
+            )
 
         return least_common_mechanism, message
 
@@ -399,8 +399,8 @@ class LayeredArchitecture(Checker):
     lower left corner).
     """
 
-    identifier = 'archan.LayeredArchitecture'
-    name = 'Layered Architecture'
+    identifier = "archan.LayeredArchitecture"
+    name = "Layered Architecture"
     description = """
     The modules that are part of the project should be organized in a layered
     way by means of groups. Modules like frameworks and librairies should be
@@ -408,8 +408,9 @@ class LayeredArchitecture(Checker):
     Security and data modules should be put last. A well layered architecture
     should be visible in the form of a matrix which has dependencies into only
     one corner (for example: in the lower-left part)."""
-    hint = 'Ensure that your applications are listed in the right ' \
-           'order when building the DSM, or remove dependencies.'
+    hint = (
+        "Ensure that your applications are listed in the right " "order when building the DSM, or remove dependencies."
+    )
 
     def check(self, dsm, **kwargs):
         """
@@ -427,21 +428,23 @@ class LayeredArchitecture(Checker):
         dsm_size = dsm.size[0]
 
         if not categories:
-            categories = ['appmodule'] * dsm_size
+            categories = ["appmodule"] * dsm_size
 
         for i in range(0, dsm_size - 1):
             for j in range(i + 1, dsm_size):
-                if (categories[i] != 'broker' and
-                        categories[j] != 'broker' and
-                        dsm.entities[i].split('.')[0] != dsm.entities[j].split('.')[0]):  # noqa
+                if (
+                    categories[i] != "broker"
+                    and categories[j] != "broker"
+                    and dsm.entities[i].split(".")[0] != dsm.entities[j].split(".")[0]
+                ):  # noqa
                     if dsm.data[i][j] > 0:
                         layered_architecture = False
                         messages.append(
-                            'Dependency from %s to %s breaks the '
-                            'layered architecture.' % (
-                                dsm.entities[i], dsm.entities[j]))
+                            "Dependency from %s to %s breaks the "
+                            "layered architecture." % (dsm.entities[i], dsm.entities[j])
+                        )
 
-        return layered_architecture, '\n'.join(messages)
+        return layered_architecture, "\n".join(messages)
 
 
 class CodeClean(Checker):
@@ -451,8 +454,8 @@ class CodeClean(Checker):
     Check that the number of issues per module is below a certain value.
     """
 
-    identifier = 'archan.CodeClean'
-    name = 'Code Clean'
+    identifier = "archan.CodeClean"
+    name = "Code Clean"
     description = """
     The code base should be kept coherent and consistent. Complexity of
     functions must not be too important. Conventions and standards must be used
@@ -460,10 +463,7 @@ class CodeClean(Checker):
     hint = """
     Reduce the number of issues in your code or increase the threshold."""
 
-    argument_list = (
-        Argument('threshold', int, 'Message number threshold (per module).',
-                 default=10),
-    )
+    argument_list = (Argument("threshold", int, "Message number threshold (per module).", default=10),)
 
     def check(self, dsm, **kwargs):
         """
@@ -475,17 +475,17 @@ class CodeClean(Checker):
         Returns:
             bool, str: True if code clean else False, messages
         """
-        logger.debug('Entities = %s' % dsm.entities)
+        logger.debug("Entities = %s" % dsm.entities)
         messages = []
         code_clean = True
-        threshold = kwargs.pop('threshold', 1)
+        threshold = kwargs.pop("threshold", 1)
         rows, _ = dsm.size
         for i in range(0, rows):
             if dsm.data[i][0] > threshold:
                 messages.append(
-                    'Number of issues (%d) in module %s '
-                    '> threshold (%d)' % (
-                        dsm.data[i][0], dsm.entities[i], threshold))
+                    "Number of issues (%d) in module %s "
+                    "> threshold (%d)" % (dsm.data[i][0], dsm.entities[i], threshold)
+                )
                 code_clean = False
 
-        return code_clean, '\n'.join(messages)
+        return code_clean, "\n".join(messages)

@@ -33,8 +33,8 @@ class Analysis:
         self.results = []
 
     @staticmethod
-    def _get_checker_result(group, checker, provider=None, nd=''):
-        logger.info('Run %schecker %s', nd, checker.identifier or checker.name)
+    def _get_checker_result(group, checker, provider=None, nd=""):
+        logger.info("Run %schecker %s", nd, checker.identifier or checker.name)
         checker.run(provider.data if provider else None)
         return Result(group, provider, checker, *checker.result)
 
@@ -53,19 +53,17 @@ class Analysis:
         for analysis_group in self.config.analysis_groups:
             if analysis_group.providers:
                 for provider in analysis_group.providers:
-                    logger.info('Run provider %s', provider.identifier)
+                    logger.info("Run provider %s", provider.identifier)
                     provider.run()
                     for checker in analysis_group.checkers:
-                        result = self._get_checker_result(
-                            analysis_group, checker, provider)
+                        result = self._get_checker_result(analysis_group, checker, provider)
                         self.results.append(result)
                         analysis_group.results.append(result)
                         if verbose:
                             result.print()
             else:
                 for checker in analysis_group.checkers:
-                    result = self._get_checker_result(
-                        analysis_group, checker, nd='no-data-')
+                    result = self._get_checker_result(analysis_group, checker, nd="no-data-")
                     self.results.append(result)
                     analysis_group.results.append(result)
                     if verbose:
@@ -86,8 +84,7 @@ class Analysis:
                 test_suite = group.name
                 description_lambda = lambda r: r.checker.name
             elif not group.checkers:
-                logger.warning(
-                    'Invalid analysis group (no checkers), skipping')
+                logger.warning("Invalid analysis group (no checkers), skipping")
                 continue
             elif n_providers > n_checkers:
                 test_suite = group.checkers[0].name
@@ -101,17 +98,16 @@ class Analysis:
                 if result.code == ResultCode.PASSED:
                     tracker.add_ok(test_suite, description)
                 elif result.code == ResultCode.IGNORED:
-                    tracker.add_ok(
-                        test_suite, description + ' (ALLOWED FAILURE)')
+                    tracker.add_ok(test_suite, description + " (ALLOWED FAILURE)")
                 elif result.code == ResultCode.NOT_IMPLEMENTED:
-                    tracker.add_not_ok(
-                        test_suite, description, 'TODO implement the test')
+                    tracker.add_not_ok(test_suite, description, "TODO implement the test")
                 elif result.code == ResultCode.FAILED:
                     tracker.add_not_ok(
-                        test_suite, description,
-                        diagnostics='  ---\n  message: %s\n  hint: %s\n  ...' % (
-                            '\n  message: '.join(result.messages.split('\n')),
-                            result.checker.hint))
+                        test_suite,
+                        description,
+                        diagnostics="  ---\n  message: %s\n  hint: %s\n  ..."
+                        % ("\n  message: ".join(result.messages.split("\n")), result.checker.hint),
+                    )
 
     def output_json(self):
         """Output analysis results in JSON format."""
@@ -128,8 +124,7 @@ class Analysis:
 class AnalysisGroup(PrintableNameMixin):
     """Placeholder for groups of providers and checkers."""
 
-    def __init__(self, name=None, description=None, providers=None,
-                 checkers=None):
+    def __init__(self, name=None, description=None, providers=None, checkers=None):
         """
         Initialization method.
 

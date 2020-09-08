@@ -4,9 +4,9 @@
 
 import sys
 
-from . import Argument, Provider
 from ..dsm import DesignStructureMatrix
 from ..logging import Logger
+from . import Argument, Provider
 
 logger = Logger.get_logger(__name__)
 
@@ -14,21 +14,16 @@ logger = Logger.get_logger(__name__)
 class CSVInput(Provider):
     """Provider to read DSM from CSV data."""
 
-    identifier = 'archan.CSVInput'
-    name = 'CSV Input'
-    description = 'Parse a CSV file to provide a matrix.'
+    identifier = "archan.CSVInput"
+    name = "CSV Input"
+    description = "Parse a CSV file to provide a matrix."
     arguments = (
-        Argument('file_path', str,
-                 'Path to the CSV file to parse.', 'sys.stdin'),
-        Argument('delimiter', str, 'Delimiter used in the CSV file.', ','),
-        Argument('categories_delimiter', str,
-                 'If set, used as delimiter for categories.')
+        Argument("file_path", str, "Path to the CSV file to parse.", "sys.stdin"),
+        Argument("delimiter", str, "Delimiter used in the CSV file.", ","),
+        Argument("categories_delimiter", str, "If set, used as delimiter for categories."),
     )
 
-    def get_data(self,
-                 file_path=sys.stdin,
-                 delimiter=',',
-                 categories_delimiter=None):
+    def get_data(self, file_path=sys.stdin, delimiter=",", categories_delimiter=None):
         """
         Implement get_dsm method from Provider class.
 
@@ -45,20 +40,18 @@ class CSVInput(Provider):
             DSM: instance of DSM.
         """
         if file_path == sys.stdin:
-            logger.info('Read data from standard input')
-            lines = [line.replace('\n', '') for line in file_path]
+            logger.info("Read data from standard input")
+            lines = [line.replace("\n", "") for line in file_path]
         else:
-            logger.info('Read data from file ' + file_path)
+            logger.info("Read data from file " + file_path)
             with open(file_path) as file:
                 lines = list(file)
-        columns = lines[0].rstrip('\n').split(delimiter)[1:]
+        columns = lines[0].rstrip("\n").split(delimiter)[1:]
         categories = None
         if categories_delimiter:
-            columns, categories = zip(*[c.split(categories_delimiter, 1)
-                                        for c in columns])
+            columns, categories = zip(*[c.split(categories_delimiter, 1) for c in columns])
         size = len(columns)
-        data = [list(map(int, l.split(delimiter)[1:]))
-                for l in lines[1:size + 1]]
+        data = [list(map(int, l.split(delimiter)[1:])) for l in lines[1 : size + 1]]
         return DesignStructureMatrix(data, columns, categories)
 
 

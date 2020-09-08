@@ -6,8 +6,7 @@ from collections import namedtuple
 
 from ..enums import ResultCode
 from ..logging import Logger
-from ..printing import (
-    PrintableArgumentMixin, PrintableNameMixin, PrintablePluginMixin)
+from ..printing import PrintableArgumentMixin, PrintableNameMixin, PrintablePluginMixin
 
 logger = Logger.get_logger(__name__)
 
@@ -31,8 +30,7 @@ class Argument(PrintableArgumentMixin):
         self.default = default
 
     def __str__(self):
-        return '  %s (%s, default %s): %s' % (
-            self.name, self.cls, self.default, self.description)
+        return "  %s (%s, default %s): %s" % (self.name, self.cls, self.default, self.description)
 
 
 # TODO: also add some "expect" attribute to describe the expected data format
@@ -44,16 +42,15 @@ class Checker(PrintableNameMixin, PrintablePluginMixin):
     of DSM/DMM/MDM and return a true or false value, with optional message.
     """
 
-    identifier = ''
-    name = ''
-    description = ''
-    hint = ''
+    identifier = ""
+    name = ""
+    description = ""
+    hint = ""
     argument_list = ()
 
     Code = ResultCode
 
-    def __init__(self, name=None, description=None, hint=None,
-                 allow_failure=False, passes=None, arguments=None):
+    def __init__(self, name=None, description=None, hint=None, allow_failure=False, passes=None, arguments=None):
         """
         Initialization method.
 
@@ -97,19 +94,19 @@ class Checker(PrintableNameMixin, PrintablePluginMixin):
         Returns:
             tuple (int, str): status constant from Checker class and messages.
         """
-        result_type = namedtuple('Result', 'code messages')
+        result_type = namedtuple("Result", "code messages")
 
         if self.passes is True:
-            result = result_type(Checker.Code.PASSED, '')
+            result = result_type(Checker.Code.PASSED, "")
         elif self.passes is False:
             if self.allow_failure:
-                result = result_type(Checker.Code.IGNORED, '')
+                result = result_type(Checker.Code.IGNORED, "")
             else:
-                result = result_type(Checker.Code.FAILED, '')
+                result = result_type(Checker.Code.FAILED, "")
         else:
             try:
                 result = self.check(data, **self.arguments)
-                messages = ''
+                messages = ""
                 if isinstance(result, tuple):
                     result, messages = result
 
@@ -121,7 +118,7 @@ class Checker(PrintableNameMixin, PrintablePluginMixin):
 
                 result = result_type(result, messages)
             except NotImplementedError:
-                result = result_type(Checker.Code.NOT_IMPLEMENTED, '')
+                result = result_type(Checker.Code.NOT_IMPLEMENTED, "")
         self.result = result
 
 
@@ -133,9 +130,9 @@ class Provider(PrintableNameMixin, PrintablePluginMixin):
     instance of DSM/DMM/MDM to be checked by an instance of Checker.
     """
 
-    identifier = ''
-    name = ''
-    description = ''
+    identifier = ""
+    name = ""
+    description = ""
     argument_list = ()
 
     def __init__(self, name=None, description=None, arguments=None):
