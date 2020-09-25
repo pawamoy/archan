@@ -26,7 +26,7 @@ try:
 
 except NameError:
 
-    class PluginNotFoundError(ImportError):
+    class PluginNotFoundError(ImportError):  # type: ignore
         """Exception to raise when a plugin is not found or importable."""
 
 

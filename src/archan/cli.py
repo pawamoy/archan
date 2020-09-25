@@ -65,7 +65,7 @@ def get_parser() -> argparse.ArgumentParser:
         An argparse parser.
     """
     parser = argparse.ArgumentParser(
-        add_help=False, description="Analysis of your architecture strength based on DSM data"
+        prog="archan", add_help=False, description="Analysis of your architecture strength based on DSM data"
     )
     parser.add_argument(
         "-c",
@@ -138,28 +138,28 @@ def main(args: Optional[List[str]] = None) -> int:
         An exit code.
     """
     parser = get_parser()
-    args = parser.parse_args(args=args)
-    Logger.set_level(args.level)
+    opts = parser.parse_args(args=args)
+    Logger.set_level(opts.level)
 
     colorama_args = {"autoreset": True}
-    if args.no_color:
+    if opts.no_color:
         colorama_args["strip"] = True
     colorama.init(**colorama_args)
 
     config = None
-    if args.no_config:
+    if opts.no_config:
         logger.info("--no-config flag used, use default configuration")
-        if args.input_file:
-            logger.info("Input file specified: %s" % args.input_file)
-            file_path = args.input_file
+        if opts.input_file:
+            logger.info("Input file specified: %s" % opts.input_file)
+            file_path = opts.input_file
         else:
             logger.info("No input file specified, will read standard input")
             file_path = sys.stdin
         config = Config.default_config(file_path)
     else:
-        if args.config_file:
-            logger.info("Configuration file specified: %s" % args.config_file)
-            config_file = args.config_file
+        if opts.config_file:
+            logger.info("Configuration file specified: %s" % opts.config_file)
+            config_file = opts.config_file
         else:
             logger.info("No configuration file specified, searching")
             config_file = Config.find()
@@ -173,7 +173,7 @@ def main(args: Optional[List[str]] = None) -> int:
     logger.debug("Configuration = {}".format(config))
     logger.debug("Plugins loaded = {}".format(config.plugins))
 
-    if args.list_plugins:
+    if opts.list_plugins:
         logger.info("Print list of plugins")
         config.print_plugins()
         return 0

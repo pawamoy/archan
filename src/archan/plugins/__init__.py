@@ -3,6 +3,7 @@
 """Plugins submodule."""
 
 from collections import namedtuple
+from typing import Sequence
 
 from ..enums import ResultCode
 from ..logging import Logger
@@ -46,7 +47,7 @@ class Checker(PrintableNameMixin, PrintablePluginMixin):
     name = ""
     description = ""
     hint = ""
-    argument_list = ()
+    argument_list: Sequence[Argument] = ()
 
     Code = ResultCode
 

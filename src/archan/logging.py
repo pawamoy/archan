@@ -5,6 +5,7 @@
 from __future__ import absolute_import
 
 import logging
+from typing import Dict
 
 from colorama import Back, Fore, Style
 
@@ -12,7 +13,7 @@ from colorama import Back, Fore, Style
 class Logger(object):
     """Static class to store loggers."""
 
-    loggers = {}
+    loggers: Dict[str, logging.Logger] = {}
     level = None
 
     @staticmethod
