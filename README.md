@@ -95,21 +95,23 @@ optional arguments:
 ```
 
 ```bash
-# Load configuration file and run archan
-# See Configuration section to know how archan finds the config file
+# See a list of all supported Archan plugins
+archan --list-plugins
+
+# Archan can locate the configuration file automatically (See the Configuration section)
 archan
-
-# No configuration, read CSV data from file
-archan --no-config --input FILE.CSV
-
-# No configuration, read CSV data from stdin
-dependenpy archan --format=csv | archan --no-config
-
-# Specify configuration file to load
+# or a specific configuration can be specified
 archan --config my_config.yml
 
+# Archan can load DSM dzta in CSV format such as the output from dependenpy (install separately)
+dependenpy pytest --format=csv --output pytest_dsm.csv
+
+# Read CSV data from file (No configuration)
+archan --no-config --input pytest_dsm.csv
+# or read CSV data from STDIN
+dependenpy pytest --format=csv | archan --no-config
+
 # Output the list of available plugins in the current environment
-archan --list-plugins
 ```
 
 ## Configuration
@@ -325,8 +327,10 @@ messages with `self.logger.debug`, `info`, `warning`, `error` or
 
 Here is the list of plugins available in other packages.
 
+See other plugins published to PyPi by searching for
+["archan-"](https://pypi.org/search/?q=archan-)
+
 ### Providers
 
 - `dependenpy.InternalDependencies`: Provide matrix data about internal
   dependencies in a set of packages. Install it with `pip install dependenpy`.
-
