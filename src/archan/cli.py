@@ -154,7 +154,7 @@ def main(args: Optional[List[str]] = None) -> int:
             file_path = opts.input_file
         else:
             logger.info("No input file specified, will read standard input")
-            file_path = sys.stdin
+            file_path = None
         config = Config.default_config(file_path)
     else:
         if opts.config_file:

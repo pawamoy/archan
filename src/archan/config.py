@@ -136,7 +136,7 @@ class Config(object):
         return None
 
     @staticmethod
-    def default_config(file_path=sys.stdin):
+    def default_config(file_path=None):
         """Return a default configuration instance."""
         return Config(
             {
@@ -324,7 +324,7 @@ class Config(object):
         Raises:
             ValueError: when the definition type is not list or dict.
         """
-        if isinstance(plugins_definition, list):
+        if isinstance(plugins_definition, (list, tuple)):
             return self.inflate_plugin_list(plugins_definition, inflate_method)
         elif isinstance(plugins_definition, dict):
             return self.inflate_plugin_dict(plugins_definition, inflate_method)

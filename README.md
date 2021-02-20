@@ -103,7 +103,7 @@ archan
 # or a specific configuration can be specified
 archan --config my_config.yml
 
-# Archan can load DSM dzta in CSV format such as the output from dependenpy (install separately)
+# Archan can load DSM data in CSV format such as the output from dependenpy (install separately)
 dependenpy pytest --format=csv --output pytest_dsm.csv
 
 # Read CSV data from file (No configuration)
