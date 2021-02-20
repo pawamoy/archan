@@ -5,7 +5,6 @@
 import collections
 import importlib
 import os
-import sys
 from copy import deepcopy
 
 import pkg_resources

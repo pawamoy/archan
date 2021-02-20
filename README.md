@@ -110,8 +110,6 @@ dependenpy pytest --format=csv --output pytest_dsm.csv
 archan --no-config --input pytest_dsm.csv
 # or read CSV data from STDIN
 dependenpy pytest --format=csv | archan --no-config
-
-# Output the list of available plugins in the current environment
 ```
 
 ## Configuration
