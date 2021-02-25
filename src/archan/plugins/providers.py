@@ -23,14 +23,14 @@ class CSVInput(Provider):
         Argument("categories_delimiter", str, "If set, used as delimiter for categories."),
     )
 
-    def get_data(self, file_path=sys.stdin, delimiter=",", categories_delimiter=None):
+    def get_data(self, file_path=None, delimiter=",", categories_delimiter=None):
         """
         Implement get_dsm method from Provider class.
 
         Parse CSV to return an instance of DSM.
 
         Args:
-            file_path (str/fd): path or file descriptor.
+            file_path (str/None): string path or None. If None, uses sys.stdin.
             delimiter (str): character(s) used as delimiter for columns.
             categories_delimiter (str):
                 character(s) used as delimiter for categories and keys
@@ -39,9 +39,9 @@ class CSVInput(Provider):
         Returns:
             DSM: instance of DSM.
         """
-        if file_path == sys.stdin:
+        if file_path is None:
             logger.info("Read data from standard input")
-            lines = [line.replace("\n", "") for line in file_path]
+            lines = [line.replace("\n", "") for line in sys.stdin]
         else:
             logger.info("Read data from file " + file_path)
             with open(file_path) as file:
