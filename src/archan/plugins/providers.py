@@ -30,7 +30,7 @@ class CSVInput(Provider):
         Parse CSV to return an instance of DSM.
 
         Args:
-            file_path (str/fd): path or file descriptor. If None, uses sys.stdin.
+            file_path (str/None): string path or None. If None, uses sys.stdin.
             delimiter (str): character(s) used as delimiter for columns.
             categories_delimiter (str):
                 character(s) used as delimiter for categories and keys
