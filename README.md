@@ -3,6 +3,7 @@
 [![ci](https://github.com/pawamoy/archan/workflows/ci/badge.svg)](https://github.com/pawamoy/archan/actions?query=workflow%3Aci)
 [![documentation](https://img.shields.io/badge/docs-mkdocs%20material-blue.svg?style=flat)](https://pawamoy.github.io/archan/)
 [![pypi version](https://img.shields.io/pypi/v/archan.svg)](https://pypi.org/project/archan/)
+[![gitter](https://badges.gitter.im/join%20chat.svg)](https://gitter.im/archan/community)
 
 A Python module that analyzes your architecture strength
 based on [Design Structure Matrix (DSM)][dsm] data.

@@ -2,9 +2,9 @@
 
 """Checker module."""
 
-from ..errors import DesignStructureMatrixError
-from ..logging import Logger
-from . import Argument, Checker
+from archan import Argument, Checker
+from archan.errors import DesignStructureMatrixError
+from archan.logging import Logger
 
 logger = Logger.get_logger(__name__)
 
@@ -53,7 +53,7 @@ class CompleteMediation(Checker):
         - Data have no dependencies at all
           (but framework/libraries would be tolerated).
 
-        Args:
+        Arguments:
             dsm (:class:`DesignStructureMatrix`): the DSM to generate
                 the mediation matrix for.
         """
@@ -125,7 +125,7 @@ class CompleteMediation(Checker):
         """
         Check if matrix and its mediation matrix are compliant.
 
-        Args:
+        Arguments:
             dsm (:class:`DesignStructureMatrix`): the DSM to check.
             complete_mediation_matrix (list of list of int): 2-dim array
 
@@ -167,7 +167,7 @@ class CompleteMediation(Checker):
         0 if the mediation matrix (line, column) is 0, or >0 if the mediation
         matrix (line, column) is 1.
 
-        Args:
+        Arguments:
             dsm (:class:`DesignStructureMatrix`): the DSM to check.
 
         Returns:
@@ -214,7 +214,7 @@ class EconomyOfMechanism(Checker):
         < 2 * the number of modules
         (dependencies to the framework are NOT considered).
 
-        Args:
+        Arguments:
             dsm (:class:`DesignStructureMatrix`): the DSM to check.
             simplicity_factor (int): simplicity factor.
 
@@ -342,7 +342,7 @@ class LeastCommonMechanism(Checker):
         """
         Check least common mechanism.
 
-        Args:
+        Arguments:
             dsm (:class:`DesignStructureMatrix`): the DSM to check.
             independence_factor (int): if the maximum dependencies for one
                 module is inferior or equal to the DSM size divided by the
@@ -416,7 +416,7 @@ class LayeredArchitecture(Checker):
         """
         Check layered architecture.
 
-        Args:
+        Arguments:
             dsm (:class:`DesignStructureMatrix`): the DSM to check.
 
         Returns:
@@ -469,7 +469,7 @@ class CodeClean(Checker):
         """
         Check code clean.
 
-        Args:
+        Arguments:
             dsm (:class:`DesignStructureMatrix`): the DSM to check.
 
         Returns:

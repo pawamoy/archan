@@ -7,8 +7,8 @@ import textwrap
 
 from colorama import Fore, Style
 
-from .enums import ResultCode
-from .logging import Logger
+from archan.enums import ResultCode
+from archan.logging import Logger
 
 logger = Logger.get_logger(__name__)
 
@@ -17,7 +17,7 @@ def console_width(default=80):
     """
     Return current console width.
 
-    Args:
+    Arguments:
         default (int): default value if width cannot be retrieved.
 
     Returns:
@@ -32,7 +32,7 @@ def pretty_description(description, wrap_at=None, indent=0):
     """
     Return a pretty formatted string given some text.
 
-    Args:
+    Arguments:
         description (str): string to format.
         wrap_at (int): maximum length of a line.
         indent (int): level of indentation.

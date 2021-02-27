@@ -7,7 +7,7 @@ Contains the DesignStructureMatrix, DomainMappingMatrix and
 MultipleDomainMatrix classes.
 """
 
-from .errors import DesignStructureMatrixError, DomainMappingMatrixError, MatrixError, MultipleDomainMatrixError
+from archan.errors import DesignStructureMatrixError, DomainMappingMatrixError, MatrixError, MultipleDomainMatrixError
 
 
 def validate_rows_length(data, length, message=None, exception=MatrixError):
@@ -52,7 +52,7 @@ class BaseMatrix(object):
         """
         Initialization method.
 
-        Args:
+        Arguments:
             data (list of list of int/float): 2-dim array.
             entities (list): list of entities.
             categories (list): list of the categories (one per entity).

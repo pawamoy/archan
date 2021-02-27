@@ -5,9 +5,9 @@
 from collections import namedtuple
 from typing import Sequence
 
-from ..enums import ResultCode
-from ..logging import Logger
-from ..printing import PrintableArgumentMixin, PrintableNameMixin, PrintablePluginMixin
+from archan.enums import ResultCode
+from archan.logging import Logger
+from archan.printing import PrintableArgumentMixin, PrintableNameMixin, PrintablePluginMixin
 
 logger = Logger.get_logger(__name__)
 
@@ -19,7 +19,7 @@ class Argument(PrintableArgumentMixin):
         """
         Initialization method.
 
-        Args:
+        Arguments:
             name (str): name of the argument.
             cls (type): type of the argument.
             description (str): description of the argument.
@@ -55,7 +55,7 @@ class Checker(PrintableNameMixin, PrintablePluginMixin):
         """
         Initialization method.
 
-        Args:
+        Arguments:
             allow_failure (bool): still pass if failed or not.
             arguments (dict): arguments passed to the check method when run.
         """
@@ -75,7 +75,7 @@ class Checker(PrintableNameMixin, PrintablePluginMixin):
         """
         Check the data and return a result.
 
-        Args:
+        Arguments:
             data (DSM/DMM/MDM): DSM/DMM/MDM instance to check.
             **kwargs: additional arguments.
 
@@ -89,7 +89,7 @@ class Checker(PrintableNameMixin, PrintablePluginMixin):
         """
         Run the check method and format the result for analysis.
 
-        Args:
+        Arguments:
             data (DSM/DMM/MDM): DSM/DMM/MDM instance to check.
 
         Returns:
@@ -140,7 +140,7 @@ class Provider(PrintableNameMixin, PrintablePluginMixin):
         """
         Initialization method.
 
-        Args:
+        Arguments:
             arguments (dict): arguments that will be used for get_data method.
         """
         if name:

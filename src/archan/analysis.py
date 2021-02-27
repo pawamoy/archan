@@ -6,9 +6,9 @@ import sys
 
 from tap.tracker import Tracker
 
-from .enums import ResultCode
-from .logging import Logger
-from .printing import PrintableNameMixin, PrintableResultMixin
+from archan.enums import ResultCode
+from archan.logging import Logger
+from archan.printing import PrintableNameMixin, PrintableResultMixin
 
 logger = Logger.get_logger(__name__)
 
@@ -26,7 +26,7 @@ class Analysis:
         """
         Initialization method.
 
-        Args:
+        Arguments:
             config (Config): the configuration object to use for analysis.
         """
         self.config = config
@@ -38,15 +38,15 @@ class Analysis:
         checker.run(provider.data if provider else None)
         return Result(group, provider, checker, *checker.result)
 
-    def run(self, verbose=True):
+    def run(self, verbose: bool = True):
         """
         Run the analysis.
 
         Generate data from each provider, then check these data with every
         checker, and store the analysis results.
 
-        Args:
-            verbose (bool): whether to immediately print the results or not.
+        Arguments:
+            verbose: whether to immediately print the results or not.
         """
         self.results.clear()
 
@@ -113,8 +113,13 @@ class Analysis:
         """Output analysis results in JSON format."""
 
     @property
-    def successful(self):
-        """Property to tell if the run was successful: no failures."""
+    def successful(self) -> bool:
+        """
+        Property to tell if the run was successful: no failures.
+        
+        Returns:
+            True if the run was successful.
+        """
         for result in self.results:
             if result.code == ResultCode.FAILED:
                 return False
@@ -128,7 +133,7 @@ class AnalysisGroup(PrintableNameMixin):
         """
         Initialization method.
 
-        Args:
+        Arguments:
             name (str): the group name.
             description (str): the group description.
             providers (list): the list of providers.
@@ -148,7 +153,7 @@ class Result(PrintableResultMixin):
         """
         Initialization method.
 
-        Args:
+        Arguments:
             group (AnalysisGroup): parent group.
             provider (Provider): parent Provider.
             checker (Checker): parent Checker.
