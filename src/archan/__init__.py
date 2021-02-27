@@ -8,9 +8,9 @@ verified.
 
 from typing import List
 
-from .dsm import DesignStructureMatrix, DomainMappingMatrix, MultipleDomainMatrix
-from .logging import Logger
-from .plugins import Argument, Checker, Provider
+from archan.dsm import DesignStructureMatrix, DomainMappingMatrix, MultipleDomainMatrix
+from archan.logging import Logger
+from archan.plugins import Argument, Checker, Provider
 
 __all__: List[str] = [
     "DesignStructureMatrix",
@@ -21,6 +21,7 @@ __all__: List[str] = [
     "Argument",
     "Logger",
 ]  # noqa: WPS410
+
 __version__ = "3.0.0"  # noqa: WPS410 (the only __variables__ we use)
 
 # TODO: DSM class should have more methods (see wiki DSM, adjacency matrix)

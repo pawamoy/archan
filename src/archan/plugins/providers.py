@@ -4,9 +4,9 @@
 
 import sys
 
-from ..dsm import DesignStructureMatrix
-from ..logging import Logger
-from . import Argument, Provider
+from archan import Argument, Provider
+from archan.dsm import DesignStructureMatrix
+from archan.logging import Logger
 
 logger = Logger.get_logger(__name__)
 
@@ -29,7 +29,7 @@ class CSVInput(Provider):
 
         Parse CSV to return an instance of DSM.
 
-        Args:
+        Arguments:
             file_path (str/None): string path or None. If None, uses sys.stdin.
             delimiter (str): character(s) used as delimiter for columns.
             categories_delimiter (str):

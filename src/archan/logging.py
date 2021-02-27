@@ -21,7 +21,7 @@ class Logger(object):
         """
         Set level of logging for all loggers.
 
-        Args:
+        Arguments:
             level (int): level of logging.
         """
         Logger.level = level
@@ -33,7 +33,7 @@ class Logger(object):
         """
         Return a logger.
 
-        Args:
+        Arguments:
             name (str): name to pass to the logging module.
             level (int): level of logging.
             fmt (str): format string.

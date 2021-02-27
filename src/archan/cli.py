@@ -18,10 +18,10 @@ from typing import List, Optional
 
 import colorama
 
-from . import __version__
-from .analysis import Analysis
-from .config import Config
-from .logging import Logger
+from archan import __version__
+from archan.analysis import Analysis
+from archan.config import Config
+from archan.logging import Logger
 
 logger = Logger.get_logger(__name__)
 
@@ -30,7 +30,7 @@ def valid_file(value):
     """
     Check if given file exists and is a regular file.
 
-    Args:
+    Arguments:
         value (str): path to the file.
 
     Raises:

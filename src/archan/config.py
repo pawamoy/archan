@@ -11,11 +11,11 @@ import pkg_resources
 import yaml
 from colorama import Style
 
-from .analysis import AnalysisGroup
-from .errors import ConfigError
-from .logging import Logger
-from .plugins import Checker, Provider
-from .printing import console_width
+from archan.analysis import AnalysisGroup
+from archan.errors import ConfigError
+from archan.logging import Logger
+from archan.plugins import Checker, Provider
+from archan.printing import console_width
 
 try:
 
@@ -37,10 +37,13 @@ class Config(object):
 
     def __init__(self, config_dict=None):
         """
-        Initialization method.
+        Initialize the object.
 
-        Args:
+        Arguments:
             config_dict (dict): the configuration as a dictionary.
+
+        Raises:
+            ValueError: When a wrong type is given for the analysis key.
         """
         self.config_dict = deepcopy(config_dict)
         self.plugins = Config.load_installed_plugins()
@@ -71,14 +74,25 @@ class Config(object):
 
     @staticmethod
     def load_local_plugin(name):
-        """Import a local plugin accessible through Python path."""
+        """
+        Import a local plugin accessible through Python path.
+        
+        Arguments:
+            name: Dotted path to the plugin.
+        
+        Raises:
+            PluginNotFoundError: When the given plugin could not be found.
+        Returns:
+            The plugin object.
+        """
+        module_name = ".".join(name.split(".")[:-1])
         try:
-            module_name = ".".join(name.split(".")[:-1])
             module_obj = importlib.import_module(name=module_name)
-            obj = getattr(module_obj, name.split(".")[-1])
-            return obj
         except (ImportError, AttributeError, ValueError) as e:
             raise PluginNotFoundError(e)
+        else:
+            obj = getattr(module_obj, name.split(".")[-1])
+            return obj
 
     @staticmethod
     def load_installed_plugins():
@@ -95,7 +109,15 @@ class Config(object):
 
     @staticmethod
     def lint(config):
-        """Verify the contents of the configuration dictionary."""
+        """
+        Verify the contents of the configuration dictionary.
+        
+        Arguments:
+            config: A configuration dictionary.
+        
+        Raises:
+            ConfigError: If the config object is not a dictionary, or doesn't have an 'analysis' item.
+        """
         if not isinstance(config, dict):
             raise ConfigError("config must be a dict")
         if "analysis" not in config:
@@ -158,7 +180,7 @@ class Config(object):
         """
         Inflate a list of strings/dictionaries to a list of plugin instances.
 
-        Args:
+        Arguments:
             plugin_list (list): a list of str/dict.
             inflate_plugin (method): the method to inflate the plugin.
 
@@ -196,7 +218,7 @@ class Config(object):
         """
         Inflate a list of strings/dictionaries to a list of plugin instances.
 
-        Args:
+        Arguments:
             plugin_dict (dict): a dict of dict.
             inflate_plugin (method): the method to inflate the plugin.
 
@@ -216,7 +238,7 @@ class Config(object):
         """
         Inflate a no-data checker from a basic definition.
 
-        Args:
+        Arguments:
             identifier (str): the no-data checker identifier / name.
             definition (bool/dict): a boolean acting as "passes" or a full
                 dict definition with "passes" and "allow_failure".
@@ -255,7 +277,7 @@ class Config(object):
         """
         Return the plugin corresponding to the given identifier and type.
 
-        Args:
+        Arguments:
             identifier (str): identifier of the plugin.
             cls (str): one of checker / provider.
 
@@ -296,7 +318,7 @@ class Config(object):
         """
         Inflate a plugin thanks to it's identifier, definition and class.
 
-        Args:
+        Arguments:
             identifier (str): the plugin identifier.
             definition (dict): the kwargs to instantiate the plugin with.
             cls (str): "provider", "checker", or None.
@@ -313,7 +335,7 @@ class Config(object):
         """
         Inflate multiple plugins based on a list/dict definition.
 
-        Args:
+        Arguments:
             plugins_definition (list/dict): the plugins definitions.
             inflate_method (method): the method to indlate each plugin.
 
@@ -354,7 +376,7 @@ class Config(object):
 
         An analysis group is a section defined in the YAML file.
 
-        Args:
+        Arguments:
             identifier (str): the group identifier.
             definition (list/dict): the group definition.
 
@@ -372,9 +394,27 @@ class Config(object):
         analysis_group = AnalysisGroup()
 
         try:
-
             first_plugin = self.inflate_plugin(identifier, definition)
+        except PluginNotFoundError as e:
+            logger.warning(
+                "Could not find any plugin identified by %s, " "considering entry as group name. Exception: %s.",
+                identifier,
+                e,
+            )
 
+            analysis_group.name = definition.pop("name", identifier)
+            analysis_group.description = definition.pop("description", None)
+
+            if bool(providers_definition) != bool(checkers_definition):
+                raise ValueError(
+                    "when declaring an analysis group with a name, you must "
+                    'either declare both "providers" and "checkers" or none.'
+                )
+
+            if providers_definition and checkers_definition:
+                analysis_group.providers.extend(self.inflate_providers(providers_definition))
+                analysis_group.checkers.extend(self.inflate_checkers(checkers_definition))
+        else:
             if isinstance(first_plugin, Checker):
                 analysis_group.checkers.append(first_plugin)
 
@@ -397,27 +437,6 @@ class Config(object):
                         'the "checkers" key.'
                     )
 
-                analysis_group.checkers.extend(self.inflate_checkers(checkers_definition))
-
-        except PluginNotFoundError as e:
-
-            logger.warning(
-                "Could not find any plugin identified by %s, " "considering entry as group name. Exception: %s.",
-                identifier,
-                e,
-            )
-
-            analysis_group.name = definition.pop("name", identifier)
-            analysis_group.description = definition.pop("description", None)
-
-            if bool(providers_definition) != bool(checkers_definition):
-                raise ValueError(
-                    "when declaring an analysis group with a name, you must "
-                    'either declare both "providers" and "checkers" or none.'
-                )
-
-            if providers_definition and checkers_definition:
-                analysis_group.providers.extend(self.inflate_providers(providers_definition))
                 analysis_group.checkers.extend(self.inflate_checkers(checkers_definition))
 
         self.cleanup_definition(definition)
