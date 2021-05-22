@@ -116,7 +116,7 @@ class Analysis:
     def successful(self) -> bool:
         """
         Property to tell if the run was successful: no failures.
-        
+
         Returns:
             True if the run was successful.
         """

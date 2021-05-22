@@ -76,10 +76,10 @@ class Config(object):
     def load_local_plugin(name):
         """
         Import a local plugin accessible through Python path.
-        
+
         Arguments:
             name: Dotted path to the plugin.
-        
+
         Raises:
             PluginNotFoundError: When the given plugin could not be found.
         Returns:
@@ -111,10 +111,10 @@ class Config(object):
     def lint(config):
         """
         Verify the contents of the configuration dictionary.
-        
+
         Arguments:
             config: A configuration dictionary.
-        
+
         Raises:
             ConfigError: If the config object is not a dictionary, or doesn't have an 'analysis' item.
         """
