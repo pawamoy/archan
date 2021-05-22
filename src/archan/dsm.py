@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 """
 DSM module.
 
@@ -23,7 +21,7 @@ def validate_square(data, message=None, exception=MatrixError):
     """Validate that the matrix has equal number of rows and columns."""
     rows, columns = len(data), len(data[0]) if data else 0
     if message is None:
-        message = "Number of rows: %s != number of columns: %s in matrix" % (rows, columns)
+        message = f"Number of rows: {rows} != number of columns: {columns} in matrix"
     if rows != columns:
         raise exception(message)
 
@@ -33,12 +31,12 @@ def validate_categories_equal_entities(categories, entities, message=None, excep
     nb_categories = len(categories)
     nb_entities = len(entities)
     if message is None:
-        message = "Number of categories: %s != number of entities: %s" % (nb_categories, nb_entities)
+        message = f"Number of categories: {nb_categories} != number of entities: {nb_entities}"
     if categories and nb_categories != nb_entities:
         raise exception(message)
 
 
-class BaseMatrix(object):
+class BaseMatrix:
     """Base class for matrix classes."""
 
     # TODO: also consider these attributes:
@@ -91,7 +89,7 @@ class BaseMatrix(object):
 
     def default_entities(self):
         """Default entities used when there are none."""
-        return [str(i) for i in range(self.rows)]
+        return [str(_) for _ in range(self.rows)]
 
 
 class DesignStructureMatrix(BaseMatrix):
@@ -105,7 +103,7 @@ class DesignStructureMatrix(BaseMatrix):
         super().validate()
         nb_entities = len(self.entities)
         if nb_entities != self.rows:
-            raise self.error("Number of entities: %s != number of rows: %s" % (nb_entities, self.rows))
+            raise self.error(f"Number of entities: {nb_entities} != number of rows: {self.rows}")
 
     def transitive_closure(self):
         """Compute the transitive closure of the matrix."""
@@ -129,13 +127,13 @@ class DomainMappingMatrix(BaseMatrix):
         nb_entities = len(self.entities)
         if nb_entities != self.rows + self.columns:
             raise self.error(
-                "Number of entities: %s != number of rows + "
-                "number of columns: %s+%s=%s" % (nb_entities, self.rows, self.columns, self.rows + self.columns)
+                f"Number of entities: {nb_entities} != number of rows + "
+                f"number of columns: {self.rows}+{self.columns}={self.rows + self.columns}"
             )
 
     def default_entities(self):
         """Return range from 0 to rows + columns."""
-        return [str(i) for i in range(self.rows + self.columns)]
+        return [str(_) for _ in range(self.rows + self.columns)]
 
 
 class MultipleDomainMatrix(BaseMatrix):
@@ -147,15 +145,19 @@ class MultipleDomainMatrix(BaseMatrix):
     def validate(self):
         """Base validation + each cell is instance of DSM or MDM."""
         super().validate()
-        message_dsm = "Matrix at [%s:%s] is not an instance of " "DesignStructureMatrix or MultipleDomainMatrix."
-        message_ddm = "Matrix at [%s:%s] is not an instance of " "DomainMappingMatrix or MultipleDomainMatrix."
+        message_dsm = (
+            "Matrix at [%s:%s] is not an instance of DesignStructureMatrix or MultipleDomainMatrix."  # noqa: WPS323
+        )
+        message_ddm = (
+            "Matrix at [%s:%s] is not an instance of DomainMappingMatrix or MultipleDomainMatrix."  # noqa: WPS323
+        )
         messages = []
         for i, row in enumerate(self.data):
             for j, cell in enumerate(row):
                 if i == j:
                     if not isinstance(cell, (DesignStructureMatrix, MultipleDomainMatrix)):
-                        messages.append(message_dsm % (i, j))
+                        messages.append(message_dsm % (i, j))  # noqa: WPS323
                 elif not isinstance(cell, (DomainMappingMatrix, MultipleDomainMatrix)):
-                    messages.append(message_ddm % (i, j))
+                    messages.append(message_ddm % (i, j))  # noqa: WPS323
         if messages:
             raise self.error("\n".join(messages))

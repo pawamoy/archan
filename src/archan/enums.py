@@ -1,9 +1,9 @@
-# -*- coding: utf-8 -*-
-
 """Enumerations module."""
 
 
 class MetaEnum(type):
+    """Metaclass for our ResultCode enum."""
+
     ALL = ()
 
     def __contains__(cls, item):
@@ -11,6 +11,8 @@ class MetaEnum(type):
 
 
 class ResultCode(metaclass=MetaEnum):
+    """Enumeration of our result codes."""
+
     PASSED = 1
     FAILED = 0
     IGNORED = -1

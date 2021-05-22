@@ -1,8 +1,4 @@
-# -*- coding: utf-8 -*-
-
 """Logging module."""
-
-from __future__ import absolute_import
 
 import logging
 from typing import Dict
@@ -10,7 +6,7 @@ from typing import Dict
 from colorama import Back, Fore, Style
 
 
-class Logger(object):
+class Logger:
     """Static class to store loggers."""
 
     loggers: Dict[str, logging.Logger] = {}
@@ -29,7 +25,7 @@ class Logger(object):
             logger.setLevel(level)
 
     @staticmethod
-    def get_logger(name, level=None, fmt=":%(lineno)d: %(message)s"):
+    def get_logger(name, level=None, fmt=":%(lineno)d: %(message)s"):  # noqa: WPS323
         """
         Return a logger.
 
@@ -43,7 +39,8 @@ class Logger(object):
         """
         if name not in Logger.loggers:
             if Logger.level is None and level is None:
-                Logger.level = level = logging.ERROR
+                Logger.level = logging.ERROR
+                level = logging.ERROR
             elif Logger.level is None:
                 Logger.level = level
             elif level is None:
@@ -60,8 +57,16 @@ class Logger(object):
 class LoggingFormatter(logging.Formatter):
     """Custom logging formatter."""
 
-    def format(self, record):
-        """Override default format method."""
+    def format(self, record: logging.LogRecord) -> str:  # noqa: A003
+        """
+        Override default format method.
+
+        Arguments:
+            record: A log record.
+
+        Returns:
+            The formatted record.
+        """
         if record.levelno == logging.DEBUG:
             string = Back.WHITE + Fore.BLACK + " debug "
         elif record.levelno == logging.INFO:
@@ -74,4 +79,4 @@ class LoggingFormatter(logging.Formatter):
             string = Back.BLACK + Fore.WHITE + " critical "
         else:
             string = ""
-        return "{none}{string}{none} {super}".format(none=Style.RESET_ALL, string=string, super=super().format(record))
+        return f"{Style.RESET_ALL}{string}{Style.RESET_ALL} {super().format(record)}"

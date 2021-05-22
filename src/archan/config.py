@@ -1,11 +1,10 @@
-# -*- coding: utf-8 -*-
-
 """Configuration module."""
 
 import collections
 import importlib
 import os
 from copy import deepcopy
+from typing import Optional, Union
 
 import pkg_resources
 import yaml
@@ -25,14 +24,14 @@ try:
 
 except NameError:
 
-    class PluginNotFoundError(ImportError):  # type: ignore
+    class PluginNotFoundError(ImportError):  # type: ignore  # noqa: WPS440
         """Exception to raise when a plugin is not found or importable."""
 
 
 logger = Logger.get_logger(__name__)
 
 
-class Config(object):
+class Config:
     """Configuration class."""
 
     def __init__(self, config_dict=None):
@@ -58,22 +57,20 @@ class Config(object):
             for group_key, group_def in analysis.items():
                 try:
                     self.analysis_groups.append(self.inflate_analysis_group(group_key, group_def))
-                except ValueError as e:
+                except ValueError as error:
                     logger.error(
-                        'Error while inflating "%s" analysis group. '
+                        f"Error while inflating '{group_key}' analysis group. "
                         "The group will not be added to the list. "
-                        "Exception: %s.",
-                        group_key,
-                        e,
+                        f"Exception: {error}."
                     )
         else:
-            raise ValueError('%s type is not supported for "analysis" key, ' "use dict only" % type(analysis))
+            raise ValueError(f"{type(analysis)} type is not supported for 'analysis' key, use dict only")
 
     def __str__(self):
         return str(self.config_dict)
 
     @staticmethod
-    def load_local_plugin(name):
+    def load_local_plugin(name) -> Union[Checker, Provider]:
         """
         Import a local plugin accessible through Python path.
 
@@ -82,21 +79,25 @@ class Config(object):
 
         Raises:
             PluginNotFoundError: When the given plugin could not be found.
+
         Returns:
             The plugin object.
         """
         module_name = ".".join(name.split(".")[:-1])
         try:
             module_obj = importlib.import_module(name=module_name)
-        except (ImportError, AttributeError, ValueError) as e:
-            raise PluginNotFoundError(e)
-        else:
-            obj = getattr(module_obj, name.split(".")[-1])
-            return obj
+        except (ImportError, AttributeError, ValueError) as error:
+            raise PluginNotFoundError(error)
+        return getattr(module_obj, name.split(".")[-1])
 
     @staticmethod
-    def load_installed_plugins():
-        """Search and load every installed plugin through entry points."""
+    def load_installed_plugins() -> collections.namedtuple:
+        """
+        Search and load every installed plugin through entry points.
+
+        Returns:
+            Providers and checkers.
+        """
         providers = {}
         checkers = {}
         for entry_point in pkg_resources.iter_entry_points(group="archan"):
@@ -124,41 +125,62 @@ class Config(object):
             raise ConfigError('config must have "analysis" item')
 
     @staticmethod
-    def from_file(path):
-        """Return a ``Config`` instance by reading a configuration file."""
+    def from_file(path: str) -> "Config":
+        """
+        Return a ``Config`` instance by reading a configuration file.
+
+        Arguments:
+            path: The config file path.
+
+        Returns:
+            The config object.
+        """
         with open(path) as stream:
             obj = yaml.safe_load(stream)
         Config.lint(obj)
         return Config(config_dict=obj)
 
     @staticmethod
-    def find():
-        """Find the configuration file if any."""
+    def find() -> Optional[str]:
+        """
+        Find the configuration file if any.
+
+        Returns:
+            The path to a configuration file.
+        """
         names = ("archan.yml", "archan.yaml", ".archan.yml", ".archan.yaml")
         current_dir = os.getcwd()
         configconfig_file = os.path.join(current_dir, ".configconfig")
         default_config_dir = os.path.join(current_dir, "config")
         if os.path.isfile(configconfig_file):
-            logger.debug("Reading %s to get config folder path", configconfig_file)
+            logger.debug(f"Reading {configconfig_file} to get config folder path")
             with open(configconfig_file) as stream:
                 config_dir = os.path.join(current_dir, stream.read()).strip()
         elif os.path.isdir(default_config_dir):
             config_dir = default_config_dir
         else:
             config_dir = current_dir
-        logger.debug("Config folder = %s", config_dir)
+        logger.debug(f"Config folder = {config_dir}")
         for name in names:
             config_file = os.path.join(config_dir, name)
-            logger.debug("Searching for config file at %s", config_file)
+            logger.debug(f"Searching for config file at {config_file}")
             if os.path.isfile(config_file):
-                logger.debug("Found %s", config_file)
+                logger.debug(f"Found {config_file}")
                 return config_file
         logger.debug("No config file found")
         return None
 
     @staticmethod
-    def default_config(file_path=None):
-        """Return a default configuration instance."""
+    def default_config(file_path=None) -> "Config":
+        """
+        Return a default configuration instance.
+
+        Arguments:
+            file_path: Optional file path to configuration file.
+
+        Returns:
+            The config object.
+        """
         return Config(
             {
                 "analysis": {
@@ -195,21 +217,19 @@ class Config(object):
             if isinstance(plugin_def, str):
                 try:
                     plugins.append(inflate_plugin(plugin_def))
-                except PluginNotFoundError as e:
-                    logger.error("Could not import plugin identified by %s. " "Exception: %s.", plugin_def, e)
+                except PluginNotFoundError as error:
+                    logger.error(f"Could not import plugin identified by {plugin_def}. Exception: {error}.")
             elif isinstance(plugin_def, dict):
                 if len(plugin_def) > 1:
-                    raise ValueError("When using a plugin list, each dictionary item " "must contain only one key.")
+                    raise ValueError("When using a plugin list, each dictionary item must contain only one key.")
                 identifier = list(plugin_def.keys())[0]
                 definition = plugin_def[identifier]
                 try:
                     plugins.append(inflate_plugin(identifier, definition))
-                except PluginNotFoundError as e:
+                except PluginNotFoundError as error:  # noqa: WPS440
                     logger.error(
-                        "Could not import plugin identified by %s. " "Inflate method: %s. Exception: %s.",
-                        identifier,
-                        inflate_plugin,
-                        e,
+                        f"Could not import plugin identified by {identifier}. "
+                        f"Inflate method: {inflate_plugin}. Exception: {error}.",
                     )
         return plugins
 
@@ -229,8 +249,8 @@ class Config(object):
         for identifier, definition in plugin_dict.items():
             try:
                 plugins.append(inflate_plugin(identifier, definition))
-            except PluginNotFoundError as e:
-                logger.error("Could not import plugin identified by %s. " "Exception: %s.", identifier, e)
+            except PluginNotFoundError as error:
+                logger.error(f"Could not import plugin identified by {identifier}. Exception: {error}")
         return plugins
 
     @staticmethod
@@ -253,8 +273,7 @@ class Config(object):
             return Checker(name=identifier, passes=definition)
         elif isinstance(definition, dict):
             return Checker(definition.pop("name", identifier), **definition)
-        else:
-            raise ValueError("%s type is not supported for no-data checkers, " "use bool or dict" % type(definition))
+        raise ValueError(f"{type(definition)} type is not supported for no-data checkers, use bool or dict")
 
     @staticmethod
     def cleanup_definition(definition):
@@ -349,10 +368,7 @@ class Config(object):
             return self.inflate_plugin_list(plugins_definition, inflate_method)
         elif isinstance(plugins_definition, dict):
             return self.inflate_plugin_dict(plugins_definition, inflate_method)
-        else:
-            raise ValueError(
-                "%s type is not supported for a plugin list, " "use list or dict" % type(plugins_definition)
-            )
+        raise ValueError(f"{type(plugins_definition)} type is not supported for a plugin list, use list or dict")
 
     def inflate_provider(self, identifier, definition=None):
         """Shortcut to inflate a provider."""
@@ -395,11 +411,9 @@ class Config(object):
 
         try:
             first_plugin = self.inflate_plugin(identifier, definition)
-        except PluginNotFoundError as e:
+        except PluginNotFoundError as error:
             logger.warning(
-                "Could not find any plugin identified by %s, " "considering entry as group name. Exception: %s.",
-                identifier,
-                e,
+                f"Could not find any plugin identified by {identifier}, considering entry as group name. Exception: {error}.",
             )
 
             analysis_group.name = definition.pop("name", identifier)
@@ -453,11 +467,11 @@ class Config(object):
         middle = int(width / 2)
         if self.available_providers:
             print(line + " " * middle + "PROVIDERS")
-            for provider in sorted(self.available_providers.values(), key=lambda x: x.identifier):
+            for provider in sorted(self.available_providers.values(), key=lambda prv: prv.identifier):
                 provider().print()
                 print()
         if self.available_checkers:
             print(line + " " * middle + "CHECKERS")
-            for checker in sorted(self.available_checkers.values(), key=lambda x: x.identifier):
+            for checker in sorted(self.available_checkers.values(), key=lambda prv: prv.identifier):
                 checker().print()
                 print()

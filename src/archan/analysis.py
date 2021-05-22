@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 """Analysis module."""
 
 import sys
@@ -34,7 +32,7 @@ class Analysis:
 
     @staticmethod
     def _get_checker_result(group, checker, provider=None, nd=""):
-        logger.info("Run %schecker %s", nd, checker.identifier or checker.name)
+        logger.info(f"Run {nd}checker {checker.identifier or checker.name}")
         checker.run(provider.data if provider else None)
         return Result(group, provider, checker, *checker.result)
 
@@ -53,7 +51,7 @@ class Analysis:
         for analysis_group in self.config.analysis_groups:
             if analysis_group.providers:
                 for provider in analysis_group.providers:
-                    logger.info("Run provider %s", provider.identifier)
+                    logger.info(f"Run provider {provider.identifier}")
                     provider.run()
                     for checker in analysis_group.checkers:
                         result = self._get_checker_result(analysis_group, checker, provider)
@@ -62,7 +60,7 @@ class Analysis:
                         if verbose:
                             result.print()
             else:
-                for checker in analysis_group.checkers:
+                for checker in analysis_group.checkers:  # noqa: WPS440
                     result = self._get_checker_result(analysis_group, checker, nd="no-data-")
                     self.results.append(result)
                     analysis_group.results.append(result)
@@ -82,18 +80,18 @@ class Analysis:
             n_checkers = len(group.checkers)
             if not group.providers and group.checkers:
                 test_suite = group.name
-                description_lambda = lambda r: r.checker.name
-            elif not group.checkers:
+                description_lambda = lambda result: result.checker.name  # noqa: E731
+            elif not group.checkers:  # noqa: WPS504
                 logger.warning("Invalid analysis group (no checkers), skipping")
                 continue
             elif n_providers > n_checkers:
                 test_suite = group.checkers[0].name
-                description_lambda = lambda r: r.provider.name
+                description_lambda = lambda result: result.provider.name  # noqa: E731
             else:
                 test_suite = group.providers[0].name
-                description_lambda = lambda r: r.checker.name
+                description_lambda = lambda result: result.checker.name  # noqa: E731
 
-            for result in group.results:
+            for result in group.results:  # noqa: WPS440
                 description = description_lambda(result)
                 if result.code == ResultCode.PASSED:
                     tracker.add_ok(test_suite, description)
@@ -102,11 +100,11 @@ class Analysis:
                 elif result.code == ResultCode.NOT_IMPLEMENTED:
                     tracker.add_not_ok(test_suite, description, "TODO implement the test")
                 elif result.code == ResultCode.FAILED:
+                    message = "\n  message: ".join(result.messages.split("\n"))
                     tracker.add_not_ok(
                         test_suite,
                         description,
-                        diagnostics="  ---\n  message: %s\n  hint: %s\n  ..."
-                        % ("\n  message: ".join(result.messages.split("\n")), result.checker.hint),
+                        diagnostics=f"  ---\n  message: {message}\n  hint: {result.checker.hint}\n  ...",
                     )
 
     def output_json(self):
