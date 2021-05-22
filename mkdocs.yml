@@ -3,6 +3,7 @@ site_description: "Analysis of your architecture strength based on DSM data."
 site_url: "https://pawamoy.github.io/archan"
 repo_url: "https://github.com/pawamoy/archan"
 repo_name: "pawamoy/archan"
+site_dir: "site"
 
 nav:
 - Home:
