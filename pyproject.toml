@@ -33,12 +33,22 @@ dependenpy = [
     "dependenpy~=3.3",
 ]
 
+[project.urls]
+Homepage = "https://github.com/pawamoy/archan"
+Repository = "https://github.com/pawamoy/archan"
+
 [project.scripts]
 archan = "archan.cli:main"
 
-[project.urls]
-Repository = "https://github.com/pawamoy/archan"
-Homepage = "https://github.com/pawamoy/archan"
+[project.entry-points.archan]
+"archan.LayeredArchitecture" = "archan.plugins.checkers:LayeredArchitecture"
+"archan.SeparationOfPrivileges" = "archan.plugins.checkers:SeparationOfPrivileges"
+"archan.LeastPrivileges" = "archan.plugins.checkers:LeastPrivileges"
+"archan.EconomyOfMechanism" = "archan.plugins.checkers:EconomyOfMechanism"
+"archan.CodeClean" = "archan.plugins.checkers:CodeClean"
+"archan.LeastCommonMechanism" = "archan.plugins.checkers:LeastCommonMechanism"
+"archan.CompleteMediation" = "archan.plugins.checkers:CompleteMediation"
+"archan.CSVInput" = "archan.plugins.providers:CSVInput"
 
 [tool.pdm]
 package-dir = "src"
@@ -85,16 +95,6 @@ tests = [
     "pytest-xdist~=2.2",
 ]
 typing = ["mypy~=0.812"]
-
-[project.entry-points.archan]
-"archan.LayeredArchitecture" = "archan.plugins.checkers:LayeredArchitecture"
-"archan.SeparationOfPrivileges" = "archan.plugins.checkers:SeparationOfPrivileges"
-"archan.LeastPrivileges" = "archan.plugins.checkers:LeastPrivileges"
-"archan.EconomyOfMechanism" = "archan.plugins.checkers:EconomyOfMechanism"
-"archan.CodeClean" = "archan.plugins.checkers:CodeClean"
-"archan.LeastCommonMechanism" = "archan.plugins.checkers:LeastCommonMechanism"
-"archan.CompleteMediation" = "archan.plugins.checkers:CompleteMediation"
-"archan.CSVInput" = "archan.plugins.providers:CSVInput"
 
 [tool.black]
 line-length = 120
