@@ -45,7 +45,7 @@ def pretty_description(description: str, wrap_at: int = None, indent: int = 0) -
         else:
             wrap_at += width
 
-    indent = " " * indent
+    indent = " " * indent  # type: ignore
     text_wrapper = textwrap.TextWrapper(
         width=wrap_at, replace_whitespace=False, initial_indent=indent, subsequent_indent=indent
     )

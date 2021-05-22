@@ -2,6 +2,8 @@
 
 """Checker module."""
 
+from typing import List
+
 from archan import Argument, Checker
 from archan.errors import DesignStructureMatrixError
 from archan.logging import Logger
@@ -27,15 +29,15 @@ class CompleteMediation(Checker):
     hint = "Remove the dependencies or deviate them through a broker module."
 
     @staticmethod
-    def generate_mediation_matrix(dsm):
+    def generate_mediation_matrix(dsm) -> List[List[int]]:
         """
         Generate the mediation matrix of the given matrix.
 
         Rules for mediation matrix generation:
 
-        Set -1 for items NOT to be considered
-        Set 0 for items which MUST NOT be present
-        Set 1 for items which MUST be present
+        - Set `-1` for items **NOT** to be considered
+        - Set `0` for items which **MUST NOT** be present
+        - Set `1` for items which **MUST** be present
 
         Each module has optional dependencies to itself.
 
@@ -54,46 +56,52 @@ class CompleteMediation(Checker):
           (but framework/libraries would be tolerated).
 
         Arguments:
-            dsm (:class:`DesignStructureMatrix`): the DSM to generate
-                the mediation matrix for.
+            dsm: The DSM to generate the mediation matrix for.
+
+        Raises:
+            DesignStructureMatrixError: The mediation matrix could not be generated.
+
+        Returns:
+            The mediation matrix.
         """
         cat = dsm.categories
         ent = dsm.entities
         size = dsm.size[0]
 
         if not cat:
-            cat = ["appmodule"] * size
+            cat = ["appmodule"] * size  # noqa: WPS435
 
-        packages = [e.split(".")[0] for e in ent]
+        packages = [entity.split(".")[0] for entity in ent]
 
         # define and initialize the mediation matrix
         mediation_matrix = [[0 for _ in range(size)] for _ in range(size)]
 
-        for i in range(0, size):
-            for j in range(0, size):
+        for i in range(0, size):  # noqa: WPS111
+            for j in range(0, size):  # noqa: WPS111
                 if cat[i] == "framework":
                     if cat[j] == "framework":
                         mediation_matrix[i][j] = -1
                     else:
                         mediation_matrix[i][j] = 0
                 elif cat[i] == "corelib":
-                    if cat[j] in ("framework", "corelib") or ent[i].startswith(packages[j] + ".") or i == j:
+                    if cat[j] in {"framework", "corelib"} or ent[i].startswith(packages[j] + ".") or i == j:
                         mediation_matrix[i][j] = -1
                     else:
                         mediation_matrix[i][j] = 0
                 elif cat[i] == "applib":
-                    if cat[j] in ("framework", "corelib", "applib") or ent[i].startswith(packages[j] + ".") or i == j:
+                    if cat[j] in {"framework", "corelib", "applib"} or ent[i].startswith(packages[j] + ".") or i == j:
                         mediation_matrix[i][j] = -1
                     else:
                         mediation_matrix[i][j] = 0
                 elif cat[i] == "appmodule":
                     # we cannot force an app module to import things from
                     # the broker if the broker itself did not import anything
-                    if (
-                        cat[j] in ("framework", "corelib", "applib", "broker", "data")
+                    ignore = (
+                        cat[j] in {"framework", "corelib", "applib", "broker", "data"}
                         or ent[i].startswith(packages[j] + ".")
                         or i == j
-                    ):
+                    )
+                    if ignore:
                         mediation_matrix[i][j] = -1
                     else:
                         mediation_matrix[i][j] = 0
@@ -101,11 +109,12 @@ class CompleteMediation(Checker):
                     # we cannot force the broker to import things from
                     # app modules if there is nothing to be imported.
                     # also broker should be authorized to use third apps
-                    if (
-                        cat[j] in ("appmodule", "corelib", "framework")
+                    ignore = (
+                        cat[j] in {"appmodule", "corelib", "framework"}
                         or ent[i].startswith(packages[j] + ".")
                         or i == j
-                    ):
+                    )
+                    if ignore:
                         mediation_matrix[i][j] = -1
                     else:
                         mediation_matrix[i][j] = 0
@@ -116,7 +125,7 @@ class CompleteMediation(Checker):
                         mediation_matrix[i][j] = 0
                 else:
                     # mediation_matrix[i][j] = -2  # errors in the generation
-                    raise DesignStructureMatrixError("Mediation matrix value NOT generated for %s:%s" % (i, j))
+                    raise DesignStructureMatrixError(f"Mediation matrix value NOT generated for {i}:{j}")
 
         return mediation_matrix
 
@@ -128,6 +137,9 @@ class CompleteMediation(Checker):
         Arguments:
             dsm (:class:`DesignStructureMatrix`): the DSM to check.
             complete_mediation_matrix (list of list of int): 2-dim array
+
+        Raises:
+            DesignStructureMatrixError: When the matrices are not compliant.
 
         Returns:
             bool: True if compliant, else False
@@ -143,16 +155,16 @@ class CompleteMediation(Checker):
 
         discrepancy_found = False
         message = []
-        for i in range(0, rows_dep_matrix):
-            for j in range(0, cols_dep_matrix):
-                if (complete_mediation_matrix[i][j] == 0 and matrix[i][j] > 0) or (
+        for i in range(0, rows_dep_matrix):  # noqa: WPS111
+            for j in range(0, cols_dep_matrix):  # noqa: WPS111
+                discrepancy = (complete_mediation_matrix[i][j] == 0 and matrix[i][j] > 0) or (
                     complete_mediation_matrix[i][j] == 1 and matrix[i][j] < 1
-                ):
+                )
+                if discrepancy:
                     discrepancy_found = True
                     message.append(
-                        "Untolerated dependency at %s:%s (%s:%s): "
-                        "%s instead of %s"
-                        % (i, j, dsm.entities[i], dsm.entities[j], matrix[i][j], complete_mediation_matrix[i][j])
+                        f"Untolerated dependency at {i}:{j} ({dsm.entities[i]}:{dsm.entities[j]}): "
+                        f"{matrix[i][j]} instead of {complete_mediation_matrix[i][j]}"
                     )
 
         message = "\n".join(message)
@@ -169,6 +181,7 @@ class CompleteMediation(Checker):
 
         Arguments:
             dsm (:class:`DesignStructureMatrix`): the DSM to check.
+            **kwargs: Optional additional keyword arguments.
 
         Returns:
             bool: True if compliant, else False
@@ -217,6 +230,7 @@ class EconomyOfMechanism(Checker):
         Arguments:
             dsm (:class:`DesignStructureMatrix`): the DSM to check.
             simplicity_factor (int): simplicity factor.
+            **kwargs: Optional additional keyword arguments.
 
         Returns:
             bool: True if economic, else False
@@ -229,17 +243,18 @@ class EconomyOfMechanism(Checker):
         dsm_size = dsm.size[0]
 
         if not categories:
-            categories = ["appmodule"] * dsm_size
+            categories = ["appmodule"] * dsm_size  # noqa: WPS435
 
         dependency_number = 0
         # evaluate Matrix(data)
-        for i in range(0, dsm_size):
-            for j in range(0, dsm_size):
-                if (
-                    categories[i] not in ("framework", "corelib")
-                    and categories[j] not in ("framework", "corelib")
+        for i in range(0, dsm_size):  # noqa: WPS111
+            for j in range(0, dsm_size):  # noqa: WPS111
+                count_dependency = (
+                    categories[i] not in {"framework", "corelib"}
+                    and categories[j] not in {"framework", "corelib"}
                     and data[i][j] > 0
-                ):
+                )
+                if count_dependency:
                     dependency_number += 1
                     # check comparison result
         if dependency_number < dsm_size * simplicity_factor:
@@ -247,9 +262,9 @@ class EconomyOfMechanism(Checker):
         else:
             message = " ".join(
                 [
-                    "Number of dependencies (%s)" % dependency_number,
-                    "> number of rows (%s)" % dsm_size,
-                    "* simplicity factor (%s) = %s" % (simplicity_factor, dsm_size * simplicity_factor),
+                    f"Number of dependencies ({dependency_number})",
+                    f"> number of rows ({dsm_size})",
+                    f"* simplicity factor ({simplicity_factor}) = {dsm_size * simplicity_factor}",
                 ]
             )
         return economy_of_mechanism, message
@@ -278,7 +293,7 @@ class SeparationOfPrivileges(Checker):
     # TODO: add hint
 
     def check(self, dsm, **kwargs):
-        """TODO: To implement."""
+        """TODO: To implement."""  # noqa: DAR101,DAR401
         raise NotImplementedError
 
 
@@ -302,7 +317,7 @@ class LeastPrivileges(Checker):
     # TODO: add hint
 
     def check(self, dsm, **kwargs):
-        """TODO: To implement."""
+        """TODO: To implement."""  # noqa: DAR101,DAR401
         raise NotImplementedError
 
 
@@ -347,6 +362,7 @@ class LeastCommonMechanism(Checker):
             independence_factor (int): if the maximum dependencies for one
                 module is inferior or equal to the DSM size divided by the
                 independence factor, then this criterion is verified.
+            **kwargs: Optional additional keyword arguments.
 
         Returns:
             bool: True if least common mechanism, else False
@@ -360,13 +376,13 @@ class LeastCommonMechanism(Checker):
         dsm_size = dsm.size[0]
 
         if not categories:
-            categories = ["appmodule"] * dsm_size
+            categories = ["appmodule"] * dsm_size  # noqa: WPS435
 
         dependent_module_number = []
         # evaluate Matrix(data)
-        for j in range(0, dsm_size):
+        for j in range(0, dsm_size):  # noqa: WPS111
             dependent_module_number.append(0)
-            for i in range(0, dsm_size):
+            for i in range(0, dsm_size):  # noqa: WPS111
                 if categories[i] != "framework" and categories[j] != "framework" and data[i][j] > 0:
                     dependent_module_number[j] += 1
         # except for the broker if any  and libs, check that threshold is not
@@ -374,18 +390,16 @@ class LeastCommonMechanism(Checker):
         #  index of brokers
         #  and app_libs are set to 0
         for index, item in enumerate(dsm.categories):
-            if item == "broker" or item == "applib":
+            if item in {"broker", "applib"}:
                 dependent_module_number[index] = 0
         if max(dependent_module_number) <= dsm_size / independence_factor:
             least_common_mechanism = True
         else:
             maximum = max(dependent_module_number)
-            message = "Dependencies to %s (%s) > matrix size (%s) / " "independence factor (%s) = %s" % (
-                dsm.entities[dependent_module_number.index(maximum)],
-                maximum,
-                dsm_size,
-                independence_factor,
-                dsm_size / independence_factor,
+            module = dsm.entities[dependent_module_number.index(maximum)]
+            message = (
+                f"Dependencies to {module} ({maximum}) > matrix size ({dsm_size}) / "
+                "independence factor ({independence_factor}) = {dsm_size / independence_factor"
             )
 
         return least_common_mechanism, message
@@ -418,6 +432,7 @@ class LayeredArchitecture(Checker):
 
         Arguments:
             dsm (:class:`DesignStructureMatrix`): the DSM to check.
+            **kwargs: Optional additional keyword arguments.
 
         Returns:
             bool, str: True if layered architecture else False, messages
@@ -428,21 +443,20 @@ class LayeredArchitecture(Checker):
         dsm_size = dsm.size[0]
 
         if not categories:
-            categories = ["appmodule"] * dsm_size
+            categories = ["appmodule"] * dsm_size  # noqa: WPS435
 
-        for i in range(0, dsm_size - 1):
-            for j in range(i + 1, dsm_size):
-                if (
+        for i in range(0, dsm_size - 1):  # noqa: WPS111
+            for j in range(i + 1, dsm_size):  # noqa: WPS111
+                check_cell = (
                     categories[i] != "broker"
                     and categories[j] != "broker"
                     and dsm.entities[i].split(".")[0] != dsm.entities[j].split(".")[0]
-                ):  # noqa
-                    if dsm.data[i][j] > 0:
-                        layered_architecture = False
-                        messages.append(
-                            "Dependency from %s to %s breaks the "
-                            "layered architecture." % (dsm.entities[i], dsm.entities[j])
-                        )
+                )
+                if check_cell and dsm.data[i][j] > 0:
+                    layered_architecture = False
+                    messages.append(
+                        f"Dependency from {dsm.entities[i]} to {dsm.entities[j]} breaks the layered architecture."
+                    )
 
         return layered_architecture, "\n".join(messages)
 
@@ -471,20 +485,20 @@ class CodeClean(Checker):
 
         Arguments:
             dsm (:class:`DesignStructureMatrix`): the DSM to check.
+            **kwargs: Optional additional keyword arguments.
 
         Returns:
             bool, str: True if code clean else False, messages
         """
-        logger.debug("Entities = %s" % dsm.entities)
+        logger.debug(f"Entities = {dsm.entities}")
         messages = []
         code_clean = True
         threshold = kwargs.pop("threshold", 1)
         rows, _ = dsm.size
-        for i in range(0, rows):
+        for i in range(0, rows):  # noqa: WPS111
             if dsm.data[i][0] > threshold:
                 messages.append(
-                    "Number of issues (%d) in module %s "
-                    "> threshold (%d)" % (dsm.data[i][0], dsm.entities[i], threshold)
+                    f"Number of issues ({dsm.data[i][0]}) in module {dsm.entities[i]} " f"> threshold ({threshold})"
                 )
                 code_clean = False
 

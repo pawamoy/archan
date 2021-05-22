@@ -49,9 +49,9 @@ class CSVInput(Provider):
         columns = lines[0].rstrip("\n").split(delimiter)[1:]
         categories = None
         if categories_delimiter:
-            columns, categories = zip(*[c.split(categories_delimiter, 1) for c in columns])
+            columns, categories = zip(*[column.split(categories_delimiter, 1) for column in columns])
         size = len(columns)
-        data = [list(map(int, l.split(delimiter)[1:])) for l in lines[1 : size + 1]]
+        data = [list(map(int, line.split(delimiter)[1:])) for line in lines[1 : size + 1]]
         return DesignStructureMatrix(data, columns, categories)
 
 

@@ -5,11 +5,24 @@ Contains the DesignStructureMatrix, DomainMappingMatrix and
 MultipleDomainMatrix classes.
 """
 
+from typing import List, Tuple
+
 from archan.errors import DesignStructureMatrixError, DomainMappingMatrixError, MatrixError, MultipleDomainMatrixError
 
 
 def validate_rows_length(data, length, message=None, exception=MatrixError):
-    """Validate that all rows have the same length."""
+    """
+    Validate that all rows have the same length.
+
+    Arguments:
+        data: The data to validate.
+        length: The length to enforce.
+        message: The exception message.
+        exception: The exception type.
+
+    Raises:
+        MatrixError: When the validation failed.
+    """  # noqa: DAR401,DAR402
     if message is None:
         message = "All rows must have the same length (same number of columns)"
     for row in data:
@@ -18,7 +31,17 @@ def validate_rows_length(data, length, message=None, exception=MatrixError):
 
 
 def validate_square(data, message=None, exception=MatrixError):
-    """Validate that the matrix has equal number of rows and columns."""
+    """
+    Validate that the matrix has equal number of rows and columns.
+
+    Arguments:
+        data: The data to validate.
+        message: The exception message.
+        exception: The exception type.
+
+    Raises:
+        MatrixError: When the validation failed.
+    """  # noqa: DAR401,DAR402
     rows, columns = len(data), len(data[0]) if data else 0
     if message is None:
         message = f"Number of rows: {rows} != number of columns: {columns} in matrix"
@@ -27,7 +50,18 @@ def validate_square(data, message=None, exception=MatrixError):
 
 
 def validate_categories_equal_entities(categories, entities, message=None, exception=MatrixError):
-    """Validate that the matrix has equal number of entities and categories."""
+    """
+    Validate that the matrix has equal number of entities and categories.
+
+    Arguments:
+        categories: The categories to validate.
+        entities: The entities to validate.
+        message: The exception message.
+        exception: The exception type.
+
+    Raises:
+        MatrixError: When the validation failed.
+    """  # noqa: DAR401,DAR402
     nb_categories = len(categories)
     nb_entities = len(entities)
     if message is None:
@@ -66,18 +100,33 @@ class BaseMatrix:
         self.validate()
 
     @property
-    def rows(self):
-        """Return number of rows in data."""
+    def rows(self) -> int:
+        """
+        Return number of rows in data.
+
+        Returns:
+            The number of rows.
+        """
         return len(self.data)
 
     @property
-    def columns(self):
-        """Return number of columns in data."""
+    def columns(self) -> int:
+        """
+        Return number of columns in data.
+
+        Returns:
+            The number of columns.
+        """
         return len(self.data[0]) if self.data else 0
 
     @property
-    def size(self):
-        """Return number of rows and columns in data."""
+    def size(self) -> Tuple[int, int]:
+        """
+        Return number of rows and columns in data.
+
+        Returns:
+            The dimensions of the data.
+        """
         return self.rows, self.columns
 
     def validate(self):
@@ -87,8 +136,13 @@ class BaseMatrix:
         if self.square:
             validate_square(self.data, exception=self.error)
 
-    def default_entities(self):
-        """Default entities used when there are none."""
+    def default_entities(self) -> List[str]:
+        """
+        Default entities used when there are none.
+
+        Returns:
+            The default entities.
+        """
         return [str(_) for _ in range(self.rows)]
 
 
@@ -99,18 +153,28 @@ class DesignStructureMatrix(BaseMatrix):
     square = True
 
     def validate(self):
-        """Base validation + entities = rows."""
+        """
+        Base validation + entities = rows.
+
+        Raises:
+            DesignStructureMatrixError: When number of entities is different than number of rows.
+        """  # noqa: DAR401,DAR402
         super().validate()
         nb_entities = len(self.entities)
         if nb_entities != self.rows:
             raise self.error(f"Number of entities: {nb_entities} != number of rows: {self.rows}")
 
-    def transitive_closure(self):
-        """Compute the transitive closure of the matrix."""
-        data = [[1 if j else 0 for j in i] for i in self.data]
-        for k in range(self.rows):
-            for i in range(self.rows):
-                for j in range(self.rows):
+    def transitive_closure(self) -> List[List[int]]:
+        """
+        Compute the transitive closure of the matrix.
+
+        Returns:
+            The transitive closure of the matrix.
+        """
+        data = [[1 if j else 0 for j in i] for i in self.data]  # noqa: WPS111
+        for k in range(self.rows):  # noqa: WPS111
+            for i in range(self.rows):  # noqa: WPS111
+                for j in range(self.rows):  # noqa: WPS111
                     if data[i][k] and data[k][j]:
                         data[i][j] = 1
         return data
@@ -122,7 +186,12 @@ class DomainMappingMatrix(BaseMatrix):
     error = DomainMappingMatrixError
 
     def validate(self):
-        """Base validation + entities = rows + columns."""
+        """
+        Base validation + entities = rows + columns.
+
+        Raises:
+            DomainMappingMatrixError: When number of entities is different than rows plus columns.
+        """  # noqa: DAR401,DAR402
         super().validate()
         nb_entities = len(self.entities)
         if nb_entities != self.rows + self.columns:
@@ -131,8 +200,13 @@ class DomainMappingMatrix(BaseMatrix):
                 f"number of columns: {self.rows}+{self.columns}={self.rows + self.columns}"
             )
 
-    def default_entities(self):
-        """Return range from 0 to rows + columns."""
+    def default_entities(self) -> List[str]:
+        """
+        Return range from 0 to rows + columns.
+
+        Returns:
+            Range from 0 to rows + columns.
+        """
         return [str(_) for _ in range(self.rows + self.columns)]
 
 
@@ -143,7 +217,12 @@ class MultipleDomainMatrix(BaseMatrix):
     square = True
 
     def validate(self):
-        """Base validation + each cell is instance of DSM or MDM."""
+        """
+        Base validation + each cell is instance of DSM or MDM.
+
+        Raises:
+            MultipleDomainMatrixError: When diagonal cells are not DSM nor MDM, or when other cells are not DMM nor MDM.
+        """  # noqa: DAR401,DAR402
         super().validate()
         message_dsm = (
             "Matrix at [%s:%s] is not an instance of DesignStructureMatrix or MultipleDomainMatrix."  # noqa: WPS323
@@ -152,12 +231,12 @@ class MultipleDomainMatrix(BaseMatrix):
             "Matrix at [%s:%s] is not an instance of DomainMappingMatrix or MultipleDomainMatrix."  # noqa: WPS323
         )
         messages = []
-        for i, row in enumerate(self.data):
-            for j, cell in enumerate(row):
-                if i == j:
+        for line, row in enumerate(self.data):
+            for column, cell in enumerate(row):
+                if line == column:
                     if not isinstance(cell, (DesignStructureMatrix, MultipleDomainMatrix)):
-                        messages.append(message_dsm % (i, j))  # noqa: WPS323
+                        messages.append(message_dsm % (line, column))  # noqa: WPS323
                 elif not isinstance(cell, (DomainMappingMatrix, MultipleDomainMatrix)):
-                    messages.append(message_ddm % (i, j))  # noqa: WPS323
+                    messages.append(message_ddm % (line, column))  # noqa: WPS323
         if messages:
             raise self.error("\n".join(messages))
