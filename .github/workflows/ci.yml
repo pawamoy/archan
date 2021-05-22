@@ -51,6 +51,7 @@ jobs:
 
     - name: Install dependencies
       run: |
+        cat pyproject.toml
         pdm install -s duty -s docs -s quality -s typing
         pip install safety
 
@@ -100,6 +101,7 @@ jobs:
 
     - name: Install dependencies
       run: |
+        cat pyproject.toml
         pdm use -f ${{ matrix.python-version }}
         pdm install -s duty -s tests
 
