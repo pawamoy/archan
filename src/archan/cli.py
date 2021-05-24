@@ -11,59 +11,70 @@
 
 """Module that contains the command line application."""
 
-import argparse
 import logging
 import os
+from argparse import SUPPRESS, ArgumentParser, ArgumentTypeError
 from typing import List, Optional
 
 import colorama
 
-from . import __version__
-from .analysis import Analysis
-from .config import Config
-from .logging import Logger
+from archan import __version__
+from archan.analysis import Analysis
+from archan.config import Config
+from archan.logging import Logger
 
 logger = Logger.get_logger(__name__)
 
 
-def valid_file(value):
+def valid_file(value: str) -> str:
     """
     Check if given file exists and is a regular file.
 
-    Args:
-        value (str): path to the file.
+    Arguments:
+        value (str): Path to the file.
 
     Raises:
-        argparse.ArgumentTypeError: if not valid.
+        ArgumentTypeError: When value not valid.
 
     Returns:
-        str: original value argument.
+        Original value argument.
     """
     if not value:
-        raise argparse.ArgumentTypeError("'' is not a valid file path")
+        raise ArgumentTypeError("'' is not a valid file path")
     elif not os.path.exists(value):
-        raise argparse.ArgumentTypeError("%s is not a valid file path" % value)
+        raise ArgumentTypeError(f"{value} is not a valid file path")
     elif os.path.isdir(value):
-        raise argparse.ArgumentTypeError("%s is a directory, not a regular file" % value)
+        raise ArgumentTypeError(f"{value} is a directory, not a regular file")
     return value
 
 
-def valid_level(value):
-    """Validation function for parser, logging level argument."""
+def valid_level(value: str) -> str:
+    """
+    Validate the logging level argument for the parser.
+
+    Arguments:
+        value: The value provided on the command line.
+
+    Raises:
+        ArgumentTypeError: When value not valid.
+
+    Returns:
+        The validated level.
+    """
     value = value.upper()
     if getattr(logging, value, None) is None:
-        raise argparse.ArgumentTypeError("%s is not a valid level" % value)
+        raise ArgumentTypeError(f"{value} is not a valid level")
     return value
 
 
-def get_parser() -> argparse.ArgumentParser:
+def get_parser() -> ArgumentParser:
     """
     Return the CLI argument parser.
 
     Returns:
         An argparse parser.
     """
-    parser = argparse.ArgumentParser(
+    parser = ArgumentParser(
         prog="archan", add_help=False, description="Analysis of your architecture strength based on DSM data"
     )
     parser.add_argument(
@@ -75,9 +86,7 @@ def get_parser() -> argparse.ArgumentParser:
         metavar="FILE",
         help="Configuration file to use.",
     )
-    parser.add_argument(
-        "-h", "--help", action="help", default=argparse.SUPPRESS, help="Show this help message and exit."
-    )
+    parser.add_argument("-h", "--help", action="help", default=SUPPRESS, help="Show this help message and exit.")
     parser.add_argument(
         "-i",
         "--input",
@@ -118,7 +127,7 @@ def get_parser() -> argparse.ArgumentParser:
         "-V",
         "--version",
         action="version",
-        version="archan %s" % __version__,
+        version=f"archan {__version__}",
         help="Show the current version of the program and exit.",
     )
     return parser
@@ -149,7 +158,7 @@ def main(args: Optional[List[str]] = None) -> int:
     if opts.no_config:
         logger.info("--no-config flag used, use default configuration")
         if opts.input_file:
-            logger.info("Input file specified: %s" % opts.input_file)
+            logger.info(f"Input file specified: {opts.input_file}")
             file_path = opts.input_file
         else:
             logger.info("No input file specified, will read standard input")
@@ -157,20 +166,20 @@ def main(args: Optional[List[str]] = None) -> int:
         config = Config.default_config(file_path)
     else:
         if opts.config_file:
-            logger.info("Configuration file specified: %s" % opts.config_file)
+            logger.info(f"Configuration file specified: {opts.config_file}")
             config_file = opts.config_file
         else:
             logger.info("No configuration file specified, searching")
             config_file = Config.find()
         if config_file:
-            logger.info("Load configuration from %s" % config_file)
+            logger.info(f"Load configuration from {config_file}")
             config = Config.from_file(config_file)
         if config is None:
             logger.info("No configuration file found, use default one")
             config = Config.default_config()
 
-    logger.debug("Configuration = {}".format(config))
-    logger.debug("Plugins loaded = {}".format(config.plugins))
+    logger.debug(f"Configuration = {config}")
+    logger.debug(f"Plugins loaded = {config.plugins}")
 
     if opts.list_plugins:
         logger.info("Print list of plugins")
@@ -181,10 +190,10 @@ def main(args: Optional[List[str]] = None) -> int:
     analysis = Analysis(config)
     try:
         analysis.run(verbose=False)
-        logger.info("Analysis successful: %s" % analysis.successful)
-        logger.info("Output results as TAP")
-        analysis.output_tap()
-        return 0 if analysis.successful else 1
     except KeyboardInterrupt:
         logger.info("Keyboard interruption, aborting")
         return 130
+    logger.info(f"Analysis successful: {analysis.successful}")
+    logger.info("Output results as TAP")
+    analysis.output_tap()
+    return 0 if analysis.successful else 1

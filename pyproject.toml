@@ -1,96 +1,46 @@
 [build-system]
-requires = ["poetry>=0.12"]
-build-backend = "poetry.masonry.api"
+requires = ["pdm-pep517"]
+build-backend = "pdm.pep517.api"
 
-[tool.poetry]
+[project]
 name = "archan"
-version = "0.3.0"
+version = {use_scm = true}
 description = "Analysis of your architecture strength based on DSM data."
-authors = ["Timothée Mazzucotelli <pawamoy@pm.me>"]
-license = "ISC License"
+authors = [{name = "Timothée Mazzucotelli", email = "pawamoy@pm.me"}]
+license = {file = "LICENSE"}
 readme = "README.md"
-repository = "https://github.com/pawamoy/archan"
-homepage = "https://github.com/pawamoy/archan"
-keywords = ["archan", "architecture", "analysis", "security", "dsm", "audit"]
-packages = [ { include = "archan", from = "src" } ]
-include = [
-    "README.md",
-    "pyproject.toml"
-]
+requires-python = ">=3.6.1"
+dynamic = ["version", "classifiers"]
 classifiers = [
     # http://pypi.python.org/pypi?%3Aaction=list_classifiers
-    "Development Status :: 3 - Alpha",
+    "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
     "Intended Audience :: Science/Research",
     "License :: OSI Approved :: ISC License (ISCL)",
     "Operating System :: Unix",
     "Programming Language :: Python",
-    "Programming Language :: Python :: 2.7",
-    "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.4",
-    "Programming Language :: Python :: 3.5",
-    "Programming Language :: Python :: 3.6",
     "Programming Language :: Python :: Implementation :: PyPy",
     "Topic :: Utilities",
 ]
+dependencies = [
+    "colorama~=0.4",
+    "pyyaml~=5.3",
+    "tap.py~=3.0",
+]
 
-[tool.poetry.dependencies]
-python = "^3.6"
-colorama = "^0.4.3"
-pyyaml = "^5.3.1"
-"tap.py" = "^3.0"
+[project.optional-dependencies]
+dependenpy = [
+    "dependenpy~=3.3",
+]
 
-dependenpy = {version = "^3.3.0", optional = true}
+[project.urls]
+Homepage = "https://github.com/pawamoy/archan"
+Repository = "https://github.com/pawamoy/archan"
 
-coverage = {version = "^5.2.1", optional = true}
-invoke = {version = "^1.4.1", optional = true}
-mypy = {version = "^0.782", optional = true}
-pytest = {version = "^6.0.1", optional = true}
-pytest-cov = {version = "^2.10.1", optional = true}
-pytest-randomly = {version = "^3.4.1", optional = true}
-pytest-sugar = {version = "^0.9.4", optional = true}
-pytest-xdist = {version = "^2.1.0", optional = true}
-
-[tool.poetry.extras]
-dependenpy = ["dependenpy"]
-tests = ["coverage", "invoke", "mypy", "pytest", "pytest-cov", "pytest-randomly", "pytest-sugar", "pytest-xdist"]
-
-[tool.poetry.dev-dependencies]
-autoflake = "^1.4"
-black = "^20.8b1"
-coverage = "^5.2.1"
-failprint = "^0.4.0"
-flakehell = "^0.6.0"
-flake8-black = "^0.2.1"
-flake8-builtins = "^1.5.3"
-flake8-tidy-imports = "^4.1.0"
-flake8-variables-names = "^0.0.3"
-flake8-pytest-style = "^1.3.0"
-git-changelog = "^0.4.0"
-httpx = "^0.14.3"
-invoke = "^1.4.1"
-ipython = "^7.2"
-# TODO: accept v5 once https://github.com/wemake-services/wemake-python-styleguide/issues/1584 is resolved
-isort = {version = "<5", extras = ["pyproject"]}
-jinja2-cli = "^0.7.0"
-mkdocs = "^1.1.2"
-mkdocs-material = "^5.5.12"
-mkdocstrings = "^0.13.1"
-mypy = "^0.782"
-pytest = "^6.0.1"
-pytest-cov = "^2.10.1"
-pytest-randomly = "^3.4.1"
-pytest-sugar = "^0.9.4"
-pytest-xdist = "^2.1.0"
-toml = "^0.10.1"
-wemake-python-styleguide = "^0.14.1"
-# TODO: remove once https://github.com/python-poetry/poetry/issues/2728 is resolved
-wrapt = "^1.12.1"
-
-[tool.poetry.scripts]
+[project.scripts]
 archan = "archan.cli:main"
 
-[tool.poetry.plugins.archan]
+[project.entry-points.archan]
 "archan.LayeredArchitecture" = "archan.plugins.checkers:LayeredArchitecture"
 "archan.SeparationOfPrivileges" = "archan.plugins.checkers:SeparationOfPrivileges"
 "archan.LeastPrivileges" = "archan.plugins.checkers:LeastPrivileges"
@@ -99,6 +49,52 @@ archan = "archan.cli:main"
 "archan.LeastCommonMechanism" = "archan.plugins.checkers:LeastCommonMechanism"
 "archan.CompleteMediation" = "archan.plugins.checkers:CompleteMediation"
 "archan.CSVInput" = "archan.plugins.providers:CSVInput"
+
+[tool.pdm]
+package-dir = "src"
+
+[tool.pdm.dev-dependencies]
+duty = ["duty~=0.6"]
+docs = [
+    "mkdocs~=1.1",
+    "mkdocs-coverage~=0.2",
+    "mkdocs-macros-plugin~=0.5",
+    "mkdocs-material~=7.1",
+    "mkdocstrings~=0.15",
+    "toml~=0.10",
+]
+format = [
+    "autoflake~=1.4",
+    "black~=20.8b1",
+    "isort~=5.8",
+]
+maintain = [
+    # TODO: remove this section when git-changelog is more powerful
+    "git-changelog~=0.4",
+]
+quality = [
+    "darglint~=1.7",
+    "flake8-bandit~=2.1",
+    "flake8-black~=0.2",
+    "flake8-bugbear~=21.3",
+    "flake8-builtins~=1.5",
+    "flake8-comprehensions~=3.4",
+    "flake8-docstrings~=1.6",
+    "flake8-pytest-style~=1.4",
+    "flake8-string-format~=0.3",
+    "flake8-tidy-imports~=4.2",
+    "flake8-variables-names~=0.0",
+    "pep8-naming~=0.11",
+    "wps-light~=0.15",
+]
+tests = [
+    "pytest~=6.2",
+    "pytest-cov~=2.11",
+    "pytest-randomly~=3.6",
+    "pytest-sugar~=0.9",
+    "pytest-xdist~=2.2",
+]
+typing = ["mypy~=0.812"]
 
 [tool.black]
 line-length = 120
@@ -113,57 +109,3 @@ balanced_wrapping = true
 default_section = "THIRDPARTY"
 known_first_party = "archan"
 include_trailing_comma = true
-
-[tool.flakehell]
-format = "colored"
-max_line_length = 132
-show_source = false
-exclude = ["tests/fixtures"]
-
-[tool.flakehell.plugins]
-"*" = [
-    "+*",
-    "-RST*",  # we write docstrings in markdown, not rst
-    "-A001",  # redundant with W0622 (builtin override), which is more precise about line number
-    "-D105",  # missing docstring in magic method
-    "-D212",  # multi-line docstring summary should start at the first line
-    "-E203",  # whitespace before ‘:’ (incompatible with Black)
-    "-F821",  # redundant with E0602 (undefined variable)
-    "-Q000",  # black already deals with quoting
-    "-S101",  # use of assert
-    "-W503",  # line break before binary operator (incompatible with Black)
-    "-C0103", # two-lowercase-letters variable DO conform to snake_case naming style
-    "-C0116",  # redunant with D102 (missing docstring)
-    "-C0301",  # line too long
-    "-R0902",  # too many instance attributes
-    "-R0903",  # too few public methods
-    "-R0912",  # too many branches
-    "-R0913",  # too many methods
-    "-R0914",  # too many local variables
-    "-R0915",  # too many statements
-    "-W0212",  # redundant with WPS437 (access to protected attribute)
-    "-W0611",  # redundant with F401 (unused import)
-    "-W1203",  # lazy formatting for logging calls
-    "-WPS305",  # f-strings
-    "-WPS110",  # common variable names (too annoying)
-    "-WPS125",  # redundant with W0622 (builtin override), which is more precise about line number
-    "-WPS201",  # too many imports
-    "-WPS202",  # too many module members
-    "-WPS210",  # too many local variables
-    "-WPS211",  # too many arguments
-    "-WPS213",  # too many expressions
-    "-WPS214",  # too many methods
-    "-WPS220",  # too deep nesting
-    "-WPS223",  # too many elif branches
-    "-WPS226",  # string over-use: can't disable it per file?
-    "-WPS230",  # too many public instance attributes
-    "-WPS306",  # too cumbersome, asks to write class A(object)
-    "-WPS317",  # multi-line paramaters (incompatible with Black)
-    "-WPS322",  # multi-line strings (incompatible with attributes docstrings)
-    "-WPS326",  # implicit string concatenation
-    "-WPS336",  # explicit string concatenation
-    "-WPS412",  # __init__ modules with logic
-    "-WPS428",  # statement with no effect (not compatible with attribute docstrings)
-    "-WPS433",  # redundant with C0415 (not top-level import)
-    "-WPS529",  # implicit dict.get usage (generally false-positive)
-]

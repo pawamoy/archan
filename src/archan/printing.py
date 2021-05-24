@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 """Printing module."""
 
 import shutil
@@ -7,8 +5,8 @@ import textwrap
 
 from colorama import Fore, Style
 
-from .enums import ResultCode
-from .logging import Logger
+from archan.enums import ResultCode
+from archan.logging import Logger
 
 logger = Logger.get_logger(__name__)
 
@@ -17,7 +15,7 @@ def console_width(default=80):
     """
     Return current console width.
 
-    Args:
+    Arguments:
         default (int): default value if width cannot be retrieved.
 
     Returns:
@@ -28,17 +26,17 @@ def console_width(default=80):
     return shutil.get_terminal_size((default, 20)).columns
 
 
-def pretty_description(description, wrap_at=None, indent=0):
+def pretty_description(description: str, wrap_at: int = None, indent: int = 0) -> str:
     """
     Return a pretty formatted string given some text.
 
-    Args:
-        description (str): string to format.
-        wrap_at (int): maximum length of a line.
-        indent (int): level of indentation.
+    Arguments:
+        description: String to format.
+        wrap_at: Maximum length of a line.
+        indent: Level of indentation.
 
     Returns:
-        str: pretty formatted string.
+        Pretty formatted string.
     """
     if wrap_at is None or wrap_at < 0:
         width = console_width(default=79)
@@ -47,44 +45,49 @@ def pretty_description(description, wrap_at=None, indent=0):
         else:
             wrap_at += width
 
-    indent = " " * indent
+    indent = " " * indent  # type: ignore
     text_wrapper = textwrap.TextWrapper(
         width=wrap_at, replace_whitespace=False, initial_indent=indent, subsequent_indent=indent
     )
-    new_desc = []
-    for line in description.split("\n"):
-        new_desc.append(line.replace("\n", "").strip())
-    while not new_desc[0]:
-        del new_desc[0]
-    while not new_desc[-1]:
-        del new_desc[-1]
-    separators = [i for i, l in enumerate(new_desc) if not l]
+    new_desc = description.strip().split("\n")
+    separators = [index for index, line in enumerate(new_desc) if not line]
     paragraphs = []
     if separators:
         start, end = 0, separators[0]
         paragraphs.append(new_desc[start:end])
-        for i in range(len(separators) - 1):
+        for sep_index in range(len(separators) - 1):
             start = end + 1
-            end = separators[i + 1]
+            end = separators[sep_index + 1]
             paragraphs.append(new_desc[start:end])
         paragraphs.append(new_desc[end + 1 :])
-        return "\n\n".join(text_wrapper.fill(" ".join(p)) for p in paragraphs)
+        return "\n\n".join(text_wrapper.fill(" ".join(prg)) for prg in paragraphs)
     return text_wrapper.fill(" ".join(new_desc))
 
 
 class PrintableNameMixin:
     """Mixin to a print_name method to instances."""
 
-    def print_name(self, indent=0, end="\n"):
-        """Print name with optional indent and end."""
+    def print_name(self, indent: int = 0, end: str = "\n") -> None:
+        """
+        Print name with optional indent and end.
+
+        Arguments:
+            indent: Indentation.
+            end: End of line.
+        """
         print(Style.BRIGHT + " " * indent + self.name, end=end)
 
 
 class PrintableArgumentMixin:
     """Mixin to add a print method to Argument instances."""
 
-    def print(self, indent=0):
-        """Print self with optional indent."""
+    def print(self, indent: int = 0) -> None:  # noqa: A003
+        """
+        Print self with optional indent.
+
+        Arguments:
+            indent: Indentation.
+        """
         text = ("{indent}{magenta}{name}{none} ({dim}{cls}{none}, " "default {dim}{default}{none})").format(
             indent=" " * indent,
             dim=Style.DIM,
@@ -104,7 +107,7 @@ class PrintableArgumentMixin:
 class PrintablePluginMixin:
     """Mixin to add a print method to plugin instances."""
 
-    def print(self):
+    def print(self) -> None:  # noqa: A003
         """Print self."""
         print(
             "{dim}Identifier:{none} {cyan}{identifier}{none}\n"
@@ -120,7 +123,7 @@ class PrintablePluginMixin:
         )
 
         if hasattr(self, "argument_list") and self.argument_list:
-            print("{dim}Arguments:{none}".format(dim=Style.DIM, none=Style.RESET_ALL))
+            print(f"{Style.DIM}Arguments:{Style.RESET_ALL}")
             for argument in self.argument_list:
                 argument.print(indent=2)
 
@@ -128,13 +131,18 @@ class PrintablePluginMixin:
 class PrintableResultMixin:
     """Mixin to add a print method to Result instances."""
 
-    def print(self, indent=2):
-        """Print self with optional indent."""
+    def print(self, indent: int = 2) -> None:  # noqa: A003
+        """
+        Print self with optional indent.
+
+        Arguments:
+            indent: Indentation.
+        """
         status = {
-            ResultCode.NOT_IMPLEMENTED: "{}not implemented{}".format(Fore.YELLOW, Style.RESET_ALL),
-            ResultCode.IGNORED: "{}failed (ignored){}".format(Fore.YELLOW, Style.RESET_ALL),
-            ResultCode.FAILED: "{}failed{}".format(Fore.RED, Style.RESET_ALL),
-            ResultCode.PASSED: "{}passed{}".format(Fore.GREEN, Style.RESET_ALL),
+            ResultCode.NOT_IMPLEMENTED: f"{Fore.YELLOW}not implemented{Style.RESET_ALL}",
+            ResultCode.IGNORED: f"{Fore.YELLOW}failed (ignored){Style.RESET_ALL}",
+            ResultCode.FAILED: f"{Fore.RED}failed{Style.RESET_ALL}",
+            ResultCode.PASSED: f"{Fore.GREEN}passed{Style.RESET_ALL}",
         }.get(self.code)
         print(
             "{bold}{group}{provider}{checker}: {none}{status}{none}".format(

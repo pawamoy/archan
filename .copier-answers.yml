@@ -1,10 +1,10 @@
 # Changes here will be overwritten by Copier
-_commit: 0526c2e
-_src_path: https://github.com/pawamoy/copier-poetry.git
+_commit: 0.2.5
+_src_path: gh:pawamoy/copier-pdm.git
 author_email: pawamoy@pm.me
 author_fullname: "Timoth\xE9e Mazzucotelli"
 author_username: pawamoy
-copyright_date: '2020'
+copyright_date: '2017'
 copyright_holder: "Timoth\xE9e Mazzucotelli"
 copyright_holder_email: pawamoy@pm.me
 copyright_license: ISC License
@@ -16,3 +16,4 @@ python_package_import_name: archan
 repository_name: archan
 repository_namespace: pawamoy
 repository_provider: github.com
+use_precommit: false

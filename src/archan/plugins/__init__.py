@@ -3,11 +3,11 @@
 """Plugins submodule."""
 
 from collections import namedtuple
-from typing import Sequence
+from typing import Optional, Sequence
 
-from ..enums import ResultCode
-from ..logging import Logger
-from ..printing import PrintableArgumentMixin, PrintableNameMixin, PrintablePluginMixin
+from archan.enums import ResultCode
+from archan.logging import Logger
+from archan.printing import PrintableArgumentMixin, PrintableNameMixin, PrintablePluginMixin
 
 logger = Logger.get_logger(__name__)
 
@@ -19,7 +19,7 @@ class Argument(PrintableArgumentMixin):
         """
         Initialization method.
 
-        Args:
+        Arguments:
             name (str): name of the argument.
             cls (type): type of the argument.
             description (str): description of the argument.
@@ -31,7 +31,7 @@ class Argument(PrintableArgumentMixin):
         self.default = default
 
     def __str__(self):
-        return "  %s (%s, default %s): %s" % (self.name, self.cls, self.default, self.description)
+        return f"  {self.name} ({self.cls}, default {self.default}): {self.description}"
 
 
 # TODO: also add some "expect" attribute to describe the expected data format
@@ -51,20 +51,32 @@ class Checker(PrintableNameMixin, PrintablePluginMixin):
 
     Code = ResultCode
 
-    def __init__(self, name=None, description=None, hint=None, allow_failure=False, passes=None, arguments=None):
+    def __init__(
+        self,
+        name: Optional[str] = None,
+        description: Optional[str] = None,
+        hint: Optional[str] = None,
+        allow_failure: bool = False,
+        passes: Optional[str] = None,
+        arguments=None,
+    ):
         """
         Initialization method.
 
-        Args:
-            allow_failure (bool): still pass if failed or not.
-            arguments (dict): arguments passed to the check method when run.
+        Arguments:
+            name: The checker name.
+            description: The checker description.
+            hint: Hint provided for failures.
+            allow_failure: Still pass if failed or not.
+            passes: ???
+            arguments: Arguments passed to the check method when run.
         """
         if name:
-            self.name = name
+            self.name = name  # noqa: WPS601
         if description:
-            self.description = description
+            self.description = description  # noqa: WPS601
         if hint:
-            self.hint = hint
+            self.hint = hint  # noqa: WPS601
 
         self.allow_failure = allow_failure
         self.passes = passes
@@ -75,25 +87,22 @@ class Checker(PrintableNameMixin, PrintablePluginMixin):
         """
         Check the data and return a result.
 
-        Args:
+        Arguments:
             data (DSM/DMM/MDM): DSM/DMM/MDM instance to check.
             **kwargs: additional arguments.
 
         Returns:
             obj: Checker constant or object with a ``__bool__`` method.
             tuple (obj, str): obj as before and string of messages
-        """
+        """  # noqa: DAR401,DAR202
         raise NotImplementedError
 
     def run(self, data):
         """
         Run the check method and format the result for analysis.
 
-        Args:
+        Arguments:
             data (DSM/DMM/MDM): DSM/DMM/MDM instance to check.
-
-        Returns:
-            tuple (int, str): status constant from Checker class and messages.
         """
         result_type = namedtuple("Result", "code messages")
 
@@ -107,9 +116,12 @@ class Checker(PrintableNameMixin, PrintablePluginMixin):
         else:
             try:
                 result = self.check(data, **self.arguments)
+            except NotImplementedError:
+                result = result_type(Checker.Code.NOT_IMPLEMENTED, "")
+            else:
                 messages = ""
                 if isinstance(result, tuple):
-                    result, messages = result
+                    result, messages = result  # noqa: WPS434
 
                 if result not in Checker.Code:
                     result = Checker.Code.PASSED if bool(result) else Checker.Code.FAILED
@@ -118,8 +130,6 @@ class Checker(PrintableNameMixin, PrintablePluginMixin):
                     result = Checker.Code.IGNORED
 
                 result = result_type(result, messages)
-            except NotImplementedError:
-                result = result_type(Checker.Code.NOT_IMPLEMENTED, "")
         self.result = result
 
 
@@ -136,23 +146,33 @@ class Provider(PrintableNameMixin, PrintablePluginMixin):
     description = ""
     argument_list = ()
 
-    def __init__(self, name=None, description=None, arguments=None):
+    def __init__(self, name: Optional[str] = None, description: Optional[str] = None, arguments=None):
         """
         Initialization method.
 
-        Args:
+        Arguments:
+            name: The provider name.
+            description: The provider description.
             arguments (dict): arguments that will be used for get_data method.
         """
         if name:
-            self.name = name
+            self.name = name  # noqa: WPS601
         if description:
-            self.description = description
+            self.description = description  # noqa: WPS601
 
         self.arguments = arguments or {}
         self.data = None
 
     def get_data(self, **kwargs):
-        """Abstract method. Return instance of DSM/DMM/MDM."""
+        """
+        Abstract method. Return instance of DSM/DMM/MDM.
+
+        Arguments:
+            **kwargs: Keyword arguments.
+
+        Raises:
+            NotImplementedError: This method must be implemented in subclasses.
+        """
         raise NotImplementedError
 
     def run(self):
