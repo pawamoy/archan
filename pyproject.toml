@@ -28,14 +28,14 @@ classifiers = [
     "Typing :: Typed",
 ]
 dependencies = [
-    "colorama~=0.4",
-    "pyyaml~=5.3",
-    "tap.py~=3.0",
+    "colorama>=0.4",
+    "pyyaml>=5.3",
+    "tap.py>=3.0",
 ]
 
 [project.optional-dependencies]
 dependenpy = [
-    "dependenpy~=3.3",
+    "dependenpy>=3.3",
 ]
 
 [project.urls]
