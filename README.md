@@ -3,7 +3,10 @@
 [![ci](https://github.com/pawamoy/archan/workflows/ci/badge.svg)](https://github.com/pawamoy/archan/actions?query=workflow%3Aci)
 [![documentation](https://img.shields.io/badge/docs-mkdocs%20material-blue.svg?style=flat)](https://pawamoy.github.io/archan/)
 [![pypi version](https://img.shields.io/pypi/v/archan.svg)](https://pypi.org/project/archan/)
+[![gitpod](https://img.shields.io/badge/gitpod-workspace-blue.svg?style=flat)](https://gitpod.io/#https://github.com/pawamoy/archan)
 [![gitter](https://badges.gitter.im/join%20chat.svg)](https://gitter.im/archan/community)
+
+Analysis of your architecture strength based on DSM data.
 
 A Python module that analyzes your architecture strength
 based on [Design Structure Matrix (DSM)][dsm] data.
@@ -56,14 +59,13 @@ pyenv global system 3.6.12
 
 With `pip`:
 ```bash
-python3.6 -m pip install archan
+pip install archan
 ```
 
 With [`pipx`](https://github.com/pipxproject/pipx):
 ```bash
-python3.6 -m pip install --user pipx
-
-pipx install --python python3.6 archan
+python3.7 -m pip install --user pipx
+pipx install archan
 ```
 
 ## Usage

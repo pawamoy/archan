@@ -4,6 +4,7 @@ site_url: "https://pawamoy.github.io/archan"
 repo_url: "https://github.com/pawamoy/archan"
 repo_name: "pawamoy/archan"
 site_dir: "site"
+watch: [README.md, CONTRIBUTING.md, CHANGELOG.md, src/archan]
 
 nav:
 - Home:
@@ -11,34 +12,27 @@ nav:
   - Changelog: changelog.md
   - Credits: credits.md
   - License: license.md
-- Code Reference:
-  - analysis.py: reference/analysis.md
-  - cli.py: reference/cli.md
-  - config.py: reference/config.md
-  - dsm.py: reference/dsm.md
-  - enums.py: reference/enums.md
-  - errors.py: reference/errors.md
-  - logging.py: reference/logging.md
-  - plugins:
-      - checkers.py: reference/plugins/checkers.md
-      - providers.py: reference/plugins/providers.md
-  - printing.py: reference/printing.md
+# defer to gen-files + literate-nav
+- Code Reference: reference/
 - Development:
   - Contributing: contributing.md
   - Code of Conduct: code_of_conduct.md
   - Coverage report: coverage.md
-  - Roadmap: roadmap.md
+- Author's website: https://pawamoy.github.io/
 
 theme:
   name: material
+  icon:
+    logo: material/currency-sign
   features:
   - navigation.tabs
+  - navigation.tabs.sticky
   - navigation.top
   palette:
   - media: "(prefers-color-scheme: light)"
     scheme: default
     primary: teal
-    accent: pink
+    accent: purple
     toggle:
       icon: material/weather-sunny
       name: Switch to dark mode
@@ -51,25 +45,38 @@ theme:
       name: Switch to light mode
 
 extra_css:
+- css/material.css
 - css/mkdocstrings.css
 
 markdown_extensions:
 - admonition
+- callouts
 - pymdownx.emoji
 - pymdownx.magiclink
 - pymdownx.snippets:
     check_paths: true
 - pymdownx.superfences
-- pymdownx.tabbed
+- pymdownx.tabbed:
+    alternate_style: true
 - pymdownx.tasklist
 - toc:
     permalink: "¤"
 
 plugins:
 - search
+- markdown-exec
+- gen-files:
+    scripts:
+    - docs/gen_ref_nav.py
+- literate-nav:
+    nav_file: SUMMARY.md
 - coverage
-- mkdocstrings:
-    watch:
-    - src/archan
-- macros:
-    module_name: docs/macros
+- section-index
+- mkdocstrings
+
+extra:
+  social:
+  - icon: fontawesome/brands/github
+    link: https://github.com/pawamoy
+  - icon: fontawesome/brands/twitter
+    link: https://twitter.com/pawamoy
