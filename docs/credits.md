@@ -8,10 +8,8 @@ These projects were used to build *Archan*. **Thank you!**
 
 ### Direct dependencies
 
-{{ cite_packages(package_info, direct_dependencies) }}
 
 ### Indirect dependencies
 
-{{ cite_packages(package_info, indirect_dependencies) }}
 
 **[More credits from the author](http://pawamoy.github.io/credits/)**
