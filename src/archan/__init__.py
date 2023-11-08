@@ -19,9 +19,7 @@ __all__: list[str] = [
     "Checker",
     "Argument",
     "Logger",
-]  # noqa: WPS410
-
-__version__ = "3.0.0"  # noqa: WPS410 (the only __variables__ we use)
+]
 
 # TODO: DSM class should have more methods (see wiki DSM, adjacency matrix)
 # FIXME: use if not sys.stdin.isatty() to detect stdin input or not

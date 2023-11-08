@@ -12,8 +12,7 @@ logger = Logger.get_logger(__name__)
 
 
 class Analysis:
-    """
-    Analysis class.
+    """Analysis class.
 
     An instance of Analysis contains a Config object.
     Providers are first run to generate the data, then
@@ -21,8 +20,7 @@ class Analysis:
     """
 
     def __init__(self, config):
-        """
-        Initialization method.
+        """Initialization method.
 
         Arguments:
             config (Config): the configuration object to use for analysis.
@@ -37,8 +35,7 @@ class Analysis:
         return Result(group, provider, checker, *checker.result)
 
     def run(self, verbose: bool = True):
-        """
-        Run the analysis.
+        """Run the analysis.
 
         Generate data from each provider, then check these data with every
         checker, and store the analysis results.
@@ -60,7 +57,7 @@ class Analysis:
                         if verbose:
                             result.print()
             else:
-                for checker in analysis_group.checkers:  # noqa: WPS440
+                for checker in analysis_group.checkers:
                     result = self._get_checker_result(analysis_group, checker, nd="no-data-")
                     self.results.append(result)
                     analysis_group.results.append(result)
@@ -81,7 +78,7 @@ class Analysis:
             if not group.providers and group.checkers:
                 test_suite = group.name
                 description_lambda = lambda result: result.checker.name  # noqa: E731
-            elif not group.checkers:  # noqa: WPS504
+            elif not group.checkers:
                 logger.warning("Invalid analysis group (no checkers), skipping")
                 continue
             elif n_providers > n_checkers:
@@ -91,7 +88,7 @@ class Analysis:
                 test_suite = group.providers[0].name
                 description_lambda = lambda result: result.checker.name  # noqa: E731
 
-            for result in group.results:  # noqa: WPS440
+            for result in group.results:
                 description = description_lambda(result)
                 if result.code == ResultCode.PASSED:
                     tracker.add_ok(test_suite, description)
@@ -112,24 +109,19 @@ class Analysis:
 
     @property
     def successful(self) -> bool:
-        """
-        Property to tell if the run was successful: no failures.
+        """Property to tell if the run was successful: no failures.
 
         Returns:
             True if the run was successful.
         """
-        for result in self.results:
-            if result.code == ResultCode.FAILED:
-                return False
-        return True
+        return all(result.code != ResultCode.FAILED for result in self.results)
 
 
 class AnalysisGroup(PrintableNameMixin):
     """Placeholder for groups of providers and checkers."""
 
     def __init__(self, name=None, description=None, providers=None, checkers=None):
-        """
-        Initialization method.
+        """Initialization method.
 
         Arguments:
             name (str): the group name.
@@ -148,8 +140,7 @@ class Result(PrintableResultMixin):
     """Placeholder for analysis results."""
 
     def __init__(self, group, provider, checker, code, messages):
-        """
-        Initialization method.
+        """Initialization method.
 
         Arguments:
             group (AnalysisGroup): parent group.

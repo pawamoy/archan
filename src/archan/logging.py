@@ -14,8 +14,7 @@ class Logger:
 
     @staticmethod
     def set_level(level):
-        """
-        Set level of logging for all loggers.
+        """Set level of logging for all loggers.
 
         Arguments:
             level (int): level of logging.
@@ -25,9 +24,8 @@ class Logger:
             logger.setLevel(level)
 
     @staticmethod
-    def get_logger(name, level=None, fmt=":%(lineno)d: %(message)s"):  # noqa: WPS323
-        """
-        Return a logger.
+    def get_logger(name, level=None, fmt=":%(lineno)d: %(message)s"):
+        """Return a logger.
 
         Arguments:
             name (str): name to pass to the logging module.
@@ -58,8 +56,7 @@ class LoggingFormatter(logging.Formatter):
     """Custom logging formatter."""
 
     def format(self, record: logging.LogRecord) -> str:  # noqa: A003
-        """
-        Override default format method.
+        """Override default format method.
 
         Arguments:
             record: A log record.

@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 """Main test module."""
 
 from archan.dsm import DesignStructureMatrix as DSM  # noqa: N817
@@ -15,8 +13,7 @@ from archan.plugins.checkers import (
 
 
 class TestCheckers:
-    """
-    Main test class.
+    """Main test class.
 
     It sets up two fake "webapp" and "genida" DSMs to check them.
     """
@@ -128,7 +125,6 @@ class TestCheckers:
             "services",
         ]
 
-        # NOQA
         genida_dependency_matrix = [
             [4438, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             [30, 14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],

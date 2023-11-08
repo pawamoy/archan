@@ -2,6 +2,7 @@
 
 import shutil
 import textwrap
+from typing import Optional
 
 from colorama import Fore, Style
 
@@ -12,8 +13,7 @@ logger = Logger.get_logger(__name__)
 
 
 def console_width(default=80):
-    """
-    Return current console width.
+    """Return current console width.
 
     Arguments:
         default (int): default value if width cannot be retrieved.
@@ -26,9 +26,8 @@ def console_width(default=80):
     return shutil.get_terminal_size((default, 20)).columns
 
 
-def pretty_description(description: str, wrap_at: int = None, indent: int = 0) -> str:
-    """
-    Return a pretty formatted string given some text.
+def pretty_description(description: str, wrap_at: Optional[int] = None, indent: int = 0) -> str:
+    """Return a pretty formatted string given some text.
 
     Arguments:
         description: String to format.
@@ -47,7 +46,10 @@ def pretty_description(description: str, wrap_at: int = None, indent: int = 0) -
 
     indent = " " * indent  # type: ignore
     text_wrapper = textwrap.TextWrapper(
-        width=wrap_at, replace_whitespace=False, initial_indent=indent, subsequent_indent=indent
+        width=wrap_at,
+        replace_whitespace=False,
+        initial_indent=indent,
+        subsequent_indent=indent,
     )
     new_desc = description.strip().split("\n")
     separators = [index for index, line in enumerate(new_desc) if not line]
@@ -68,8 +70,7 @@ class PrintableNameMixin:
     """Mixin to a print_name method to instances."""
 
     def print_name(self, indent: int = 0, end: str = "\n") -> None:
-        """
-        Print name with optional indent and end.
+        """Print name with optional indent and end.
 
         Arguments:
             indent: Indentation.
@@ -82,13 +83,12 @@ class PrintableArgumentMixin:
     """Mixin to add a print method to Argument instances."""
 
     def print(self, indent: int = 0) -> None:  # noqa: A003
-        """
-        Print self with optional indent.
+        """Print self with optional indent.
 
         Arguments:
             indent: Indentation.
         """
-        text = ("{indent}{magenta}{name}{none} ({dim}{cls}{none}, " "default {dim}{default}{none})").format(
+        text = "{indent}{magenta}{name}{none} ({dim}{cls}{none}, default {dim}{default}{none})".format(
             indent=" " * indent,
             dim=Style.DIM,
             magenta=Fore.MAGENTA,
@@ -110,16 +110,9 @@ class PrintablePluginMixin:
     def print(self) -> None:  # noqa: A003
         """Print self."""
         print(
-            "{dim}Identifier:{none} {cyan}{identifier}{none}\n"
-            "{dim}Name:{none} {name}\n"
-            "{dim}Description:{none}\n{description}".format(
-                dim=Style.DIM,
-                cyan=Fore.CYAN,
-                none=Style.RESET_ALL,
-                identifier=self.identifier,
-                name=self.name,
-                description=pretty_description(self.description, indent=2),
-            )
+            f"{Style.DIM}Identifier:{Style.RESET_ALL} {Fore.CYAN}{self.identifier}{Style.RESET_ALL}\n"
+            f"{Style.DIM}Name:{Style.RESET_ALL} {self.name}\n"
+            f"{Style.DIM}Description:{Style.RESET_ALL}\n{pretty_description(self.description, indent=2)}",
         )
 
         if hasattr(self, "argument_list") and self.argument_list:
@@ -132,8 +125,7 @@ class PrintableResultMixin:
     """Mixin to add a print method to Result instances."""
 
     def print(self, indent: int = 2) -> None:  # noqa: A003
-        """
-        Print self with optional indent.
+        """Print self with optional indent.
 
         Arguments:
             indent: Indentation.
@@ -152,7 +144,7 @@ class PrintableResultMixin:
                 checker=self.checker.name,
                 none=Style.RESET_ALL,
                 status=status,
-            )
+            ),
         )
         if self.messages:
             for message in self.messages.split("\n"):

@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 """Checker module."""
 
 from typing import List
@@ -30,8 +28,7 @@ class CompleteMediation(Checker):
 
     @staticmethod
     def generate_mediation_matrix(dsm) -> List[List[int]]:
-        """
-        Generate the mediation matrix of the given matrix.
+        """Generate the mediation matrix of the given matrix.
 
         Rules for mediation matrix generation:
 
@@ -69,15 +66,15 @@ class CompleteMediation(Checker):
         size = dsm.size[0]
 
         if not cat:
-            cat = ["appmodule"] * size  # noqa: WPS435
+            cat = ["appmodule"] * size
 
         packages = [entity.split(".")[0] for entity in ent]
 
         # define and initialize the mediation matrix
         mediation_matrix = [[0 for _ in range(size)] for _ in range(size)]
 
-        for i in range(0, size):  # noqa: WPS111
-            for j in range(0, size):  # noqa: WPS111
+        for i in range(size):
+            for j in range(size):
                 if cat[i] == "framework":
                     if cat[j] == "framework":
                         mediation_matrix[i][j] = -1
@@ -131,8 +128,7 @@ class CompleteMediation(Checker):
 
     @staticmethod
     def matrices_compliance(dsm, complete_mediation_matrix):
-        """
-        Check if matrix and its mediation matrix are compliant.
+        """Check if matrix and its mediation matrix are compliant.
 
         Arguments:
             dsm (:class:`DesignStructureMatrix`): the DSM to check.
@@ -151,12 +147,12 @@ class CompleteMediation(Checker):
         cols_med_matrix = len(complete_mediation_matrix[0])
 
         if rows_dep_matrix != rows_med_matrix or cols_dep_matrix != cols_med_matrix:
-            raise DesignStructureMatrixError("Matrices are NOT compliant " "(number of rows/columns not equal)")
+            raise DesignStructureMatrixError("Matrices are NOT compliant (number of rows/columns not equal)")
 
         discrepancy_found = False
         message = []
-        for i in range(0, rows_dep_matrix):  # noqa: WPS111
-            for j in range(0, cols_dep_matrix):  # noqa: WPS111
+        for i in range(rows_dep_matrix):
+            for j in range(cols_dep_matrix):
                 discrepancy = (complete_mediation_matrix[i][j] == 0 and matrix[i][j] > 0) or (
                     complete_mediation_matrix[i][j] == 1 and matrix[i][j] < 1
                 )
@@ -164,7 +160,7 @@ class CompleteMediation(Checker):
                     discrepancy_found = True
                     message.append(
                         f"Untolerated dependency at {i}:{j} ({dsm.entities[i]}:{dsm.entities[j]}): "
-                        f"{matrix[i][j]} instead of {complete_mediation_matrix[i][j]}"
+                        f"{matrix[i][j]} instead of {complete_mediation_matrix[i][j]}",
                     )
 
         message = "\n".join(message)
@@ -172,8 +168,7 @@ class CompleteMediation(Checker):
         return not discrepancy_found, message
 
     def check(self, dsm, **kwargs):
-        """
-        Check if matrix and its mediation matrix are compliant.
+        """Check if matrix and its mediation matrix are compliant.
 
         It means that number of dependencies for each (line, column) is either
         0 if the mediation matrix (line, column) is 0, or >0 if the mediation
@@ -196,7 +191,7 @@ class EconomyOfMechanism(Checker):
 
     identifier = "archan.EconomyOfMechanism"
     name = "Economy of Mechanism"
-    hint = "Reduce the number of dependencies in your own code " "or increase the simplicity factor."
+    hint = "Reduce the number of dependencies in your own code or increase the simplicity factor."
     description = """
     Keep the design as simple and small as possible. This well-known principle
     applies to any aspect of a system, but it deserves emphasis for protection
@@ -220,8 +215,7 @@ class EconomyOfMechanism(Checker):
     )
 
     def check(self, dsm, simplicity_factor=2, **kwargs):
-        """
-        Check economy of mechanism.
+        """Check economy of mechanism.
 
         As first abstraction, number of dependencies between two modules
         < 2 * the number of modules
@@ -243,12 +237,12 @@ class EconomyOfMechanism(Checker):
         dsm_size = dsm.size[0]
 
         if not categories:
-            categories = ["appmodule"] * dsm_size  # noqa: WPS435
+            categories = ["appmodule"] * dsm_size
 
         dependency_number = 0
         # evaluate Matrix(data)
-        for i in range(0, dsm_size):  # noqa: WPS111
-            for j in range(0, dsm_size):  # noqa: WPS111
+        for i in range(dsm_size):
+            for j in range(dsm_size):
                 count_dependency = (
                     categories[i] not in {"framework", "corelib"}
                     and categories[j] not in {"framework", "corelib"}
@@ -265,7 +259,7 @@ class EconomyOfMechanism(Checker):
                     f"Number of dependencies ({dependency_number})",
                     f"> number of rows ({dsm_size})",
                     f"* simplicity factor ({simplicity_factor}) = {dsm_size * simplicity_factor}",
-                ]
+                ],
             )
         return economy_of_mechanism, message
 
@@ -293,7 +287,7 @@ class SeparationOfPrivileges(Checker):
     # TODO: add hint
 
     def check(self, dsm, **kwargs):
-        """TODO: To implement."""  # noqa: DAR101,DAR401
+        """TODO: To implement."""
         raise NotImplementedError
 
 
@@ -317,7 +311,7 @@ class LeastPrivileges(Checker):
     # TODO: add hint
 
     def check(self, dsm, **kwargs):
-        """TODO: To implement."""  # noqa: DAR101,DAR401
+        """TODO: To implement."""
         raise NotImplementedError
 
 
@@ -354,8 +348,7 @@ class LeastCommonMechanism(Checker):
     )
 
     def check(self, dsm, independence_factor=5, **kwargs):
-        """
-        Check least common mechanism.
+        """Check least common mechanism.
 
         Arguments:
             dsm (:class:`DesignStructureMatrix`): the DSM to check.
@@ -376,13 +369,13 @@ class LeastCommonMechanism(Checker):
         dsm_size = dsm.size[0]
 
         if not categories:
-            categories = ["appmodule"] * dsm_size  # noqa: WPS435
+            categories = ["appmodule"] * dsm_size
 
         dependent_module_number = []
         # evaluate Matrix(data)
-        for j in range(0, dsm_size):  # noqa: WPS111
+        for j in range(dsm_size):
             dependent_module_number.append(0)
-            for i in range(0, dsm_size):  # noqa: WPS111
+            for i in range(dsm_size):
                 if categories[i] != "framework" and categories[j] != "framework" and data[i][j] > 0:
                     dependent_module_number[j] += 1
         # except for the broker if any  and libs, check that threshold is not
@@ -406,8 +399,7 @@ class LeastCommonMechanism(Checker):
 
 
 class LayeredArchitecture(Checker):
-    """
-    Layered architecture check.
+    """Layered architecture check.
 
     Check that the DSM can be diagonalized (no marks in upper right or
     lower left corner).
@@ -422,13 +414,10 @@ class LayeredArchitecture(Checker):
     Security and data modules should be put last. A well layered architecture
     should be visible in the form of a matrix which has dependencies into only
     one corner (for example: in the lower-left part)."""
-    hint = (
-        "Ensure that your applications are listed in the right " "order when building the DSM, or remove dependencies."
-    )
+    hint = "Ensure that your applications are listed in the right order when building the DSM, or remove dependencies."
 
     def check(self, dsm, **kwargs):
-        """
-        Check layered architecture.
+        """Check layered architecture.
 
         Arguments:
             dsm (:class:`DesignStructureMatrix`): the DSM to check.
@@ -443,10 +432,10 @@ class LayeredArchitecture(Checker):
         dsm_size = dsm.size[0]
 
         if not categories:
-            categories = ["appmodule"] * dsm_size  # noqa: WPS435
+            categories = ["appmodule"] * dsm_size
 
-        for i in range(0, dsm_size - 1):  # noqa: WPS111
-            for j in range(i + 1, dsm_size):  # noqa: WPS111
+        for i in range(dsm_size - 1):
+            for j in range(i + 1, dsm_size):
                 check_cell = (
                     categories[i] != "broker"
                     and categories[j] != "broker"
@@ -455,15 +444,14 @@ class LayeredArchitecture(Checker):
                 if check_cell and dsm.data[i][j] > 0:
                     layered_architecture = False
                     messages.append(
-                        f"Dependency from {dsm.entities[i]} to {dsm.entities[j]} breaks the layered architecture."
+                        f"Dependency from {dsm.entities[i]} to {dsm.entities[j]} breaks the layered architecture.",
                     )
 
         return layered_architecture, "\n".join(messages)
 
 
 class CodeClean(Checker):
-    """
-    Code clean checker.
+    """Code clean checker.
 
     Check that the number of issues per module is below a certain value.
     """
@@ -480,8 +468,7 @@ class CodeClean(Checker):
     argument_list = (Argument("threshold", int, "Message number threshold (per module).", default=10),)
 
     def check(self, dsm, **kwargs):
-        """
-        Check code clean.
+        """Check code clean.
 
         Arguments:
             dsm (:class:`DesignStructureMatrix`): the DSM to check.
@@ -495,10 +482,10 @@ class CodeClean(Checker):
         code_clean = True
         threshold = kwargs.pop("threshold", 1)
         rows, _ = dsm.size
-        for i in range(0, rows):  # noqa: WPS111
+        for i in range(rows):
             if dsm.data[i][0] > threshold:
                 messages.append(
-                    f"Number of issues ({dsm.data[i][0]}) in module {dsm.entities[i]} " f"> threshold ({threshold})"
+                    f"Number of issues ({dsm.data[i][0]}) in module {dsm.entities[i]} > threshold ({threshold})",
                 )
                 code_clean = False
 

@@ -13,23 +13,21 @@
 
 from __future__ import annotations
 
+import argparse
 import logging
 import os
-import argparse
 import sys
 from typing import Any
 
-from archan import debug
-
-
 import colorama
 
-from archan import __version__
+from archan import debug
 from archan.analysis import Analysis
 from archan.config import Config
 from archan.logging import Logger
 
 logger = Logger.get_logger(__name__)
+
 
 class _DebugInfo(argparse.Action):
     def __init__(self, nargs: int | str | None = 0, **kwargs: Any) -> None:
@@ -41,8 +39,7 @@ class _DebugInfo(argparse.Action):
 
 
 def valid_file(value: str) -> str:
-    """
-    Check if given file exists and is a regular file.
+    """Check if given file exists and is a regular file.
 
     Arguments:
         value (str): Path to the file.
@@ -63,8 +60,7 @@ def valid_file(value: str) -> str:
 
 
 def valid_level(value: str) -> str:
-    """
-    Validate the logging level argument for the parser.
+    """Validate the logging level argument for the parser.
 
     Arguments:
         value: The value provided on the command line.
@@ -77,7 +73,7 @@ def valid_level(value: str) -> str:
     """
     value = value.upper()
     if getattr(logging, value, None) is None:
-        raise ArgumentTypeError(f"{value} is not a valid level")
+        raise argparse.ArgumentTypeError(f"{value} is not a valid level")
     return value
 
 
@@ -88,7 +84,9 @@ def get_parser() -> argparse.ArgumentParser:
         An argparse parser.
     """
     parser = argparse.ArgumentParser(
-        prog="archan", add_help=False, description="Analysis of your architecture strength based on DSM data"
+        prog="archan",
+        add_help=False,
+        description="Analysis of your architecture strength based on DSM data",
     )
     parser.add_argument(
         "-c",
@@ -99,7 +97,13 @@ def get_parser() -> argparse.ArgumentParser:
         metavar="FILE",
         help="Configuration file to use.",
     )
-    parser.add_argument("-h", "--help", action="help", default=argparse.SUPPRESS, help="Show this help message and exit.")
+    parser.add_argument(
+        "-h",
+        "--help",
+        action="help",
+        default=argparse.SUPPRESS,
+        help="Show this help message and exit.",
+    )
     parser.add_argument(
         "-i",
         "--input",
@@ -118,7 +122,11 @@ def get_parser() -> argparse.ArgumentParser:
         help="Show the available plugins. Default: false.",
     )
     parser.add_argument(
-        "--no-color", action="store_true", dest="no_color", default=False, help="Do not use colors. Default: false."
+        "--no-color",
+        action="store_true",
+        dest="no_color",
+        default=False,
+        help="Do not use colors. Default: false.",
     )
     parser.add_argument(
         "--no-config",
@@ -140,7 +148,7 @@ def get_parser() -> argparse.ArgumentParser:
         "-V",
         "--version",
         action="version",
-        version=f"archan {__version__}",
+        version=f"archan {debug.get_version()}",
         help="Show the current version of the program and exit.",
     )
     parser.add_argument("--debug-info", action=_DebugInfo, help="Print debug information.")

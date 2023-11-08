@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 """Provider module."""
 
 import sys
@@ -24,8 +22,7 @@ class CSVInput(Provider):
     )
 
     def get_data(self, file_path=None, delimiter=",", categories_delimiter=None):
-        """
-        Implement get_dsm method from Provider class.
+        """Implement get_dsm method from Provider class.
 
         Parse CSV to return an instance of DSM.
 

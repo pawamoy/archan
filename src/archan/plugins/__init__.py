@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 """Plugins submodule."""
 
 from collections import namedtuple
@@ -16,8 +14,7 @@ class Argument(PrintableArgumentMixin):
     """Placeholder for name, class, description and default value."""
 
     def __init__(self, name, cls, description, default=None):
-        """
-        Initialization method.
+        """Initialization method.
 
         Arguments:
             name (str): name of the argument.
@@ -36,8 +33,7 @@ class Argument(PrintableArgumentMixin):
 
 # TODO: also add some "expect" attribute to describe the expected data format
 class Checker(PrintableNameMixin, PrintablePluginMixin):
-    """
-    Checker class.
+    """Checker class.
 
     An instance of Checker implements a check method that analyzes an instance
     of DSM/DMM/MDM and return a true or false value, with optional message.
@@ -60,8 +56,7 @@ class Checker(PrintableNameMixin, PrintablePluginMixin):
         passes: Optional[str] = None,
         arguments=None,
     ):
-        """
-        Initialization method.
+        """Initialization method.
 
         Arguments:
             name: The checker name.
@@ -72,11 +67,11 @@ class Checker(PrintableNameMixin, PrintablePluginMixin):
             arguments: Arguments passed to the check method when run.
         """
         if name:
-            self.name = name  # noqa: WPS601
+            self.name = name
         if description:
-            self.description = description  # noqa: WPS601
+            self.description = description
         if hint:
-            self.hint = hint  # noqa: WPS601
+            self.hint = hint
 
         self.allow_failure = allow_failure
         self.passes = passes
@@ -84,8 +79,7 @@ class Checker(PrintableNameMixin, PrintablePluginMixin):
         self.result = None
 
     def check(self, data, **kwargs):
-        """
-        Check the data and return a result.
+        """Check the data and return a result.
 
         Arguments:
             data (DSM/DMM/MDM): DSM/DMM/MDM instance to check.
@@ -94,12 +88,11 @@ class Checker(PrintableNameMixin, PrintablePluginMixin):
         Returns:
             obj: Checker constant or object with a ``__bool__`` method.
             tuple (obj, str): obj as before and string of messages
-        """  # noqa: DAR401,DAR202
+        """
         raise NotImplementedError
 
     def run(self, data):
-        """
-        Run the check method and format the result for analysis.
+        """Run the check method and format the result for analysis.
 
         Arguments:
             data (DSM/DMM/MDM): DSM/DMM/MDM instance to check.
@@ -109,10 +102,9 @@ class Checker(PrintableNameMixin, PrintablePluginMixin):
         if self.passes is True:
             result = result_type(Checker.Code.PASSED, "")
         elif self.passes is False:
-            if self.allow_failure:
-                result = result_type(Checker.Code.IGNORED, "")
-            else:
-                result = result_type(Checker.Code.FAILED, "")
+            result = (
+                result_type(Checker.Code.IGNORED, "") if self.allow_failure else result_type(Checker.Code.FAILED, "")
+            )
         else:
             try:
                 result = self.check(data, **self.arguments)
@@ -121,7 +113,7 @@ class Checker(PrintableNameMixin, PrintablePluginMixin):
             else:
                 messages = ""
                 if isinstance(result, tuple):
-                    result, messages = result  # noqa: WPS434
+                    result, messages = result
 
                 if result not in Checker.Code:
                     result = Checker.Code.PASSED if bool(result) else Checker.Code.FAILED
@@ -134,8 +126,7 @@ class Checker(PrintableNameMixin, PrintablePluginMixin):
 
 
 class Provider(PrintableNameMixin, PrintablePluginMixin):
-    """
-    Provider class.
+    """Provider class.
 
     An instance of provider implements a get_data method that returns an
     instance of DSM/DMM/MDM to be checked by an instance of Checker.
@@ -147,8 +138,7 @@ class Provider(PrintableNameMixin, PrintablePluginMixin):
     argument_list = ()
 
     def __init__(self, name: Optional[str] = None, description: Optional[str] = None, arguments=None):
-        """
-        Initialization method.
+        """Initialization method.
 
         Arguments:
             name: The provider name.
@@ -156,16 +146,15 @@ class Provider(PrintableNameMixin, PrintablePluginMixin):
             arguments (dict): arguments that will be used for get_data method.
         """
         if name:
-            self.name = name  # noqa: WPS601
+            self.name = name
         if description:
-            self.description = description  # noqa: WPS601
+            self.description = description
 
         self.arguments = arguments or {}
         self.data = None
 
     def get_data(self, **kwargs):
-        """
-        Abstract method. Return instance of DSM/DMM/MDM.
+        """Abstract method. Return instance of DSM/DMM/MDM.
 
         Arguments:
             **kwargs: Keyword arguments.

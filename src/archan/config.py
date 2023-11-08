@@ -20,10 +20,9 @@ try:
     class PluginNotFoundError(ModuleNotFoundError):
         """Exception to raise when a plugin is not found or importable."""
 
-
 except NameError:
 
-    class PluginNotFoundError(ImportError):  # type: ignore  # noqa: WPS440
+    class PluginNotFoundError(ImportError):  # type: ignore
         """Exception to raise when a plugin is not found or importable."""
 
 
@@ -34,8 +33,7 @@ class Plugins:
     """Simple class used to store providers and checkers."""
 
     def __init__(self, providers: Dict[str, Type[Provider]], checkers: Dict[str, Type[Checker]]):
-        """
-        Initialize the object.
+        """Initialize the object.
 
         Arguments:
             providers: Some providers.
@@ -49,8 +47,7 @@ class Config:
     """Configuration class."""
 
     def __init__(self, config_dict=None):
-        """
-        Initialize the object.
+        """Initialize the object.
 
         Arguments:
             config_dict (dict): the configuration as a dictionary.
@@ -75,7 +72,7 @@ class Config:
                     logger.error(
                         f"Error while inflating '{group_key}' analysis group. "
                         "The group will not be added to the list. "
-                        f"Exception: {error}."
+                        f"Exception: {error}.",
                     )
         else:
             raise ValueError(f"{type(analysis)} type is not supported for 'analysis' key, use dict only")
@@ -85,8 +82,7 @@ class Config:
 
     @staticmethod
     def load_local_plugin(name) -> Union[Type[Checker], Type[Provider]]:
-        """
-        Import a local plugin accessible through Python path.
+        """Import a local plugin accessible through Python path.
 
         Arguments:
             name: Dotted path to the plugin.
@@ -106,8 +102,7 @@ class Config:
 
     @staticmethod
     def load_installed_plugins() -> Plugins:
-        """
-        Search and load every installed plugin through entry points.
+        """Search and load every installed plugin through entry points.
 
         Returns:
             Providers and checkers.
@@ -124,8 +119,7 @@ class Config:
 
     @staticmethod
     def lint(config):
-        """
-        Verify the contents of the configuration dictionary.
+        """Verify the contents of the configuration dictionary.
 
         Arguments:
             config: A configuration dictionary.
@@ -140,8 +134,7 @@ class Config:
 
     @staticmethod
     def from_file(path: str) -> "Config":
-        """
-        Return a ``Config`` instance by reading a configuration file.
+        """Return a ``Config`` instance by reading a configuration file.
 
         Arguments:
             path: The config file path.
@@ -156,8 +149,7 @@ class Config:
 
     @staticmethod
     def find() -> Optional[str]:
-        """
-        Find the configuration file if any.
+        """Find the configuration file if any.
 
         Returns:
             The path to a configuration file.
@@ -186,8 +178,7 @@ class Config:
 
     @staticmethod
     def default_config(file_path=None) -> "Config":
-        """
-        Return a default configuration instance.
+        """Return a default configuration instance.
 
         Arguments:
             file_path: Optional file path to configuration file.
@@ -206,15 +197,14 @@ class Config:
                             "archan.LeastCommonMechanism",
                             "archan.LayeredArchitecture",
                         ),
-                    }
-                }
-            }
+                    },
+                },
+            },
         )
 
     @staticmethod
     def inflate_plugin_list(plugin_list, inflate_plugin) -> List[Union[Checker, Provider]]:
-        """
-        Inflate a list of strings/dictionaries to a list of plugin instances.
+        """Inflate a list of strings/dictionaries to a list of plugin instances.
 
         Arguments:
             plugin_list (list): a list of str/dict.
@@ -236,11 +226,11 @@ class Config:
             elif isinstance(plugin_def, dict):
                 if len(plugin_def) > 1:
                     raise ValueError("When using a plugin list, each dictionary item must contain only one key.")
-                identifier = list(plugin_def.keys())[0]
+                identifier = next(iter(plugin_def.keys()))
                 definition = plugin_def[identifier]
                 try:
                     plugins.append(inflate_plugin(identifier, definition))
-                except PluginNotFoundError as error:  # noqa: WPS440
+                except PluginNotFoundError as error:
                     logger.error(
                         f"Could not import plugin identified by {identifier}. "
                         f"Inflate method: {inflate_plugin}. Exception: {error}.",
@@ -249,8 +239,7 @@ class Config:
 
     @staticmethod
     def inflate_plugin_dict(plugin_dict, inflate_plugin) -> List[Union[Checker, Provider]]:
-        """
-        Inflate a list of strings/dictionaries to a list of plugin instances.
+        """Inflate a list of strings/dictionaries to a list of plugin instances.
 
         Arguments:
             plugin_dict (dict): a dict of dict.
@@ -269,8 +258,7 @@ class Config:
 
     @staticmethod
     def inflate_nd_checker(identifier, definition):
-        """
-        Inflate a no-data checker from a basic definition.
+        """Inflate a no-data checker from a basic definition.
 
         Arguments:
             identifier (str): the no-data checker identifier / name.
@@ -291,8 +279,7 @@ class Config:
 
     @staticmethod
     def cleanup_definition(definition):
-        """
-        Clean-up a definition (remove name, description and arguments).
+        """Clean-up a definition (remove name, description and arguments).
 
         Arguments:
             definition: The definition to clean.
@@ -303,8 +290,7 @@ class Config:
 
     @property
     def available_providers(self) -> Dict[str, Type[Provider]]:
-        """
-        Return the available providers.
+        """Return the available providers.
 
         Returns:
             The available providers.
@@ -313,8 +299,7 @@ class Config:
 
     @property
     def available_checkers(self) -> Dict[str, Type[Checker]]:
-        """
-        Return the available checkers.
+        """Return the available checkers.
 
         Returns:
             The available checkers.
@@ -322,8 +307,7 @@ class Config:
         return self.plugins.checkers
 
     def get_plugin(self, identifier, cls=None) -> Union[Type[Checker], Type[Provider]]:
-        """
-        Return the plugin corresponding to the given identifier and type.
+        """Return the plugin corresponding to the given identifier and type.
 
         Arguments:
             identifier (str): identifier of the plugin.
@@ -339,8 +323,7 @@ class Config:
         return Config.load_local_plugin(identifier)
 
     def get_provider(self, identifier) -> Type[Provider]:
-        """
-        Return the provider class corresponding to the given identifier.
+        """Return the provider class corresponding to the given identifier.
 
         Arguments:
             identifier: The provider identifier.
@@ -351,8 +334,7 @@ class Config:
         return self.get_plugin(identifier, cls="provider")  # type: ignore
 
     def get_checker(self, identifier) -> Type[Checker]:
-        """
-        Return the checker class corresponding to the given identifier.
+        """Return the checker class corresponding to the given identifier.
 
         Arguments:
             identifier: The checker identifier.
@@ -363,8 +345,7 @@ class Config:
         return self.get_plugin(identifier, cls="checker")  # type: ignore
 
     def provider_from_dict(self, dct) -> Optional[Provider]:
-        """
-        Return a provider instance from a dict object.
+        """Return a provider instance from a dict object.
 
         Arguments:
             dct: The dictionary describing the provider.
@@ -372,15 +353,14 @@ class Config:
         Returns:
             The provider.
         """
-        provider_identifier = list(dct.keys())[0]
+        provider_identifier = next(iter(dct.keys()))
         provider_class = self.get_provider(provider_identifier)
         if provider_class:
             return provider_class(**dct[provider_identifier])
         return None
 
     def checker_from_dict(self, dct) -> Optional[Checker]:
-        """
-        Return a checker instance from a dict object.
+        """Return a checker instance from a dict object.
 
         Arguments:
             dct: The dictionary describing the checker.
@@ -388,17 +368,19 @@ class Config:
         Returns:
             The checker.
         """
-        checker_identifier = list(dct.keys())[0]
+        checker_identifier = next(iter(dct.keys()))
         checker_class = self.get_checker(checker_identifier)
         if checker_class:
             return checker_class(**dct[checker_identifier])
         return None
 
     def inflate_plugin(
-        self, identifier: str, definition: Optional[Dict] = None, cls: Optional[str] = None
+        self,
+        identifier: str,
+        definition: Optional[Dict] = None,
+        cls: Optional[str] = None,
     ) -> Union[Checker, Provider]:
-        """
-        Inflate a plugin thanks to it's identifier, definition and class.
+        """Inflate a plugin thanks to it's identifier, definition and class.
 
         Arguments:
             identifier: the plugin identifier.
@@ -414,8 +396,7 @@ class Config:
         return real_cls(**definition or {})
 
     def inflate_plugins(self, plugins_definition, inflate_method) -> List[Union[Checker, Provider]]:
-        """
-        Inflate multiple plugins based on a list/dict definition.
+        """Inflate multiple plugins based on a list/dict definition.
 
         Arguments:
             plugins_definition (list/dict): the plugins definitions.
@@ -434,8 +415,7 @@ class Config:
         raise ValueError(f"{type(plugins_definition)} type is not supported for a plugin list, use list or dict")
 
     def inflate_provider(self, identifier, definition=None) -> Provider:
-        """
-        Shortcut to inflate a provider.
+        """Shortcut to inflate a provider.
 
         Arguments:
             identifier: The provider identifier.
@@ -447,8 +427,7 @@ class Config:
         return self.inflate_plugin(identifier, definition, "provider")  # type: ignore
 
     def inflate_checker(self, identifier, definition=None) -> Checker:
-        """
-        Shortcut to inflate a checker.
+        """Shortcut to inflate a checker.
 
         Arguments:
             identifier: The checker identifier.
@@ -460,8 +439,7 @@ class Config:
         return self.inflate_plugin(identifier, definition, "checker")  # type: ignore
 
     def inflate_providers(self, providers_definition) -> List[Provider]:
-        """
-        Shortcut to inflate multiple providers.
+        """Shortcut to inflate multiple providers.
 
         Arguments:
             providers_definition: The providers definitions.
@@ -483,8 +461,7 @@ class Config:
         return self.inflate_plugins(checkers_definition, self.inflate_checker)  # type: ignore
 
     def inflate_analysis_group(self, identifier, definition) -> AnalysisGroup:
-        """
-        Inflate a whole analysis group.
+        """Inflate a whole analysis group.
 
         An analysis group is a section defined in the YAML file.
 
@@ -505,7 +482,7 @@ class Config:
 
         analysis_group = AnalysisGroup()
 
-        try:  # noqa: WPS503
+        try:
             first_plugin = self.inflate_plugin(identifier, definition)
         except PluginNotFoundError as error:
             logger.warning(
@@ -518,7 +495,7 @@ class Config:
             if bool(providers_definition) != bool(checkers_definition):
                 raise ValueError(
                     "when declaring an analysis group with a name, you must "
-                    'either declare both "providers" and "checkers" or none.'
+                    'either declare both "providers" and "checkers" or none.',
                 )
 
             if providers_definition and checkers_definition:
@@ -532,7 +509,7 @@ class Config:
                     raise ValueError(
                         "when declaring an analysis group with a checker "
                         "identifier, you must also declare providers with "
-                        'the "providers" key.'
+                        'the "providers" key.',
                     )
 
                 analysis_group.providers.extend(self.inflate_providers(providers_definition))
@@ -544,7 +521,7 @@ class Config:
                     raise ValueError(
                         "when declaring an analysis group with a provider "
                         "identifier, you must also declare checkers with "
-                        'the "checkers" key.'
+                        'the "checkers" key.',
                     )
 
                 analysis_group.checkers.extend(self.inflate_checkers(checkers_definition))
