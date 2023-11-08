@@ -1,5 +1,4 @@
-"""
-Entry-point module, in case you use `python -m archan`.
+"""Entry-point module, in case you use `python -m archan`.
 
 Why does this file exist, and why `__main__`? For more info, read:
 

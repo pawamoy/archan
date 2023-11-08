@@ -1,18 +1,17 @@
-"""
-Archan package.
+"""Archan package.
 
 The purpose of this package is to make possible the analysis of a problem
 using a DSM (Design Structure Matrix) on which certain criteria will be
 verified.
 """
 
-from typing import List
+from __future__ import annotations
 
 from archan.dsm import DesignStructureMatrix, DomainMappingMatrix, MultipleDomainMatrix
 from archan.logging import Logger
 from archan.plugins import Argument, Checker, Provider
 
-__all__: List[str] = [
+__all__: list[str] = [
     "DesignStructureMatrix",
     "DomainMappingMatrix",
     "MultipleDomainMatrix",

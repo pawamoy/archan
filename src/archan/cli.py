@@ -1,3 +1,5 @@
+"""Module that contains the command line application."""
+
 # Why does this file exist, and why not put this in `__main__`?
 #
 # You might be tempted to import things from `__main__` later,
@@ -9,12 +11,16 @@
 # - When you import `__main__` it will get executed again (as a module) because
 #   there's no `archan.__main__` in `sys.modules`.
 
-"""Module that contains the command line application."""
+from __future__ import annotations
 
 import logging
 import os
-from argparse import SUPPRESS, ArgumentParser, ArgumentTypeError
-from typing import List, Optional
+import argparse
+import sys
+from typing import Any
+
+from archan import debug
+
 
 import colorama
 
@@ -24,6 +30,14 @@ from archan.config import Config
 from archan.logging import Logger
 
 logger = Logger.get_logger(__name__)
+
+class _DebugInfo(argparse.Action):
+    def __init__(self, nargs: int | str | None = 0, **kwargs: Any) -> None:
+        super().__init__(nargs=nargs, **kwargs)
+
+    def __call__(self, *args: Any, **kwargs: Any) -> None:  # noqa: ARG002
+        debug.print_debug_info()
+        sys.exit(0)
 
 
 def valid_file(value: str) -> str:
@@ -40,11 +54,11 @@ def valid_file(value: str) -> str:
         Original value argument.
     """
     if not value:
-        raise ArgumentTypeError("'' is not a valid file path")
+        raise argparse.ArgumentTypeError("'' is not a valid file path")
     elif not os.path.exists(value):
-        raise ArgumentTypeError(f"{value} is not a valid file path")
+        raise argparse.ArgumentTypeError(f"{value} is not a valid file path")
     elif os.path.isdir(value):
-        raise ArgumentTypeError(f"{value} is a directory, not a regular file")
+        raise argparse.ArgumentTypeError(f"{value} is a directory, not a regular file")
     return value
 
 
@@ -67,14 +81,13 @@ def valid_level(value: str) -> str:
     return value
 
 
-def get_parser() -> ArgumentParser:
-    """
-    Return the CLI argument parser.
+def get_parser() -> argparse.ArgumentParser:
+    """Return the CLI argument parser.
 
     Returns:
         An argparse parser.
     """
-    parser = ArgumentParser(
+    parser = argparse.ArgumentParser(
         prog="archan", add_help=False, description="Analysis of your architecture strength based on DSM data"
     )
     parser.add_argument(
@@ -86,7 +99,7 @@ def get_parser() -> ArgumentParser:
         metavar="FILE",
         help="Configuration file to use.",
     )
-    parser.add_argument("-h", "--help", action="help", default=SUPPRESS, help="Show this help message and exit.")
+    parser.add_argument("-h", "--help", action="help", default=argparse.SUPPRESS, help="Show this help message and exit.")
     parser.add_argument(
         "-i",
         "--input",
@@ -130,16 +143,16 @@ def get_parser() -> ArgumentParser:
         version=f"archan {__version__}",
         help="Show the current version of the program and exit.",
     )
+    parser.add_argument("--debug-info", action=_DebugInfo, help="Print debug information.")
     return parser
 
 
-def main(args: Optional[List[str]] = None) -> int:
-    """
-    Run the main program.
+def main(args: list[str] | None = None) -> int:
+    """Run the main program.
 
     This function is executed when you type `archan` or `python -m archan`.
 
-    Arguments:
+    Parameters:
         args: Arguments passed from the command line.
 
     Returns:

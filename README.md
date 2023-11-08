@@ -4,7 +4,7 @@
 [![documentation](https://img.shields.io/badge/docs-mkdocs%20material-blue.svg?style=flat)](https://pawamoy.github.io/archan/)
 [![pypi version](https://img.shields.io/pypi/v/archan.svg)](https://pypi.org/project/archan/)
 [![gitpod](https://img.shields.io/badge/gitpod-workspace-blue.svg?style=flat)](https://gitpod.io/#https://github.com/pawamoy/archan)
-[![gitter](https://badges.gitter.im/join%20chat.svg)](https://gitter.im/archan/community)
+[![gitter](https://badges.gitter.im/join%20chat.svg)](https://app.gitter.im/#/room/#archan:gitter.im)
 
 Analysis of your architecture strength based on DSM data.
 
@@ -31,40 +31,18 @@ Jerome H. Saltzer and Michael D. Schroeder.
 [django-meerkat]: https://github.com/pawamoy/django-meerkat
 [provider]: https://github.com/pawamoy/dependenpy/blob/master/src/dependenpy/plugins.py
 
-## Requirements
-
-Archan requires Python 3.6 or above.
-
-<details>
-<summary>To install Python 3.6, I recommend using <a href="https://github.com/pyenv/pyenv"><code>pyenv</code></a>.</summary>
-
-```bash
-# install pyenv
-git clone https://github.com/pyenv/pyenv ~/.pyenv
-
-# setup pyenv (you should also put these three lines in .bashrc or similar)
-export PATH="${HOME}/.pyenv/bin:${PATH}"
-export PYENV_ROOT="${HOME}/.pyenv"
-eval "$(pyenv init -)"
-
-# install Python 3.6
-pyenv install 3.6.12
-
-# make it available globally
-pyenv global system 3.6.12
-```
-</details>
-
 ## Installation
 
 With `pip`:
+
 ```bash
 pip install archan
 ```
 
 With [`pipx`](https://github.com/pipxproject/pipx):
+
 ```bash
-python3.7 -m pip install --user pipx
+python3.8 -m pip install --user pipx
 pipx install archan
 ```
 
