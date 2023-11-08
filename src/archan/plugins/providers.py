@@ -1,5 +1,7 @@
 """Provider module."""
 
+from __future__ import annotations
+
 import sys
 
 from archan import Argument, Provider
@@ -21,7 +23,12 @@ class CSVInput(Provider):
         Argument("categories_delimiter", str, "If set, used as delimiter for categories."),
     )
 
-    def get_data(self, file_path=None, delimiter=",", categories_delimiter=None):
+    def get_data(
+        self,
+        file_path: str | None = None,
+        delimiter: str = ",",
+        categories_delimiter: str | None = None,
+    ) -> DesignStructureMatrix:
         """Implement get_dsm method from Provider class.
 
         Parse CSV to return an instance of DSM.
@@ -40,7 +47,7 @@ class CSVInput(Provider):
             logger.info("Read data from standard input")
             lines = [line.replace("\n", "") for line in sys.stdin]
         else:
-            logger.info("Read data from file " + file_path)
+            logger.info(f"Read data from file {file_path}")
             with open(file_path) as file:
                 lines = list(file)
         columns = lines[0].rstrip("\n").split(delimiter)[1:]

@@ -4,12 +4,17 @@ Contains the DesignStructureMatrix, DomainMappingMatrix and
 MultipleDomainMatrix classes.
 """
 
-from typing import List, Tuple
+from __future__ import annotations
 
 from archan.errors import DesignStructureMatrixError, DomainMappingMatrixError, MatrixError, MultipleDomainMatrixError
 
 
-def validate_rows_length(data, length, message=None, exception=MatrixError):
+def validate_rows_length(
+    data: list[list],
+    length: int,
+    message: str | None = None,
+    exception: type = MatrixError,
+) -> None:
     """Validate that all rows have the same length.
 
     Arguments:
@@ -28,7 +33,7 @@ def validate_rows_length(data, length, message=None, exception=MatrixError):
             raise exception(message)
 
 
-def validate_square(data, message=None, exception=MatrixError):
+def validate_square(data: list[list], message: str | None = None, exception: type = MatrixError) -> None:
     """Validate that the matrix has equal number of rows and columns.
 
     Arguments:
@@ -46,7 +51,12 @@ def validate_square(data, message=None, exception=MatrixError):
         raise exception(message)
 
 
-def validate_categories_equal_entities(categories, entities, message=None, exception=MatrixError):
+def validate_categories_equal_entities(
+    categories: list,
+    entities: list,
+    message: str | None = None,
+    exception: type = MatrixError,
+) -> None:
     """Validate that the matrix has equal number of entities and categories.
 
     Arguments:
@@ -76,7 +86,7 @@ class BaseMatrix:
     error = MatrixError
     square = False
 
-    def __init__(self, data, entities=None, categories=None):
+    def __init__(self, data: list[list[int | float]], entities: list | None = None, categories: list | None = None):
         """Initialization method.
 
         Arguments:
@@ -113,7 +123,7 @@ class BaseMatrix:
         return len(self.data[0]) if self.data else 0
 
     @property
-    def size(self) -> Tuple[int, int]:
+    def size(self) -> tuple[int, int]:
         """Return number of rows and columns in data.
 
         Returns:
@@ -121,14 +131,14 @@ class BaseMatrix:
         """
         return self.rows, self.columns
 
-    def validate(self):
+    def validate(self) -> None:
         """Validate data (rows length, categories=entities, square)."""
         validate_rows_length(self.data, self.columns, exception=self.error)
         validate_categories_equal_entities(self.categories, self.entities, exception=self.error)
         if self.square:
             validate_square(self.data, exception=self.error)
 
-    def default_entities(self) -> List[str]:
+    def default_entities(self) -> list[str]:
         """Default entities used when there are none.
 
         Returns:
@@ -143,7 +153,7 @@ class DesignStructureMatrix(BaseMatrix):
     error = DesignStructureMatrixError
     square = True
 
-    def validate(self):
+    def validate(self) -> None:
         """Base validation + entities = rows.
 
         Raises:
@@ -154,7 +164,7 @@ class DesignStructureMatrix(BaseMatrix):
         if nb_entities != self.rows:
             raise self.error(f"Number of entities: {nb_entities} != number of rows: {self.rows}")
 
-    def transitive_closure(self) -> List[List[int]]:
+    def transitive_closure(self) -> list[list[int]]:
         """Compute the transitive closure of the matrix.
 
         Returns:
@@ -174,7 +184,7 @@ class DomainMappingMatrix(BaseMatrix):
 
     error = DomainMappingMatrixError
 
-    def validate(self):
+    def validate(self) -> None:
         """Base validation + entities = rows + columns.
 
         Raises:
@@ -188,7 +198,7 @@ class DomainMappingMatrix(BaseMatrix):
                 f"number of columns: {self.rows}+{self.columns}={self.rows + self.columns}",
             )
 
-    def default_entities(self) -> List[str]:
+    def default_entities(self) -> list[str]:
         """Return range from 0 to rows + columns.
 
         Returns:
@@ -203,7 +213,7 @@ class MultipleDomainMatrix(BaseMatrix):
     error = MultipleDomainMatrixError
     square = True
 
-    def validate(self):
+    def validate(self) -> None:
         """Base validation + each cell is instance of DSM or MDM.
 
         Raises:

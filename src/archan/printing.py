@@ -1,8 +1,9 @@
 """Printing module."""
 
+from __future__ import annotations
+
 import shutil
 import textwrap
-from typing import Optional
 
 from colorama import Fore, Style
 
@@ -12,21 +13,21 @@ from archan.logging import Logger
 logger = Logger.get_logger(__name__)
 
 
-def console_width(default=80):
+def console_width(default: int = 80) -> int:
     """Return current console width.
 
     Arguments:
-        default (int): default value if width cannot be retrieved.
+        default: Default value if width cannot be retrieved.
 
     Returns:
-        int: console width.
+        Console width.
     """
     # only solution that works with stdin redirected from file
     # https://stackoverflow.com/questions/566746
     return shutil.get_terminal_size((default, 20)).columns
 
 
-def pretty_description(description: str, wrap_at: Optional[int] = None, indent: int = 0) -> str:
+def pretty_description(description: str, wrap_at: int | None = None, indent: int = 0) -> str:
     """Return a pretty formatted string given some text.
 
     Arguments:
@@ -44,7 +45,7 @@ def pretty_description(description: str, wrap_at: Optional[int] = None, indent: 
         else:
             wrap_at += width
 
-    indent = " " * indent  # type: ignore
+    indent = " " * indent
     text_wrapper = textwrap.TextWrapper(
         width=wrap_at,
         replace_whitespace=False,

@@ -1,6 +1,8 @@
 """Checker module."""
 
-from typing import List
+from __future__ import annotations
+
+from typing import Any
 
 from archan import Argument, Checker
 from archan.errors import DesignStructureMatrixError
@@ -27,7 +29,7 @@ class CompleteMediation(Checker):
     hint = "Remove the dependencies or deviate them through a broker module."
 
     @staticmethod
-    def generate_mediation_matrix(dsm) -> List[List[int]]:
+    def generate_mediation_matrix(dsm: DesignStructureMatrixError) -> list[list[int]]:
         """Generate the mediation matrix of the given matrix.
 
         Rules for mediation matrix generation:
@@ -127,7 +129,10 @@ class CompleteMediation(Checker):
         return mediation_matrix
 
     @staticmethod
-    def matrices_compliance(dsm, complete_mediation_matrix):
+    def matrices_compliance(
+        dsm: DesignStructureMatrixError,
+        complete_mediation_matrix: list[list[int]],
+    ) -> tuple[bool, str]:
         """Check if matrix and its mediation matrix are compliant.
 
         Arguments:
@@ -167,7 +172,7 @@ class CompleteMediation(Checker):
 
         return not discrepancy_found, message
 
-    def check(self, dsm, **kwargs):
+    def check(self, dsm: DesignStructureMatrixError, **kwargs: Any) -> tuple[bool, str]:  # noqa: ARG002
         """Check if matrix and its mediation matrix are compliant.
 
         It means that number of dependencies for each (line, column) is either
@@ -214,7 +219,12 @@ class EconomyOfMechanism(Checker):
         ),
     )
 
-    def check(self, dsm, simplicity_factor=2, **kwargs):
+    def check(
+        self,
+        dsm: DesignStructureMatrixError,
+        simplicity_factor: int = 2,
+        **kwargs: Any,  # noqa: ARG002
+    ) -> tuple[bool, str]:
         """Check economy of mechanism.
 
         As first abstraction, number of dependencies between two modules
@@ -286,7 +296,7 @@ class SeparationOfPrivileges(Checker):
     separation of privilege for their implementation."""
     # TODO: add hint
 
-    def check(self, dsm, **kwargs):
+    def check(self, dsm: DesignStructureMatrixError, **kwargs: Any) -> tuple[bool, str]:
         """TODO: To implement."""
         raise NotImplementedError
 
@@ -310,7 +320,7 @@ class LeastPrivileges(Checker):
     "need-to-know" is an example of this principle."""
     # TODO: add hint
 
-    def check(self, dsm, **kwargs):
+    def check(self, dsm: DesignStructureMatrixError, **kwargs: Any) -> tuple[bool, str]:
         """TODO: To implement."""
         raise NotImplementedError
 
@@ -347,7 +357,12 @@ class LeastCommonMechanism(Checker):
         ),
     )
 
-    def check(self, dsm, independence_factor=5, **kwargs):
+    def check(
+        self,
+        dsm: DesignStructureMatrixError,
+        independence_factor: int = 5,
+        **kwargs: Any,  # noqa: ARG002
+    ) -> tuple[bool, str]:
         """Check least common mechanism.
 
         Arguments:
@@ -416,7 +431,7 @@ class LayeredArchitecture(Checker):
     one corner (for example: in the lower-left part)."""
     hint = "Ensure that your applications are listed in the right order when building the DSM, or remove dependencies."
 
-    def check(self, dsm, **kwargs):
+    def check(self, dsm: DesignStructureMatrixError, **kwargs: Any) -> tuple[bool, str]:  # noqa: ARG002
         """Check layered architecture.
 
         Arguments:
@@ -467,7 +482,7 @@ class CodeClean(Checker):
 
     argument_list = (Argument("threshold", int, "Message number threshold (per module).", default=10),)
 
-    def check(self, dsm, **kwargs):
+    def check(self, dsm: DesignStructureMatrixError, **kwargs: Any) -> tuple[bool, str]:
         """Check code clean.
 
         Arguments:

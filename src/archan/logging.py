@@ -1,7 +1,9 @@
 """Logging module."""
 
+from __future__ import annotations
+
 import logging
-from typing import Dict
+from typing import ClassVar
 
 from colorama import Back, Fore, Style
 
@@ -9,11 +11,11 @@ from colorama import Back, Fore, Style
 class Logger:
     """Static class to store loggers."""
 
-    loggers: Dict[str, logging.Logger] = {}
+    loggers: ClassVar[dict[str, logging.Logger]] = {}
     level = None
 
     @staticmethod
-    def set_level(level):
+    def set_level(level: int) -> None:
         """Set level of logging for all loggers.
 
         Arguments:
@@ -24,7 +26,7 @@ class Logger:
             logger.setLevel(level)
 
     @staticmethod
-    def get_logger(name, level=None, fmt=":%(lineno)d: %(message)s"):
+    def get_logger(name: str, level: int | None = None, fmt: str = ":%(lineno)d: %(message)s") -> logging.Logger:
         """Return a logger.
 
         Arguments:

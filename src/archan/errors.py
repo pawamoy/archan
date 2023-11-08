@@ -1,5 +1,7 @@
 """Errors module."""
 
+from __future__ import annotations
+
 
 class MatrixError(Exception):
     """Exception raised when matrix data are incorrect."""

@@ -69,12 +69,17 @@ ignore = [
     "PLR0912",  # Too many branches
     "PLR0913",  # Too many arguments to function call
     "PLR0915",  # Too many statements
+    "RUF001",  # String contains ambiguous `–` (EN DASH). Did you mean `-` (HYPHEN-MINUS)
     "SLF001", # Private member accessed
     "TRY003",  # Avoid specifying long messages outside the exception class
+    "TRY400",  # Use `logging.exception` instead of `logging.error`
 ]
 
 [per-file-ignores]
 "src/*/cli.py" = [
+    "T201",  # Print statement
+]
+"src/*/printing.py" = [
     "T201",  # Print statement
 ]
 "src/*/debug.py" = [

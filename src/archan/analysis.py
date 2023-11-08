@@ -1,12 +1,20 @@
 """Analysis module."""
 
+from __future__ import annotations
+
 import sys
+from typing import TYPE_CHECKING
 
 from tap.tracker import Tracker
 
 from archan.enums import ResultCode
 from archan.logging import Logger
 from archan.printing import PrintableNameMixin, PrintableResultMixin
+
+if TYPE_CHECKING:
+    from archan.checkers import Checker
+    from archan.config import Config
+    from archan.providers import Provider
 
 logger = Logger.get_logger(__name__)
 
@@ -19,7 +27,7 @@ class Analysis:
     these data are all checked against every checker.
     """
 
-    def __init__(self, config):
+    def __init__(self, config: Config):
         """Initialization method.
 
         Arguments:
@@ -29,12 +37,17 @@ class Analysis:
         self.results = []
 
     @staticmethod
-    def _get_checker_result(group, checker, provider=None, nd=""):
+    def _get_checker_result(
+        group: AnalysisGroup,
+        checker: Checker,
+        provider: Provider | None = None,
+        nd: str = "",
+    ) -> Result:
         logger.info(f"Run {nd}checker {checker.identifier or checker.name}")
         checker.run(provider.data if provider else None)
         return Result(group, provider, checker, *checker.result)
 
-    def run(self, verbose: bool = True):
+    def run(self, verbose: bool = True) -> None:  # noqa: FBT001, FBT002
         """Run the analysis.
 
         Generate data from each provider, then check these data with every
@@ -64,12 +77,12 @@ class Analysis:
                     if verbose:
                         result.print()
 
-    def print_results(self):
+    def print_results(self) -> None:
         """Print analysis results as text on standard output."""
         for result in self.results:
             result.print()
 
-    def output_tap(self):
+    def output_tap(self) -> None:
         """Output analysis results in TAP format."""
         tracker = Tracker(streaming=True, stream=sys.stdout)
         for group in self.config.analysis_groups:
@@ -104,7 +117,7 @@ class Analysis:
                         diagnostics=f"  ---\n  message: {message}\n  hint: {result.checker.hint}\n  ...",
                     )
 
-    def output_json(self):
+    def output_json(self) -> None:
         """Output analysis results in JSON format."""
 
     @property
@@ -120,7 +133,13 @@ class Analysis:
 class AnalysisGroup(PrintableNameMixin):
     """Placeholder for groups of providers and checkers."""
 
-    def __init__(self, name=None, description=None, providers=None, checkers=None):
+    def __init__(
+        self,
+        name: str | None = None,
+        description: str | None = None,
+        providers: list | None = None,
+        checkers: list | None = None,
+    ):
         """Initialization method.
 
         Arguments:
@@ -139,7 +158,7 @@ class AnalysisGroup(PrintableNameMixin):
 class Result(PrintableResultMixin):
     """Placeholder for analysis results."""
 
-    def __init__(self, group, provider, checker, code, messages):
+    def __init__(self, group: AnalysisGroup, provider: Provider, checker: Checker, code: int, messages: str):
         """Initialization method.
 
         Arguments:

@@ -1,12 +1,16 @@
 """Enumerations module."""
 
+from __future__ import annotations
+
+from typing import Any
+
 
 class MetaEnum(type):
     """Metaclass for our ResultCode enum."""
 
     ALL = ()
 
-    def __contains__(cls, item):
+    def __contains__(cls, item: Any):
         return item in cls.ALL
 
 

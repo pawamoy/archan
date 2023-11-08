@@ -1,11 +1,16 @@
 """Plugins submodule."""
 
+from __future__ import annotations
+
 from collections import namedtuple
-from typing import Optional, Sequence
+from typing import TYPE_CHECKING, Any, Sequence
 
 from archan.enums import ResultCode
 from archan.logging import Logger
 from archan.printing import PrintableArgumentMixin, PrintableNameMixin, PrintablePluginMixin
+
+if TYPE_CHECKING:
+    from archan.dsm import DesignStructureMatrix, DomainMappingMatrix, MultipleDomainMatrix
 
 logger = Logger.get_logger(__name__)
 
@@ -13,7 +18,7 @@ logger = Logger.get_logger(__name__)
 class Argument(PrintableArgumentMixin):
     """Placeholder for name, class, description and default value."""
 
-    def __init__(self, name, cls, description, default=None):
+    def __init__(self, name: str, cls: type, description: str, default: Any | None = None):
         """Initialization method.
 
         Arguments:
@@ -49,12 +54,12 @@ class Checker(PrintableNameMixin, PrintablePluginMixin):
 
     def __init__(
         self,
-        name: Optional[str] = None,
-        description: Optional[str] = None,
-        hint: Optional[str] = None,
-        allow_failure: bool = False,
-        passes: Optional[str] = None,
-        arguments=None,
+        name: str | None = None,
+        description: str | None = None,
+        hint: str | None = None,
+        allow_failure: bool = False,  # noqa: FBT001, FBT002
+        passes: str | None = None,
+        arguments: dict | None = None,
     ):
         """Initialization method.
 
@@ -78,7 +83,11 @@ class Checker(PrintableNameMixin, PrintablePluginMixin):
         self.arguments = arguments or {}
         self.result = None
 
-    def check(self, data, **kwargs):
+    def check(
+        self,
+        data: DesignStructureMatrix | MultipleDomainMatrix | DomainMappingMatrix,
+        **kwargs: Any,
+    ) -> tuple[Any, str]:
         """Check the data and return a result.
 
         Arguments:
@@ -91,13 +100,13 @@ class Checker(PrintableNameMixin, PrintablePluginMixin):
         """
         raise NotImplementedError
 
-    def run(self, data):
+    def run(self, data: DesignStructureMatrix | MultipleDomainMatrix | DomainMappingMatrix) -> None:
         """Run the check method and format the result for analysis.
 
         Arguments:
             data (DSM/DMM/MDM): DSM/DMM/MDM instance to check.
         """
-        result_type = namedtuple("Result", "code messages")
+        result_type = namedtuple("Result", "code messages")  # noqa: PYI024
 
         if self.passes is True:
             result = result_type(Checker.Code.PASSED, "")
@@ -137,7 +146,12 @@ class Provider(PrintableNameMixin, PrintablePluginMixin):
     description = ""
     argument_list = ()
 
-    def __init__(self, name: Optional[str] = None, description: Optional[str] = None, arguments=None):
+    def __init__(
+        self,
+        name: str | None = None,
+        description: str | None = None,
+        arguments: dict | None = None,
+    ) -> None:
         """Initialization method.
 
         Arguments:
@@ -153,7 +167,7 @@ class Provider(PrintableNameMixin, PrintablePluginMixin):
         self.arguments = arguments or {}
         self.data = None
 
-    def get_data(self, **kwargs):
+    def get_data(self, **kwargs: Any) -> None:
         """Abstract method. Return instance of DSM/DMM/MDM.
 
         Arguments:
@@ -164,6 +178,6 @@ class Provider(PrintableNameMixin, PrintablePluginMixin):
         """
         raise NotImplementedError
 
-    def run(self):
+    def run(self) -> None:
         """Run the get_data method with run arguments, store the result."""
         self.data = self.get_data(**self.arguments)

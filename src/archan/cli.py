@@ -52,9 +52,9 @@ def valid_file(value: str) -> str:
     """
     if not value:
         raise argparse.ArgumentTypeError("'' is not a valid file path")
-    elif not os.path.exists(value):
+    if not os.path.exists(value):
         raise argparse.ArgumentTypeError(f"{value} is not a valid file path")
-    elif os.path.isdir(value):
+    if os.path.isdir(value):
         raise argparse.ArgumentTypeError(f"{value} is a directory, not a regular file")
     return value
 
