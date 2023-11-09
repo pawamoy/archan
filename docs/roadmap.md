@@ -26,7 +26,7 @@ data to be checked (software dependencies do not offer such data).
 However, everything in this matrix is not fixed. We could maybe imagine
 running a Complete Mediation check on the network architecture or a
 Layered Architecture check on access control data. The only limit is
-imagination: what data to present, how to generate them, how to check them.
+imagination: what data to present, how to generate it, how to check it.
 
 The risk column is a perfect example: we could define risks for pretty much
 each kind of entity: code source, access control, network architecture..., but

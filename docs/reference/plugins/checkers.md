@@ -1,1 +1,0 @@
-::: archan.plugins.checkers

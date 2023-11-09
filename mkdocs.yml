@@ -16,6 +16,7 @@ validation:
 nav:
 - Home:
   - Overview: index.md
+  - Roadmap: roadmap.md
   - Changelog: changelog.md
   - Credits: credits.md
   - License: license.md
