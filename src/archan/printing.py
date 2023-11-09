@@ -108,10 +108,14 @@ class PrintableArgumentMixin:
 class PrintablePluginMixin:
     """Mixin to add a print method to plugin instances."""
 
+    identifier: str
+    name: str
+    description: str
+
     def print(self) -> None:  # noqa: A003
         """Print self."""
         print(
-            f"{Style.DIM}Identifier:{Style.RESET_ALL} {Fore.CYAN}{self.identifier}{Style.RESET_ALL}\n"  # type: ignore[attr-defined]
+            f"{Style.DIM}Identifier:{Style.RESET_ALL} {Fore.CYAN}{self.identifier}{Style.RESET_ALL}\n"
             f"{Style.DIM}Name:{Style.RESET_ALL} {self.name}\n"
             f"{Style.DIM}Description:{Style.RESET_ALL}\n{pretty_description(self.description, indent=2)}",
         )
