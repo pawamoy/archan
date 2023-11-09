@@ -45,12 +45,12 @@ def pretty_description(description: str, wrap_at: int | None = None, indent: int
         else:
             wrap_at += width
 
-    indent = " " * indent
+    indent_str = " " * indent
     text_wrapper = textwrap.TextWrapper(
         width=wrap_at,
         replace_whitespace=False,
-        initial_indent=indent,
-        subsequent_indent=indent,
+        initial_indent=indent_str,
+        subsequent_indent=indent_str,
     )
     new_desc = description.strip().split("\n")
     separators = [index for index, line in enumerate(new_desc) if not line]
@@ -77,7 +77,7 @@ class PrintableNameMixin:
             indent: Indentation.
             end: End of line.
         """
-        print(Style.BRIGHT + " " * indent + self.name, end=end)
+        print(Style.BRIGHT + " " * indent + self.name, end=end)  # type: ignore[attr-defined]
 
 
 class PrintableArgumentMixin:
@@ -94,13 +94,13 @@ class PrintableArgumentMixin:
             dim=Style.DIM,
             magenta=Fore.MAGENTA,
             none=Style.RESET_ALL,
-            name=self.name,
-            cls=self.cls,
-            default=self.default,
+            name=self.name,  # type: ignore[attr-defined]
+            cls=self.cls,  # type: ignore[attr-defined]
+            default=self.default,  # type: ignore[attr-defined]
         )
 
-        if self.description:
-            text += ":\n" + pretty_description(self.description, indent=indent + 2)
+        if self.description:  # type: ignore[attr-defined]
+            text += ":\n" + pretty_description(self.description, indent=indent + 2)  # type: ignore[attr-defined]
 
         print(text)
 
@@ -111,7 +111,7 @@ class PrintablePluginMixin:
     def print(self) -> None:  # noqa: A003
         """Print self."""
         print(
-            f"{Style.DIM}Identifier:{Style.RESET_ALL} {Fore.CYAN}{self.identifier}{Style.RESET_ALL}\n"
+            f"{Style.DIM}Identifier:{Style.RESET_ALL} {Fore.CYAN}{self.identifier}{Style.RESET_ALL}\n"  # type: ignore[attr-defined]
             f"{Style.DIM}Name:{Style.RESET_ALL} {self.name}\n"
             f"{Style.DIM}Description:{Style.RESET_ALL}\n{pretty_description(self.description, indent=2)}",
         )
@@ -136,19 +136,21 @@ class PrintableResultMixin:
             ResultCode.IGNORED: f"{Fore.YELLOW}failed (ignored){Style.RESET_ALL}",
             ResultCode.FAILED: f"{Fore.RED}failed{Style.RESET_ALL}",
             ResultCode.PASSED: f"{Fore.GREEN}passed{Style.RESET_ALL}",
-        }.get(self.code)
+        }.get(
+            self.code,  # type: ignore[attr-defined]
+        )
         print(
             "{bold}{group}{provider}{checker}: {none}{status}{none}".format(
                 bold=Style.BRIGHT,
-                group=(self.group.name + " – ") if self.group.name else "",
-                provider=(self.provider.name + " – ") if self.provider else "",
-                checker=self.checker.name,
+                group=(self.group.name + " – ") if self.group.name else "",  # type: ignore[attr-defined]
+                provider=(self.provider.name + " – ") if self.provider else "",  # type: ignore[attr-defined]
+                checker=self.checker.name,  # type: ignore[attr-defined]
                 none=Style.RESET_ALL,
                 status=status,
             ),
         )
-        if self.messages:
-            for message in self.messages.split("\n"):
+        if self.messages:  # type: ignore[attr-defined]
+            for message in self.messages.split("\n"):  # type: ignore[attr-defined]
                 print(pretty_description(message, indent=indent))
-            if self.checker.hint:
-                print(pretty_description("Hint: " + self.checker.hint, indent=indent))
+            if self.checker.hint:  # type: ignore[attr-defined]
+                print(pretty_description("Hint: " + self.checker.hint, indent=indent))  # type: ignore[attr-defined]

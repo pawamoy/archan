@@ -58,7 +58,7 @@ class Checker(PrintableNameMixin, PrintablePluginMixin):
         description: str | None = None,
         hint: str | None = None,
         allow_failure: bool = False,  # noqa: FBT001, FBT002
-        passes: str | None = None,
+        passes: Any | None = None,
         arguments: dict | None = None,
     ):
         """Initialization method.
@@ -85,7 +85,7 @@ class Checker(PrintableNameMixin, PrintablePluginMixin):
 
     def check(
         self,
-        data: DesignStructureMatrix | MultipleDomainMatrix | DomainMappingMatrix,
+        dsm: DesignStructureMatrix | MultipleDomainMatrix | DomainMappingMatrix,
         **kwargs: Any,
     ) -> tuple[Any, str]:
         """Check the data and return a result.
@@ -106,7 +106,7 @@ class Checker(PrintableNameMixin, PrintablePluginMixin):
         Arguments:
             data (DSM/DMM/MDM): DSM/DMM/MDM instance to check.
         """
-        result_type = namedtuple("Result", "code messages")  # noqa: PYI024
+        result_type = namedtuple("Result", "code messages")  # type: ignore[name-match]  # noqa: PYI024
 
         if self.passes is True:
             result = result_type(Checker.Code.PASSED, "")
@@ -116,7 +116,7 @@ class Checker(PrintableNameMixin, PrintablePluginMixin):
             )
         else:
             try:
-                result = self.check(data, **self.arguments)
+                result = self.check(data, **self.arguments)  # type: ignore[assignment]
             except NotImplementedError:
                 result = result_type(Checker.Code.NOT_IMPLEMENTED, "")
             else:
@@ -125,13 +125,13 @@ class Checker(PrintableNameMixin, PrintablePluginMixin):
                     result, messages = result
 
                 if result not in Checker.Code:
-                    result = Checker.Code.PASSED if bool(result) else Checker.Code.FAILED
+                    result = Checker.Code.PASSED if bool(result) else Checker.Code.FAILED  # type: ignore[assignment]
 
                 if result == Checker.Code.FAILED and self.allow_failure:
-                    result = Checker.Code.IGNORED
+                    result = Checker.Code.IGNORED  # type: ignore[assignment]
 
                 result = result_type(result, messages)
-        self.result = result
+        self.result = result  # type: ignore[assignment]
 
 
 class Provider(PrintableNameMixin, PrintablePluginMixin):
@@ -144,7 +144,7 @@ class Provider(PrintableNameMixin, PrintablePluginMixin):
     identifier = ""
     name = ""
     description = ""
-    argument_list = ()
+    argument_list: tuple[Argument, ...] = ()
 
     def __init__(
         self,
@@ -167,7 +167,7 @@ class Provider(PrintableNameMixin, PrintablePluginMixin):
         self.arguments = arguments or {}
         self.data = None
 
-    def get_data(self, **kwargs: Any) -> None:
+    def get_data(self, **kwargs: Any) -> Any:
         """Abstract method. Return instance of DSM/DMM/MDM.
 
         Arguments:

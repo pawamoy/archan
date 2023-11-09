@@ -49,7 +49,7 @@ class Logger:
             logger_handler = logging.StreamHandler()
             logger_handler.setFormatter(LoggingFormatter(fmt=name + fmt))
             logger.addHandler(logger_handler)
-            logger.setLevel(level)
+            logger.setLevel(level)  # type: ignore[arg-type]
             Logger.loggers[name] = logger
         return Logger.loggers[name]
 

@@ -2,11 +2,14 @@
 
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from archan import Argument, Checker
 from archan.errors import DesignStructureMatrixError
 from archan.logging import Logger
+
+if TYPE_CHECKING:
+    from archan.dsm import DesignStructureMatrix, DomainMappingMatrix, MultipleDomainMatrix
 
 logger = Logger.get_logger(__name__)
 
@@ -29,7 +32,9 @@ class CompleteMediation(Checker):
     hint = "Remove the dependencies or deviate them through a broker module."
 
     @staticmethod
-    def generate_mediation_matrix(dsm: DesignStructureMatrixError) -> list[list[int]]:
+    def generate_mediation_matrix(
+        dsm: DesignStructureMatrix | MultipleDomainMatrix | DomainMappingMatrix,
+    ) -> list[list[int]]:
         """Generate the mediation matrix of the given matrix.
 
         Rules for mediation matrix generation:
@@ -130,7 +135,7 @@ class CompleteMediation(Checker):
 
     @staticmethod
     def matrices_compliance(
-        dsm: DesignStructureMatrixError,
+        dsm: DesignStructureMatrix | MultipleDomainMatrix | DomainMappingMatrix,
         complete_mediation_matrix: list[list[int]],
     ) -> tuple[bool, str]:
         """Check if matrix and its mediation matrix are compliant.
@@ -155,7 +160,7 @@ class CompleteMediation(Checker):
             raise DesignStructureMatrixError("Matrices are NOT compliant (number of rows/columns not equal)")
 
         discrepancy_found = False
-        message = []
+        messages = []
         for i in range(rows_dep_matrix):
             for j in range(cols_dep_matrix):
                 discrepancy = (complete_mediation_matrix[i][j] == 0 and matrix[i][j] > 0) or (
@@ -163,16 +168,20 @@ class CompleteMediation(Checker):
                 )
                 if discrepancy:
                     discrepancy_found = True
-                    message.append(
+                    messages.append(
                         f"Untolerated dependency at {i}:{j} ({dsm.entities[i]}:{dsm.entities[j]}): "
                         f"{matrix[i][j]} instead of {complete_mediation_matrix[i][j]}",
                     )
 
-        message = "\n".join(message)
+        message = "\n".join(messages)
 
         return not discrepancy_found, message
 
-    def check(self, dsm: DesignStructureMatrixError, **kwargs: Any) -> tuple[bool, str]:  # noqa: ARG002
+    def check(
+        self,
+        dsm: DesignStructureMatrix | MultipleDomainMatrix | DomainMappingMatrix,
+        **kwargs: Any,  # noqa: ARG002
+    ) -> tuple[Any, str]:
         """Check if matrix and its mediation matrix are compliant.
 
         It means that number of dependencies for each (line, column) is either
@@ -221,10 +230,10 @@ class EconomyOfMechanism(Checker):
 
     def check(
         self,
-        dsm: DesignStructureMatrixError,
+        dsm: DesignStructureMatrix | MultipleDomainMatrix | DomainMappingMatrix,
         simplicity_factor: int = 2,
         **kwargs: Any,  # noqa: ARG002
-    ) -> tuple[bool, str]:
+    ) -> tuple[Any, str]:
         """Check economy of mechanism.
 
         As first abstraction, number of dependencies between two modules
@@ -296,7 +305,11 @@ class SeparationOfPrivileges(Checker):
     separation of privilege for their implementation."""
     # TODO: add hint
 
-    def check(self, dsm: DesignStructureMatrixError, **kwargs: Any) -> tuple[bool, str]:
+    def check(
+        self,
+        dsm: DesignStructureMatrix | MultipleDomainMatrix | DomainMappingMatrix,
+        **kwargs: Any,
+    ) -> tuple[Any, str]:
         """TODO: To implement."""
         raise NotImplementedError
 
@@ -320,7 +333,11 @@ class LeastPrivileges(Checker):
     "need-to-know" is an example of this principle."""
     # TODO: add hint
 
-    def check(self, dsm: DesignStructureMatrixError, **kwargs: Any) -> tuple[bool, str]:
+    def check(
+        self,
+        dsm: DesignStructureMatrix | MultipleDomainMatrix | DomainMappingMatrix,
+        **kwargs: Any,
+    ) -> tuple[Any, str]:
         """TODO: To implement."""
         raise NotImplementedError
 
@@ -359,10 +376,10 @@ class LeastCommonMechanism(Checker):
 
     def check(
         self,
-        dsm: DesignStructureMatrixError,
+        dsm: DesignStructureMatrix | MultipleDomainMatrix | DomainMappingMatrix,
         independence_factor: int = 5,
         **kwargs: Any,  # noqa: ARG002
-    ) -> tuple[bool, str]:
+    ) -> tuple[Any, str]:
         """Check least common mechanism.
 
         Arguments:
@@ -431,7 +448,11 @@ class LayeredArchitecture(Checker):
     one corner (for example: in the lower-left part)."""
     hint = "Ensure that your applications are listed in the right order when building the DSM, or remove dependencies."
 
-    def check(self, dsm: DesignStructureMatrixError, **kwargs: Any) -> tuple[bool, str]:  # noqa: ARG002
+    def check(
+        self,
+        dsm: DesignStructureMatrix | MultipleDomainMatrix | DomainMappingMatrix,
+        **kwargs: Any,  # noqa: ARG002
+    ) -> tuple[Any, str]:
         """Check layered architecture.
 
         Arguments:
@@ -482,7 +503,11 @@ class CodeClean(Checker):
 
     argument_list = (Argument("threshold", int, "Message number threshold (per module).", default=10),)
 
-    def check(self, dsm: DesignStructureMatrixError, **kwargs: Any) -> tuple[bool, str]:
+    def check(
+        self,
+        dsm: DesignStructureMatrix | MultipleDomainMatrix | DomainMappingMatrix,
+        **kwargs: Any,
+    ) -> tuple[Any, str]:
         """Check code clean.
 
         Arguments:

@@ -1,5 +1,7 @@
 """Main test module."""
 
+from typing import TYPE_CHECKING
+
 from archan.dsm import DesignStructureMatrix as DSM  # noqa: N817
 from archan.plugins.checkers import (
     Checker,
@@ -11,12 +13,18 @@ from archan.plugins.checkers import (
     SeparationOfPrivileges,
 )
 
+if TYPE_CHECKING:
+    from archan.analysis import Result
+
 
 class TestCheckers:
     """Main test class.
 
     It sets up two fake "webapp" and "genida" DSMs to check them.
     """
+
+    web_app_dsm: DSM
+    genida_dsm: DSM
 
     @classmethod
     def setup_class(cls) -> None:
@@ -63,7 +71,7 @@ class TestCheckers:
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1],
         ]
 
-        cls.web_app_dsm = DSM(web_app_dependency_matrix, web_app_entities, web_app_categories)
+        cls.web_app_dsm = DSM(web_app_dependency_matrix, web_app_entities, web_app_categories)  # type: ignore[arg-type]
 
         genida_categories = [
             "framework",
@@ -155,54 +163,54 @@ class TestCheckers:
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1],
         ]
 
-        cls.genida_dsm = DSM(genida_dependency_matrix, genida_entities, genida_categories)
+        cls.genida_dsm = DSM(genida_dependency_matrix, genida_entities, genida_categories)  # type: ignore[arg-type]
 
     # Webapp tests
     def test_webapp_complete_mediation(self) -> None:
         """Test complete mediation for webapp."""
         check = CompleteMediation()
         check.run(self.web_app_dsm)
-        result = check.result
+        result: Result = check.result  # type: ignore[assignment]
         assert result.code == Checker.Code.PASSED, f"Complete mediation: {result.messages}"
 
     def test_webapp_economy_of_mechanism(self) -> None:
         """Test economoy of mechanism for webapp."""
         check = EconomyOfMechanism()
         check.run(self.web_app_dsm)
-        result = check.result
+        result: Result = check.result  # type: ignore[assignment]
         assert result.code == Checker.Code.PASSED, f"Economy of mechanism: {result.messages}"
 
     def test_webapp_least_common_mechanism(self) -> None:
         """Test least common mechanism for webapp."""
         check = LeastCommonMechanism()
         check.run(self.web_app_dsm)
-        result = check.result
+        result: Result = check.result  # type: ignore[assignment]
         assert result.code == Checker.Code.PASSED, f"Least common mechanism: {result.messages}"
 
     # def test_webapp_code_clean(self) -> None:
     #     """Test code clean for webapp."""
-    #     result = CodeClean().run(self.web_app_dsm)
+    #     result: Result = CodeClean().run(self.web_app_dsm)
     #     assert result.code == Checker.Code.NOT_IMPLEMENTED, f"Code clean: {result.messages}"
 
     def test_webapp_layered_architecture(self) -> None:
         """Test layered architecture for webapp."""
         check = LayeredArchitecture()
         check.run(self.web_app_dsm)
-        result = check.result
+        result: Result = check.result  # type: ignore[assignment]
         assert result.code == Checker.Code.FAILED, f"Layered architecture: {result.messages}"
 
     def test_webapp_least_privileges(self) -> None:
         """Test least privileges for webapp."""
         check = LeastPrivileges()
         check.run(self.web_app_dsm)
-        result = check.result
+        result: Result = check.result  # type: ignore[assignment]
         assert result.code == Checker.Code.NOT_IMPLEMENTED, f"Least privileges: {result.messages}"
 
     def test_webapp_separation_of_privileges(self) -> None:
         """Test separation of privileges for webapp."""
         check = SeparationOfPrivileges()
         check.run(self.web_app_dsm)
-        result = check.result
+        result: Result = check.result  # type: ignore[assignment]
         assert result.code == Checker.Code.NOT_IMPLEMENTED, f"Separation of privileges: {result.messages}"
 
     # Genida tests
@@ -210,45 +218,45 @@ class TestCheckers:
         """Test complete mediation for webapp."""
         check = CompleteMediation()
         check.run(self.genida_dsm)
-        result = check.result
+        result: Result = check.result  # type: ignore[assignment]
         assert result.code == Checker.Code.PASSED, f"Complete mediation: {result.messages}"
 
     def test_genida_economy_of_mechanism(self) -> None:
         """Test economoy of mechanism for webapp."""
         check = EconomyOfMechanism()
         check.run(self.genida_dsm)
-        result = check.result
+        result: Result = check.result  # type: ignore[assignment]
         assert result.code == Checker.Code.PASSED, f"Economy of mechanism: {result.messages}"
 
     def test_genida_least_common_mechanism(self) -> None:
         """Test least common mechanism for webapp."""
         check = LeastCommonMechanism()
         check.run(self.genida_dsm)
-        result = check.result
+        result: Result = check.result  # type: ignore[assignment]
         assert result.code == Checker.Code.PASSED, f"Least common mechanism: {result.messages}"
 
     # def test_genida_code_clean(self) -> None:
     #     """Test code clean for webapp."""
-    #     result = CodeClean().run(self.genida_dsm)
+    #     result: Result = CodeClean().run(self.genida_dsm)
     #     assert result.code == Checker.Code.NOT_IMPLEMENTED, f"Code clean: {result.messages}"
 
     def test_genida_layered_architecture(self) -> None:
         """Test layered architecture for webapp."""
         check = LayeredArchitecture(allow_failure=True)
         check.run(self.genida_dsm)
-        result = check.result
+        result: Result = check.result  # type: ignore[assignment]
         assert result.code == Checker.Code.IGNORED, f"Layered architecture: {result.messages}"
 
     def test_genida_least_privileges(self) -> None:
         """Test least privileges for webapp."""
         check = LeastPrivileges(allow_failure=True)
         check.run(self.genida_dsm)
-        result = check.result
+        result: Result = check.result  # type: ignore[assignment]
         assert result.code == Checker.Code.NOT_IMPLEMENTED, f"Least privileges: {result.messages}"
 
     def test_genida_separation_of_privileges(self) -> None:
         """Test separation of privileges for webapp."""
         check = SeparationOfPrivileges()
         check.run(self.genida_dsm)
-        result = check.result
+        result: Result = check.result  # type: ignore[assignment]
         assert result.code == Checker.Code.NOT_IMPLEMENTED, f"Separation of privileges: {result.messages}"

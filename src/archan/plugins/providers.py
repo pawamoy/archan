@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import sys
+from typing import Any
 
 from archan import Argument, Provider
 from archan.dsm import DesignStructureMatrix
@@ -17,7 +18,7 @@ class CSVInput(Provider):
     identifier = "archan.CSVInput"
     name = "CSV Input"
     description = "Parse a CSV file to provide a matrix."
-    arguments = (
+    argument_list = (
         Argument("file_path", str, "Path to the CSV file to parse.", "sys.stdin"),
         Argument("delimiter", str, "Delimiter used in the CSV file.", ","),
         Argument("categories_delimiter", str, "If set, used as delimiter for categories."),
@@ -28,6 +29,7 @@ class CSVInput(Provider):
         file_path: str | None = None,
         delimiter: str = ",",
         categories_delimiter: str | None = None,
+        **kwargs: Any,  # noqa: ARG002
     ) -> DesignStructureMatrix:
         """Implement get_dsm method from Provider class.
 
@@ -53,10 +55,10 @@ class CSVInput(Provider):
         columns = lines[0].rstrip("\n").split(delimiter)[1:]
         categories = None
         if categories_delimiter:
-            columns, categories = zip(*[column.split(categories_delimiter, 1) for column in columns])
+            columns, categories = zip(*[column.split(categories_delimiter, 1) for column in columns])  # type: ignore[assignment]
         size = len(columns)
         data = [list(map(int, line.split(delimiter)[1:])) for line in lines[1 : size + 1]]
-        return DesignStructureMatrix(data, columns, categories)
+        return DesignStructureMatrix(data, columns, categories)  # type: ignore[arg-type]
 
 
 # FIXME: move this provider in its own repo? it's not ready

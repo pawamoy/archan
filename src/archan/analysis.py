@@ -34,7 +34,7 @@ class Analysis:
             config (Config): the configuration object to use for analysis.
         """
         self.config = config
-        self.results = []
+        self.results: list[Result] = []
 
     @staticmethod
     def _get_checker_result(
@@ -152,7 +152,7 @@ class AnalysisGroup(PrintableNameMixin):
         self.description = description
         self.providers = providers or []
         self.checkers = checkers or []
-        self.results = []
+        self.results: list[Result] = []
 
 
 class Result(PrintableResultMixin):

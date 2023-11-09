@@ -5,9 +5,9 @@ from __future__ import annotations
 import importlib
 import os
 from copy import deepcopy
+from importlib.metadata import entry_points
 from typing import Callable
 
-import pkg_resources
 import yaml
 from colorama import Style
 
@@ -17,15 +17,9 @@ from archan.logging import Logger
 from archan.plugins import Checker, Provider
 from archan.printing import console_width
 
-try:
 
-    class PluginNotFoundError(ModuleNotFoundError):
-        """Exception to raise when a plugin is not found or importable."""
-
-except NameError:
-
-    class PluginNotFoundError(ImportError):
-        """Exception to raise when a plugin is not found or importable."""
+class PluginNotFoundError(ModuleNotFoundError):
+    """Exception to raise when a plugin is not found or importable."""
 
 
 logger = Logger.get_logger(__name__)
@@ -111,7 +105,8 @@ class Config:
         """
         providers = {}
         checkers = {}
-        for entry_point in pkg_resources.iter_entry_points(group="archan"):
+        eps = next(eps for group, eps in entry_points().items() if group.startswith("archan"))
+        for entry_point in eps:
             obj = entry_point.load()
             if issubclass(obj, Provider):
                 providers[entry_point.name] = obj
@@ -333,7 +328,7 @@ class Config:
         Returns:
             The provider.
         """
-        return self.get_plugin(identifier, cls="provider")
+        return self.get_plugin(identifier, cls="provider")  # type: ignore[arg-type,return-value]
 
     def get_checker(self, identifier: str) -> type[Checker]:
         """Return the checker class corresponding to the given identifier.
@@ -344,7 +339,7 @@ class Config:
         Returns:
             The checker.
         """
-        return self.get_plugin(identifier, cls="checker")
+        return self.get_plugin(identifier, cls="checker")  # type: ignore[arg-type,return-value]
 
     def provider_from_dict(self, dct: dict) -> Provider | None:
         """Return a provider instance from a dict object.
@@ -392,7 +387,7 @@ class Config:
         Returns:
             Provider/Checker: instance of plugin.
         """
-        real_cls = self.get_plugin(identifier, cls)
+        real_cls = self.get_plugin(identifier, cls)  # type: ignore[arg-type]
         # TODO: implement re-usability of plugins?
         # same instances shared across analyses (to avoid re-computing stuff)
         return real_cls(**definition or {})
@@ -430,7 +425,7 @@ class Config:
         Returns:
             A provider.
         """
-        return self.inflate_plugin(identifier, definition, "provider")
+        return self.inflate_plugin(identifier, definition, "provider")  # type: ignore[return-value]
 
     def inflate_checker(self, identifier: str, definition: dict | None = None) -> Checker:
         """Shortcut to inflate a checker.
@@ -442,7 +437,7 @@ class Config:
         Returns:
             A checker.
         """
-        return self.inflate_plugin(identifier, definition, "checker")
+        return self.inflate_plugin(identifier, definition, "checker")  # type: ignore[return-value]
 
     def inflate_providers(self, providers_definition: list | dict) -> list[Provider]:
         """Shortcut to inflate multiple providers.
@@ -453,7 +448,7 @@ class Config:
         Returns:
             Multiple providers.
         """
-        return self.inflate_plugins(providers_definition, self.inflate_provider)
+        return self.inflate_plugins(providers_definition, self.inflate_provider)  # type: ignore[return-value]
 
     def inflate_checkers(self, checkers_definition: list | dict) -> list[Checker]:
         """Shortcut to inflate multiple checkers.
@@ -464,9 +459,9 @@ class Config:
         Returns:
             Multiple checkers.
         """
-        return self.inflate_plugins(checkers_definition, self.inflate_checker)
+        return self.inflate_plugins(checkers_definition, self.inflate_checker)  # type: ignore[return-value]
 
-    def inflate_analysis_group(self, identifier: str, definition: list | dict) -> AnalysisGroup:
+    def inflate_analysis_group(self, identifier: str, definition: dict) -> AnalysisGroup:
         """Inflate a whole analysis group.
 
         An analysis group is a section defined in the YAML file.
