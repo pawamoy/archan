@@ -30,8 +30,8 @@ class Analysis:
     def __init__(self, config: Config):
         """Initialization method.
 
-        Arguments:
-            config (Config): the configuration object to use for analysis.
+        Parameters:
+            config: The configuration object to use for analysis.
         """
         self.config = config
         self.results: list[Result] = []
@@ -53,8 +53,8 @@ class Analysis:
         Generate data from each provider, then check these data with every
         checker, and store the analysis results.
 
-        Arguments:
-            verbose: whether to immediately print the results or not.
+        Parameters:
+            verbose: Whether to immediately print the results or not.
         """
         self.results.clear()
 
@@ -142,11 +142,11 @@ class AnalysisGroup(PrintableNameMixin):
     ):
         """Initialization method.
 
-        Arguments:
-            name (str): the group name.
-            description (str): the group description.
-            providers (list): the list of providers.
-            checkers (list): the list of checkers.
+        Parameters:
+            name: The group name.
+            description: The group description.
+            providers: The list of providers.
+            checkers: The list of checkers.
         """
         self.name = name
         self.description = description
@@ -161,12 +161,12 @@ class Result(PrintableResultMixin):
     def __init__(self, group: AnalysisGroup, provider: Provider, checker: Checker, code: int, messages: str):
         """Initialization method.
 
-        Arguments:
-            group (AnalysisGroup): parent group.
-            provider (Provider): parent Provider.
-            checker (Checker): parent Checker.
-            code (int): constant from Checker class.
-            messages (str): messages string.
+        Parameters:
+            group: Parent group.
+            provider: Parent Provider.
+            checker: Parent Checker.
+            code: Constant from Checker class.
+            messages: Messages string.
         """
         self.group = group
         self.provider = provider

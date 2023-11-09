@@ -41,8 +41,8 @@ class _DebugInfo(argparse.Action):
 def valid_file(value: str) -> str:
     """Check if given file exists and is a regular file.
 
-    Arguments:
-        value (str): Path to the file.
+    Parameters:
+        value: Path to the file.
 
     Raises:
         ArgumentTypeError: When value not valid.
@@ -62,7 +62,7 @@ def valid_file(value: str) -> str:
 def valid_level(value: str) -> str:
     """Validate the logging level argument for the parser.
 
-    Arguments:
+    Parameters:
         value: The value provided on the command line.
 
     Raises:

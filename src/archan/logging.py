@@ -18,8 +18,8 @@ class Logger:
     def set_level(level: int) -> None:
         """Set level of logging for all loggers.
 
-        Arguments:
-            level (int): level of logging.
+        Parameters:
+            level: Level of logging.
         """
         Logger.level = level
         for logger in Logger.loggers.values():
@@ -29,13 +29,13 @@ class Logger:
     def get_logger(name: str, level: int | None = None, fmt: str = ":%(lineno)d: %(message)s") -> logging.Logger:
         """Return a logger.
 
-        Arguments:
-            name (str): name to pass to the logging module.
-            level (int): level of logging.
-            fmt (str): format string.
+        Parameters:
+            name: Name to pass to the logging module.
+            level: Level of logging.
+            fmt: Format string.
 
         Returns:
-            logging.Logger: logger from ``logging.getLogger``.
+            Logger from ``logging.getLogger``.
         """
         if name not in Logger.loggers:
             if Logger.level is None and level is None:
@@ -60,7 +60,7 @@ class LoggingFormatter(logging.Formatter):
     def format(self, record: logging.LogRecord) -> str:  # noqa: A003
         """Override default format method.
 
-        Arguments:
+        Parameters:
             record: A log record.
 
         Returns:

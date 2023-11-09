@@ -59,7 +59,7 @@ class CompleteMediation(Checker):
         - Data have no dependencies at all
           (but framework/libraries would be tolerated).
 
-        Arguments:
+        Parameters:
             dsm: The DSM to generate the mediation matrix for.
 
         Raises:
@@ -140,15 +140,15 @@ class CompleteMediation(Checker):
     ) -> tuple[bool, str]:
         """Check if matrix and its mediation matrix are compliant.
 
-        Arguments:
-            dsm (:class:`DesignStructureMatrix`): the DSM to check.
-            complete_mediation_matrix (list of list of int): 2-dim array
+        Parameters:
+            dsm: The DSM to check.
+            complete_mediation_matrix: 2-dim array.
 
         Raises:
             DesignStructureMatrixError: When the matrices are not compliant.
 
         Returns:
-            bool: True if compliant, else False
+            True if compliant, else False.
         """
         matrix = dsm.data
         rows_dep_matrix = len(matrix)
@@ -188,12 +188,12 @@ class CompleteMediation(Checker):
         0 if the mediation matrix (line, column) is 0, or >0 if the mediation
         matrix (line, column) is 1.
 
-        Arguments:
-            dsm (:class:`DesignStructureMatrix`): the DSM to check.
+        Parameters:
+            dsm: The DSM to check.
             **kwargs: Optional additional keyword arguments.
 
         Returns:
-            bool: True if compliant, else False
+            True if compliant, else False.
         """
         # generate complete_mediation_matrix according to each category
         med_matrix = CompleteMediation.generate_mediation_matrix(dsm)
@@ -240,13 +240,13 @@ class EconomyOfMechanism(Checker):
         < 2 * the number of modules
         (dependencies to the framework are NOT considered).
 
-        Arguments:
-            dsm (:class:`DesignStructureMatrix`): the DSM to check.
-            simplicity_factor (int): simplicity factor.
+        Parameters:
+            dsm: The DSM to check.
+            simplicity_factor: Simplicity factor.
             **kwargs: Optional additional keyword arguments.
 
         Returns:
-            bool: True if economic, else False
+            True if economic, else False.
         """
         # economy_of_mechanism
         economy_of_mechanism = False
@@ -382,15 +382,15 @@ class LeastCommonMechanism(Checker):
     ) -> tuple[Any, str]:
         """Check least common mechanism.
 
-        Arguments:
-            dsm (:class:`DesignStructureMatrix`): the DSM to check.
-            independence_factor (int): if the maximum dependencies for one
+        Parameters:
+            dsm: The DSM to check.
+            independence_factor: If the maximum dependencies for one
                 module is inferior or equal to the DSM size divided by the
                 independence factor, then this criterion is verified.
             **kwargs: Optional additional keyword arguments.
 
         Returns:
-            bool: True if least common mechanism, else False
+            True if least common mechanism, else False.
         """
         # leastCommonMechanismMatrix
         least_common_mechanism = False
@@ -455,12 +455,12 @@ class LayeredArchitecture(Checker):
     ) -> tuple[Any, str]:
         """Check layered architecture.
 
-        Arguments:
-            dsm (:class:`DesignStructureMatrix`): the DSM to check.
+        Parameters:
+            dsm: The DSM to check.
             **kwargs: Optional additional keyword arguments.
 
         Returns:
-            bool, str: True if layered architecture else False, messages
+            True if layered architecture else False, messages.
         """
         layered_architecture = True
         messages = []
@@ -510,12 +510,12 @@ class CodeClean(Checker):
     ) -> tuple[Any, str]:
         """Check code clean.
 
-        Arguments:
-            dsm (:class:`DesignStructureMatrix`): the DSM to check.
+        Parameters:
+            dsm: The DSM to check.
             **kwargs: Optional additional keyword arguments.
 
         Returns:
-            bool, str: True if code clean else False, messages
+            True if code clean else False, messages.
         """
         logger.debug(f"Entities = {dsm.entities}")
         messages = []

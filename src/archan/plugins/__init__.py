@@ -21,11 +21,11 @@ class Argument(PrintableArgumentMixin):
     def __init__(self, name: str, cls: type, description: str, default: Any | None = None):
         """Initialization method.
 
-        Arguments:
-            name (str): name of the argument.
-            cls (type): type of the argument.
-            description (str): description of the argument.
-            default (obj): default value for the argument.
+        Parameters:
+            name: Name of the argument.
+            cls: Type of the argument.
+            description: Description of the argument.
+            default: Default value for the argument.
         """
         self.name = name
         self.cls = cls
@@ -63,12 +63,12 @@ class Checker(PrintableNameMixin, PrintablePluginMixin):
     ):
         """Initialization method.
 
-        Arguments:
+        Parameters:
             name: The checker name.
             description: The checker description.
             hint: Hint provided for failures.
             allow_failure: Still pass if failed or not.
-            passes: ???
+            passes: Boolean.
             arguments: Arguments passed to the check method when run.
         """
         if name:
@@ -90,21 +90,21 @@ class Checker(PrintableNameMixin, PrintablePluginMixin):
     ) -> tuple[Any, str]:
         """Check the data and return a result.
 
-        Arguments:
-            data (DSM/DMM/MDM): DSM/DMM/MDM instance to check.
-            **kwargs: additional arguments.
+        Parameters:
+            dsm: DSM/DMM/MDM instance to check.
+            **kwargs: Additional arguments.
 
         Returns:
-            obj: Checker constant or object with a ``__bool__`` method.
-            tuple (obj, str): obj as before and string of messages
+            result: Checker constant or object with a ``__bool__`` method.
+            message: Optional messages.
         """
         raise NotImplementedError
 
     def run(self, data: DesignStructureMatrix | MultipleDomainMatrix | DomainMappingMatrix) -> None:
         """Run the check method and format the result for analysis.
 
-        Arguments:
-            data (DSM/DMM/MDM): DSM/DMM/MDM instance to check.
+        Parameters:
+            data: DSM/DMM/MDM instance to check.
         """
         result_type = namedtuple("Result", "code messages")  # type: ignore[name-match]  # noqa: PYI024
 
@@ -154,10 +154,10 @@ class Provider(PrintableNameMixin, PrintablePluginMixin):
     ) -> None:
         """Initialization method.
 
-        Arguments:
+        Parameters:
             name: The provider name.
             description: The provider description.
-            arguments (dict): arguments that will be used for get_data method.
+            arguments: Arguments that will be used for `get_data` method.
         """
         if name:
             self.name = name
@@ -170,7 +170,7 @@ class Provider(PrintableNameMixin, PrintablePluginMixin):
     def get_data(self, **kwargs: Any) -> Any:
         """Abstract method. Return instance of DSM/DMM/MDM.
 
-        Arguments:
+        Parameters:
             **kwargs: Keyword arguments.
 
         Raises:

@@ -17,7 +17,7 @@ def validate_rows_length(
 ) -> None:
     """Validate that all rows have the same length.
 
-    Arguments:
+    Parameters:
         data: The data to validate.
         length: The length to enforce.
         message: The exception message.
@@ -36,7 +36,7 @@ def validate_rows_length(
 def validate_square(data: list[list], message: str | None = None, exception: type = MatrixError) -> None:
     """Validate that the matrix has equal number of rows and columns.
 
-    Arguments:
+    Parameters:
         data: The data to validate.
         message: The exception message.
         exception: The exception type.
@@ -59,7 +59,7 @@ def validate_categories_equal_entities(
 ) -> None:
     """Validate that the matrix has equal number of entities and categories.
 
-    Arguments:
+    Parameters:
         categories: The categories to validate.
         entities: The entities to validate.
         message: The exception message.
@@ -89,10 +89,10 @@ class BaseMatrix:
     def __init__(self, data: list[list[int | float]], entities: list | None = None, categories: list | None = None):
         """Initialization method.
 
-        Arguments:
-            data (list of list of int/float): 2-dim array.
-            entities (list): list of entities.
-            categories (list): list of the categories (one per entity).
+        Parameters:
+            data: 2-dim array.
+            entities: List of entities.
+            categories: List of the categories (one per entity).
         """
         self.data = data
         if entities is None:

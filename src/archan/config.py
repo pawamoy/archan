@@ -31,7 +31,7 @@ class Plugins:
     def __init__(self, providers: dict[str, type[Provider]], checkers: dict[str, type[Checker]]):
         """Initialize the object.
 
-        Arguments:
+        Parameters:
             providers: Some providers.
             checkers: Some checkers.
         """
@@ -45,8 +45,8 @@ class Config:
     def __init__(self, config_dict: dict | None = None):
         """Initialize the object.
 
-        Arguments:
-            config_dict (dict): the configuration as a dictionary.
+        Parameters:
+            config_dict: the configuration as a dictionary.
 
         Raises:
             ValueError: When a wrong type is given for the analysis key.
@@ -80,7 +80,7 @@ class Config:
     def load_local_plugin(name: str) -> type[Checker | Provider]:
         """Import a local plugin accessible through Python path.
 
-        Arguments:
+        Parameters:
             name: Dotted path to the plugin.
 
         Raises:
@@ -118,7 +118,7 @@ class Config:
     def lint(config: dict) -> None:
         """Verify the contents of the configuration dictionary.
 
-        Arguments:
+        Parameters:
             config: A configuration dictionary.
 
         Raises:
@@ -133,7 +133,7 @@ class Config:
     def from_file(path: str) -> Config:
         """Return a ``Config`` instance by reading a configuration file.
 
-        Arguments:
+        Parameters:
             path: The config file path.
 
         Returns:
@@ -177,7 +177,7 @@ class Config:
     def default_config(file_path: str | None = None) -> Config:
         """Return a default configuration instance.
 
-        Arguments:
+        Parameters:
             file_path: Optional file path to configuration file.
 
         Returns:
@@ -203,15 +203,15 @@ class Config:
     def inflate_plugin_list(plugin_list: list, inflate_plugin: Callable) -> list[Checker | Provider]:
         """Inflate a list of strings/dictionaries to a list of plugin instances.
 
-        Arguments:
-            plugin_list (list): a list of str/dict.
-            inflate_plugin (method): the method to inflate the plugin.
+        Parameters:
+            plugin_list: a list of str/dict.
+            inflate_plugin: the method to inflate the plugin.
 
         Returns:
-            list: a plugin instances list.
+            A plugin instances list.
 
         Raises:
-            ValueError: when a dictionary item contains more than one key.
+            ValueError: When a dictionary item contains more than one key.
         """
         plugins = []
         for plugin_def in plugin_list:
@@ -238,12 +238,12 @@ class Config:
     def inflate_plugin_dict(plugin_dict: dict, inflate_plugin: Callable) -> list[Checker | Provider]:
         """Inflate a list of strings/dictionaries to a list of plugin instances.
 
-        Arguments:
-            plugin_dict (dict): a dict of dict.
-            inflate_plugin (method): the method to inflate the plugin.
+        Parameters:
+            plugin_dict: A dict of dict.
+            inflate_plugin: The method to inflate the plugin.
 
         Returns:
-            list: a plugin instances list.
+            A plugin instances list.
         """
         plugins = []
         for identifier, definition in plugin_dict.items():
@@ -257,16 +257,16 @@ class Config:
     def inflate_nd_checker(identifier: str, definition: bool | dict) -> Checker:
         """Inflate a no-data checker from a basic definition.
 
-        Arguments:
-            identifier (str): the no-data checker identifier / name.
-            definition (bool/dict): a boolean acting as "passes" or a full
+        Parameters:
+            identifier: The no-data checker identifier / name.
+            definition: A boolean acting as "passes" or a full
                 dict definition with "passes" and "allow_failure".
 
         Returns:
-            Checker: a checker instance.
+            A checker instance.
 
         Raises:
-            ValueError: when the definition type is not bool or dict.
+            ValueError: When the definition type is not bool or dict.
         """
         if isinstance(definition, bool):
             return Checker(name=identifier, passes=definition)
@@ -278,7 +278,7 @@ class Config:
     def cleanup_definition(definition: dict) -> None:
         """Clean-up a definition (remove name, description and arguments).
 
-        Arguments:
+        Parameters:
             definition: The definition to clean.
         """
         definition.pop("name", "")
@@ -306,9 +306,9 @@ class Config:
     def get_plugin(self, identifier: str, cls: type | None = None) -> type[Checker | Provider]:
         """Return the plugin corresponding to the given identifier and type.
 
-        Arguments:
-            identifier (str): identifier of the plugin.
-            cls (str): one of checker / provider.
+        Parameters:
+            identifier: Identifier of the plugin.
+            cls: One of checker / provider.
 
         Returns:
             Checker/Provider: plugin class.
@@ -322,7 +322,7 @@ class Config:
     def get_provider(self, identifier: str) -> type[Provider]:
         """Return the provider class corresponding to the given identifier.
 
-        Arguments:
+        Parameters:
             identifier: The provider identifier.
 
         Returns:
@@ -333,7 +333,7 @@ class Config:
     def get_checker(self, identifier: str) -> type[Checker]:
         """Return the checker class corresponding to the given identifier.
 
-        Arguments:
+        Parameters:
             identifier: The checker identifier.
 
         Returns:
@@ -344,7 +344,7 @@ class Config:
     def provider_from_dict(self, dct: dict) -> Provider | None:
         """Return a provider instance from a dict object.
 
-        Arguments:
+        Parameters:
             dct: The dictionary describing the provider.
 
         Returns:
@@ -359,7 +359,7 @@ class Config:
     def checker_from_dict(self, dct: dict) -> Checker | None:
         """Return a checker instance from a dict object.
 
-        Arguments:
+        Parameters:
             dct: The dictionary describing the checker.
 
         Returns:
@@ -379,13 +379,13 @@ class Config:
     ) -> Checker | Provider:
         """Inflate a plugin thanks to it's identifier, definition and class.
 
-        Arguments:
-            identifier: the plugin identifier.
-            definition (dict): the kwargs to instantiate the plugin with.
-            cls (str): "provider", "checker", or None.
+        Parameters:
+            identifier: The plugin identifier.
+            definition: The kwargs to instantiate the plugin with.
+            cls: "provider", "checker", or None.
 
         Returns:
-            Provider/Checker: instance of plugin.
+            Instance of plugin.
         """
         real_cls = self.get_plugin(identifier, cls)  # type: ignore[arg-type]
         # TODO: implement re-usability of plugins?
@@ -399,15 +399,15 @@ class Config:
     ) -> list[Checker | Provider]:
         """Inflate multiple plugins based on a list/dict definition.
 
-        Arguments:
-            plugins_definition (list/dict): the plugins definitions.
-            inflate_method (method): the method to indlate each plugin.
+        Parameters:
+            plugins_definition: The plugins definitions.
+            inflate_method: The method to indlate each plugin.
 
         Returns:
             A list of plugin instances.
 
         Raises:
-            ValueError: when the definition type is not list or dict.
+            ValueError: When the definition type is not list or dict.
         """
         if isinstance(plugins_definition, (list, tuple)):
             return self.inflate_plugin_list(plugins_definition, inflate_method)
@@ -418,7 +418,7 @@ class Config:
     def inflate_provider(self, identifier: str, definition: dict | None = None) -> Provider:
         """Shortcut to inflate a provider.
 
-        Arguments:
+        Parameters:
             identifier: The provider identifier.
             definition: The provider definition.
 
@@ -430,7 +430,7 @@ class Config:
     def inflate_checker(self, identifier: str, definition: dict | None = None) -> Checker:
         """Shortcut to inflate a checker.
 
-        Arguments:
+        Parameters:
             identifier: The checker identifier.
             definition: The checker definition.
 
@@ -442,7 +442,7 @@ class Config:
     def inflate_providers(self, providers_definition: list | dict) -> list[Provider]:
         """Shortcut to inflate multiple providers.
 
-        Arguments:
+        Parameters:
             providers_definition: The providers definitions.
 
         Returns:
@@ -453,7 +453,7 @@ class Config:
     def inflate_checkers(self, checkers_definition: list | dict) -> list[Checker]:
         """Shortcut to inflate multiple checkers.
 
-        Arguments:
+        Parameters:
             checkers_definition: The checkers definitions.
 
         Returns:
@@ -466,15 +466,15 @@ class Config:
 
         An analysis group is a section defined in the YAML file.
 
-        Arguments:
-            identifier (str): the group identifier.
-            definition (list/dict): the group definition.
+        Parameters:
+            identifier: The group identifier.
+            definition: The group definition.
 
         Returns:
-            AnalysisGroup: an instance of AnalysisGroup.
+            An instance of AnalysisGroup.
 
         Raises:
-            ValueError: when identifier targets a plugin of a certain type,
+            ValueError: When identifier targets a plugin of a certain type,
                 and the definition does not contain the entry for the
                 other-type plugins (providers <-> checkers).
         """

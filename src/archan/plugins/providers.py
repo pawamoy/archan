@@ -35,11 +35,11 @@ class CSVInput(Provider):
 
         Parse CSV to return an instance of DSM.
 
-        Arguments:
-            file_path (str/None): string path or None. If None, uses sys.stdin.
-            delimiter (str): character(s) used as delimiter for columns.
-            categories_delimiter (str):
-                character(s) used as delimiter for categories and keys
+        Parameters:
+            file_path: String path or None. If None, uses sys.stdin.
+            delimiter: Character(s) used as delimiter for columns.
+            categories_delimiter:
+                Character(s) used as delimiter for categories and keys
                 (first column).
 
         Returns:

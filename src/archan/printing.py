@@ -16,7 +16,7 @@ logger = Logger.get_logger(__name__)
 def console_width(default: int = 80) -> int:
     """Return current console width.
 
-    Arguments:
+    Parameters:
         default: Default value if width cannot be retrieved.
 
     Returns:
@@ -30,7 +30,7 @@ def console_width(default: int = 80) -> int:
 def pretty_description(description: str, wrap_at: int | None = None, indent: int = 0) -> str:
     """Return a pretty formatted string given some text.
 
-    Arguments:
+    Parameters:
         description: String to format.
         wrap_at: Maximum length of a line.
         indent: Level of indentation.
@@ -73,7 +73,7 @@ class PrintableNameMixin:
     def print_name(self, indent: int = 0, end: str = "\n") -> None:
         """Print name with optional indent and end.
 
-        Arguments:
+        Parameters:
             indent: Indentation.
             end: End of line.
         """
@@ -86,7 +86,7 @@ class PrintableArgumentMixin:
     def print(self, indent: int = 0) -> None:  # noqa: A003
         """Print self with optional indent.
 
-        Arguments:
+        Parameters:
             indent: Indentation.
         """
         text = "{indent}{magenta}{name}{none} ({dim}{cls}{none}, default {dim}{default}{none})".format(
@@ -128,7 +128,7 @@ class PrintableResultMixin:
     def print(self, indent: int = 2) -> None:  # noqa: A003
         """Print self with optional indent.
 
-        Arguments:
+        Parameters:
             indent: Indentation.
         """
         status = {
