@@ -1,14 +1,4 @@
 analysis:
-  archan_pylint.PylintProvider:
-    name: Pylint
-    arguments:
-      pylint_args:
-        - src/archan
-    checkers:
-      archan.CodeClean:
-        allow_failure: true
-        arguments:
-          threshold: 10
   dependenpy.InternalDependencies:
     name: Software Architecture
     arguments:
