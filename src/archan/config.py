@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import importlib
 import os
+import sys
 from copy import deepcopy
 from importlib.metadata import entry_points
 from typing import Callable
@@ -105,7 +106,14 @@ class Config:
         """
         providers = {}
         checkers = {}
-        eps = next(eps for group, eps in entry_points().items() if group.startswith("archan"))
+        entrypoints = entry_points()
+
+        # TODO: Remove first block once support for Python < 3.12 is dropped.
+        if sys.version_info < (3, 12):
+            eps = next(eps for group, eps in entrypoints.items() if group.startswith("archan"))
+        else:
+            eps = entrypoints.select(group="archan")
+
         for entry_point in eps:
             obj = entry_point.load()
             if issubclass(obj, Provider):
